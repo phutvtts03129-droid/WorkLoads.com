@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đăng nhập - AURA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>body{font-family:Inter,sans-serif}.serif{font-family:'Playfair Display',serif}@keyframes f{50%{transform:translateY(-14px)}}.fl{animation:f 5s ease-in-out infinite}</style></head>
+<body class="min-h-screen bg-gradient-to-br from-rose-100 via-purple-100 to-sky-100 flex items-center justify-center p-4">
+<i class="fa-solid fa-gem fl absolute top-10 left-10 text-purple-300 text-4xl"></i><i class="fa-solid fa-heart fl absolute bottom-10 right-16 text-pink-300 text-3xl"></i>
+<div class="bg-white rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full grid md:grid-cols-2 relative">
+ <div class="hidden md:block relative"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover" alt="">
+  <div class="absolute inset-0 bg-gradient-to-t from-indigo-950/80 to-transparent flex flex-col justify-end p-8 text-white"><h2 class="serif text-3xl font-bold">Chào mừng đến AURA</h2><p class="text-sm text-white/80 mt-2">Đăng nhập để mua sắm và nhận ưu đãi thành viên.</p></div></div>
+ <div class="p-8 md:p-10">
+  <a href="index.html" class="text-sm text-slate-400 hover:text-purple-600"><i class="fa-solid fa-arrow-left mr-1"></i>Về trang chủ</a>
+  <h1 class="serif text-3xl font-bold mt-4">Đăng nhập</h1>
+  <div class="mt-6 space-y-4">
+   <label class="block"><span class="text-sm font-semibold">Tài khoản</span><div class="relative mt-1"><i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="u" class="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-purple-500 outline-none" placeholder="admin hoặc customer"></div></label>
+   <label class="block"><span class="text-sm font-semibold">Mật khẩu</span><div class="relative mt-1"><i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input id="p" type="password" class="w-full pl-11 pr-12 py-3 rounded-xl border border-slate-200 focus:border-purple-500 outline-none" placeholder="••••••"><button type="button" onclick="const i=p;i.type=i.type=='password'?'text':'password'" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-eye"></i></button></div></label>
+   <p id="err" class="text-sm text-red-500 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i>Sai tài khoản hoặc mật khẩu!</p>
+   <button onclick="login()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold hover:shadow-lg transition"><i class="fa-solid fa-right-to-bracket mr-2"></i>Đăng nhập</button>
+  </div>
+  <div class="mt-6 p-4 rounded-2xl bg-slate-50 text-sm space-y-2"><b class="text-slate-600"><i class="fa-solid fa-key text-amber-500 mr-1"></i>Tài khoản demo (bấm để điền nhanh)</b>
+   <button onclick="fill('admin','admin123')" class="w-full text-left p-2.5 rounded-lg bg-white border hover:border-amber-400"><i class="fa-solid fa-user-shield text-amber-500 mr-2"></i><b>Admin</b> — admin / admin123</button>
+   <button onclick="fill('customer','123456')" class="w-full text-left p-2.5 rounded-lg bg-white border hover:border-purple-400"><i class="fa-solid fa-user text-purple-500 mr-2"></i><b>Khách hàng</b> — customer / 123456</button></div>
+ </div></div>
+<script>
+const ACC={admin:{pw:'admin123',role:'admin',name:'Quản trị viên'},customer:{pw:'123456',role:'customer',name:'Nguyễn Văn A'}};
+function fill(a,b){u.value=a;p.value=b}
+function login(){const a=ACC[u.value.trim()];if(!a||a.pw!==p.value){err.classList.remove('hidden');return}
+ try{localStorage.setItem('aura_user',JSON.stringify({user:u.value.trim(),role:a.role,name:a.name}))}catch(e){}location.href='index.html'}
+document.addEventListener('keydown',e=>e.key==='Enter'&&login());
+</script></body></html>
