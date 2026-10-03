@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CYBER HUB - Web Game Portal</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js CDN for 3D Game -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            dark: '#05070f',
+                            card: '#0d1322',
+                            border: '#1e293b',
+                            neon: '#00f3ff',
+                            pink: '#ff007f',
+                            purple: '#9d4edd',
+                            lime: '#10b981',
+                            yellow: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        sans: ['Be Vietnam Pro', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #05070f;
+            color: #f8fafc;
+            overflow-x: hidden;
+            font-family: 'Be Vietnam Pro', sans-serif;
+        }
+
+        /* Glowing Neon Effects */
+        .neon-glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+        .neon-glow-pink {
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+        }
+        .neon-glow-purple {
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+        }
+
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+        .neon-text-pink {
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.6);
+        }
+
+        /* Canvas Responsive Wrappers */
+        .game-canvas-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 540px;
+            background: #02040a;
+            border: 2px solid #1e293b;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Virtual D-Pad / Controls for Mobile */
+        .touch-btn {
+            touch-action: manipulation;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            color: #00f3ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 20px;
+            active: background #00f3ff;
+        }
+        .touch-btn:active {
+            background: rgba(0, 243, 255, 0.4);
+            color: #fff;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f3ff;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-gray-800 bg-cyber-card/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchGame('hub')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center text-xl font-bold font-orbitron text-white shadow-lg neon-glow-cyan">
+                    🎮
+                </div>
+                <div>
+                    <h1 class="font-orbitron font-bold text-lg md:text-xl text-white tracking-wider flex items-center gap-2">
+                        CYBER<span class="text-cyber-neon">HUB</span>
+                        <span class="text-xs px-2 py-0.5 rounded bg-cyber-pink/20 text-cyber-pink border border-cyber-pink/40 font-sans font-semibold">WEB GAME</span>
+                    </h1>
+                    <p class="text-xs text-gray-400">Nền Tảng Game Trực Tiếp Trên Trình Duyệt</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Sound Toggle -->
+                <button id="soundToggleBtn" onclick="toggleAudio()" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-900 text-gray-300 hover:text-white hover:border-cyber-neon transition flex items-center gap-2 text-sm">
+                    <i id="soundIcon" class="fa-solid fa-volume-high text-cyber-neon"></i>
+                    <span class="hidden sm:inline">Âm Thanh</span>
+                </button>
+
+                <!-- Fullscreen Button -->
+                <button onclick="toggleFullScreen()" class="px-3 py-1.5 rounded-lg border border-gray-700 bg-gray-900 text-gray-300 hover:text-white hover:border-cyber-neon transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-expand"></i>
+                    <span class="hidden sm:inline">Toàn Màn Hình</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col items-center">
+
+        <!-- GAME HUB / SELECTION SCREEN -->
+        <div id="hubView" class="w-full flex flex-col items-center gap-8 py-4">
+            
+            <!-- Hero Banner -->
+            <div class="w-full rounded-2xl bg-gradient-to-r from-gray-900 via-cyber-card to-gray-900 border border-gray-800 p-6 md:p-10 text-center relative overflow-hidden shadow-2xl">
+                <div class="absolute -top-24 -left-24 w-60 h-60 bg-cyber-neon/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-cyber-purple/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <span class="inline-block px-4 py-1.5 rounded-full bg-cyber-neon/10 border border-cyber-neon/30 text-cyber-neon text-xs font-semibold tracking-wider uppercase mb-3">
+                    Công Nghệ HTML5 • WebGL • Canvas 2D
+                </span>
+                <h2 class="font-orbitron text-3xl md:text-5xl font-extrabold text-white mb-4 tracking-wide">
+                    CHỌN THỂ LOẠI GAME ĐỂ TRẢI NGHIỆM
+                </h2>
+                <p class="text-gray-400 max-w-2xl mx-auto text-sm md:text-base mb-6">
+                    Không cần tải về hay cài đặt. Tận hưởng tốc độ xử lý đồ họa mượt mà 60 FPS ngay trên trình duyệt máy tính & điện thoại của bạn.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 text-xs md:text-sm text-gray-300">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-cyber-neon"></i> Tốc Độ Tải Tức Thời</span>
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-gamepad text-cyber-pink"></i> Hỗ Trợ Phím & Cảm Ứng</span>
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-trophy text-cyber-yellow"></i> Xếp Hạng Điểm Cao</span>
+                </div>
+            </div>
+
+            <!-- Game Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+
+                <!-- Game Card 1: 2D Neon Snake -->
+                <div class="bg-cyber-card border border-gray-800 rounded-2xl p-6 flex flex-col justify-between hover:border-cyber-neon transition duration-300 hover:-translate-y-1.5 group shadow-lg">
+                    <div>
+                        <div class="relative w-full h-44 rounded-xl bg-gray-950 border border-gray-800 overflow-hidden mb-5 flex items-center justify-center group-hover:border-cyber-neon/50 transition">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent z-10"></div>
+                            <i class="fa-solid fa-staff-snake text-6xl text-cyber-neon group-hover:scale-110 transition duration-300"></i>
+                            <span class="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-md bg-cyber-neon/20 text-cyber-neon text-xs font-bold border border-cyber-neon/40">2D CASUAL</span>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-xl text-white mb-2 group-hover:text-cyber-neon transition">
+                            Neon Cyber Snake
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+                            Game 2D truyền thống nâng cấp đồ họa Neon rực rỡ. Ăn hạt năng lượng, nhặt kim cương power-up và sống sót tạo kỷ lục điểm số!
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-800/80 pt-3 mb-4">
+                            <span>Công nghệ: <b>Canvas 2D</b></span>
+                            <span>Độ khó: <b>Vừa phải</b></span>
+                        </div>
+                        <button onclick="switchGame('snake')" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 font-orbitron font-bold text-white tracking-wider hover:opacity-90 transition neon-glow-cyan">
+                            PLAY GAME 2D <i class="fa-solid fa-play ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Card 2: 3D Space Runner -->
+                <div class="bg-cyber-card border border-gray-800 rounded-2xl p-6 flex flex-col justify-between hover:border-cyber-purple transition duration-300 hover:-translate-y-1.5 group shadow-lg">
+                    <div>
+                        <div class="relative w-full h-44 rounded-xl bg-gray-950 border border-gray-800 overflow-hidden mb-5 flex items-center justify-center group-hover:border-cyber-purple/50 transition">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent z-10"></div>
+                            <i class="fa-solid fa-rocket text-6xl text-cyber-purple group-hover:scale-110 transition duration-300"></i>
+                            <span class="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-md bg-cyber-purple/20 text-cyber-purple text-xs font-bold border border-cyber-purple/40">3D WEBGL</span>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-xl text-white mb-2 group-hover:text-cyber-purple transition">
+                            Cyber Space 3D Runner
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+                            Điều khiển phi thuyền 3D né vật cản trong đường hầm Neon tốc độ cao. Trải nghiệm đồ họa 3D thời gian thực trên Three.js.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-800/80 pt-3 mb-4">
+                            <span>Công nghệ: <b>WebGL / Three.js</b></span>
+                            <span>Độ khó: <b>Nhanh</b></span>
+                        </div>
+                        <button onclick="switchGame('runner3d')" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 font-orbitron font-bold text-white tracking-wider hover:opacity-90 transition neon-glow-purple">
+                            PLAY GAME 3D <i class="fa-solid fa-play ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Card 3: Multiplayer .IO Arena -->
+                <div class="bg-cyber-card border border-gray-800 rounded-2xl p-6 flex flex-col justify-between hover:border-cyber-lime transition duration-300 hover:-translate-y-1.5 group shadow-lg">
+                    <div>
+                        <div class="relative w-full h-44 rounded-xl bg-gray-950 border border-gray-800 overflow-hidden mb-5 flex items-center justify-center group-hover:border-cyber-lime/50 transition">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-transparent to-transparent z-10"></div>
+                            <i class="fa-solid fa-crosshairs text-6xl text-cyber-lime group-hover:scale-110 transition duration-300"></i>
+                            <span class="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-md bg-cyber-lime/20 text-cyber-lime text-xs font-bold border border-cyber-lime/40">.IO MULTIPLAYER</span>
+                        </div>
+                        <h3 class="font-orbitron font-bold text-xl text-white mb-2 group-hover:text-cyber-lime transition">
+                            CyberArena.IO Battle
+                        </h3>
+                        <p class="text-gray-400 text-sm mb-4 leading-relaxed">
+                            Đấu trường sinh tồn đối kháng! Thu thập hạt năng lượng, bắn hạ 10 AI Bot, nâng cấp Laser và thống trị Bảng Xếp Hạng.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-800/80 pt-3 mb-4">
+                            <span>Mô phỏng: <b>WebSocket / Bots</b></span>
+                            <span>Kiểu chơi: <b>Action .IO</b></span>
+                        </div>
+                        <button onclick="switchGame('arena')" class="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 font-orbitron font-bold text-white tracking-wider hover:opacity-90 transition">
+                            PLAY .IO ARENA <i class="fa-solid fa-play ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- GAME VIEW CONTAINER (Hidden by default, shown when a game starts) -->
+        <div id="gameView" class="w-full hidden flex-col items-center gap-4">
+            
+            <!-- Game Top Navigation / Control Bar -->
+            <div class="w-full max-w-[900px] flex justify-between items-center bg-cyber-card border border-gray-800 px-4 py-3 rounded-xl">
+                <button onclick="switchGame('hub')" class="px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:text-white hover:bg-gray-700 text-xs font-semibold flex items-center gap-2 transition">
+                    <i class="fa-solid fa-arrow-left"></i> Trở Về Hub
+                </button>
+                <div class="text-center">
+                    <h3 id="currentGameTitle" class="font-orbitron font-bold text-white text-sm md:text-base">TÊN GAME</h3>
+                </div>
+                <div class="flex items-center gap-3 font-orbitron text-xs">
+                    <span class="text-gray-400">SCORE: <strong id="scoreDisplay" class="text-cyber-neon text-sm">0</strong></span>
+                    <span class="text-gray-400 hidden sm:inline">HIGH: <strong id="highScoreDisplay" class="text-cyber-yellow text-sm">0</strong></span>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="game-canvas-container flex items-center justify-center">
+                <!-- 2D Canvas -->
+                <canvas id="gameCanvas2D" class="w-full h-full block" width="900" height="540"></canvas>
+                <!-- 3D Canvas Container -->
+                <div id="gameCanvas3D" class="w-full h-full absolute inset-0 hidden"></div>
+
+                <!-- Overlay UI (Pause / Game Over / Start) -->
+                <div id="gameOverlay" class="absolute inset-0 bg-cyber-dark/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30">
+                    <h2 id="overlayTitle" class="font-orbitron text-3xl md:text-4xl font-extrabold text-white mb-2">NEON CYBER SNAKE</h2>
+                    <p id="overlayDesc" class="text-gray-300 text-sm max-w-md mb-6">Sử dụng các phím mũi tên [W, A, S, D] hoặc nút cảm ứng để di chuyển.</p>
+                    <button id="startBtn" onclick="startGame()" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 font-orbitron font-bold text-white tracking-widest hover:scale-105 transition neon-glow-cyan text-sm md:text-base">
+                        BẮT ĐẦU CHƠI <i class="fa-solid fa-play ml-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Touch Controls (Shown on Touch devices) -->
+            <div id="touchControls" class="w-full max-w-[900px] grid grid-cols-3 gap-2 mt-2 sm:hidden">
+                <div></div>
+                <button class="touch-btn py-3" onclick="handleVirtualInput('UP')"><i class="fa-solid fa-arrow-up"></i></button>
+                <div></div>
+                <button class="touch-btn py-3" onclick="handleVirtualInput('LEFT')"><i class="fa-solid fa-arrow-left"></i></button>
+                <button class="touch-btn py-3" onclick="handleVirtualInput('ACTION')"><i class="fa-solid fa-crosshairs text-cyber-pink"></i></button>
+                <button class="touch-btn py-3" onclick="handleVirtualInput('RIGHT')"><i class="fa-solid fa-arrow-right"></i></button>
+                <div></div>
+                <button class="touch-btn py-3" onclick="handleVirtualInput('DOWN')"><i class="fa-solid fa-arrow-down"></i></button>
+                <div></div>
+            </div>
+
+            <!-- Keyboard Instructions Footer -->
+            <div class="w-full max-w-[900px] bg-gray-950 border border-gray-800/80 rounded-xl p-3 text-xs text-gray-400 flex flex-wrap justify-between items-center gap-2">
+                <span id="controlInstructions"><i class="fa-solid fa-keyboard text-cyber-neon mr-1"></i> Điều khiển: <b>[W,A,S,D]</b> hoặc <b>Phím Mũi Tên</b> để di chuyển.</span>
+                <span class="text-gray-500">Ấn [P] hoặc [ESC] để Tạm Dừng</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 bg-cyber-card py-4 text-center text-xs text-gray-500">
+        <p>© 2026 CYBER HUB Gaming Platform • Xây dựng chuẩn HTML5, Canvas 2D & WebGL Three.js</p>
+    </footer>
+
+    <!-- AUDIO SYNTHESIZER (Web Audio API - No external sound files needed) -->
+    <script>
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'eat') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'hit' || type === 'gameover') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'shoot') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'boost') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.linearRampToValueAtTime(900, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-cyber-neon';
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-gray-500';
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+
+    <!-- GAME ENGINE CORE (SNAKE 2D, RUNNER 3D, ARENA .IO) -->
+    <script>
+        let currentGame = 'none'; // 'snake', 'runner3d', 'arena'
+        let isGameRunning = false;
+        let animationFrameId = null;
+        let currentScore = 0;
+
+        const canvas2D = document.getElementById('gameCanvas2D');
+        const ctx2D = canvas2D.getContext('2d');
+        const canvas3DContainer = document.getElementById('gameCanvas3D');
+
+        const hubView = document.getElementById('hubView');
+        const gameView = document.getElementById('gameView');
+        const gameOverlay = document.getElementById('gameOverlay');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const highScoreDisplay = document.getElementById('highScoreDisplay');
+
+        // Local Storage High Scores
+        const highScores = {
+            snake: localStorage.getItem('hs_snake') || 0,
+            runner3d: localStorage.getItem('hs_runner3d') || 0,
+            arena: localStorage.getItem('hs_arena') || 0
+        };
+
+        // Switch between Hub View and Active Game View
+        function switchGame(gameType) {
+            stopCurrentGame();
+
+            if (gameType === 'hub') {
+                hubView.classList.remove('hidden');
+                gameView.classList.add('hidden');
+                currentGame = 'none';
+                return;
+            }
+
+            currentGame = gameType;
+            hubView.classList.add('hidden');
+            gameView.classList.remove('hidden');
+            gameView.classList.add('flex');
+
+            // Reset UI Visibility
+            canvas2D.classList.remove('hidden');
+            canvas3DContainer.classList.add('hidden');
+            gameOverlay.classList.remove('hidden');
+
+            highScoreDisplay.innerText = highScores[gameType];
+            scoreDisplay.innerText = '0';
+
+            const titleElem = document.getElementById('currentGameTitle');
+            const overlayTitle = document.getElementById('overlayTitle');
+            const overlayDesc = document.getElementById('overlayDesc');
+            const instructions = document.getElementById('controlInstructions');
+
+            if (gameType === 'snake') {
+                titleElem.innerText = 'NEON CYBER SNAKE (2D CASUAL)';
+                overlayTitle.innerText = 'NEON CYBER SNAKE';
+                overlayDesc.innerText = 'Điều khiển Rắn Neon ăn Hạt Năng Lượng & Nhặt Kim Cương. Tránh đụng tường hoặc tự cắn đuôi!';
+                instructions.innerHTML = '<i class="fa-solid fa-keyboard text-cyber-neon mr-1"></i> Phím di chuyển: <b>[W,A,S,D]</b> hoặc <b>[Mũi Tên]</b>.';
+                initSnakeGame();
+            } else if (gameType === 'runner3d') {
+                titleElem.innerText = 'CYBER SPACE 3D RUNNER (3D WEBGL)';
+                overlayTitle.innerText = 'CYBER SPACE 3D RUNNER';
+                overlayDesc.innerText = 'Đua phi thuyền 3D trong đường hầm Neon. Dùng mũi tên Trái/Phải để né chướng ngại vật đỏ & thu thập các Khối Vàng!';
+                instructions.innerHTML = '<i class="fa-solid fa-keyboard text-cyber-purple mr-1"></i> Né sang Trái/Phải: <b>[A / D]</b> hoặc <b>[Mũi tên Trái / Phải]</b>.';
+                canvas2D.classList.add('hidden');
+                canvas3DContainer.classList.remove('hidden');
+                initRunner3DGame();
+            } else if (gameType === 'arena') {
+                titleElem.innerText = 'CYBERARENA.IO (MULTIPLAYER BATTLE)';
+                overlayTitle.innerText = 'CYBERARENA.IO BATTLE';
+                overlayDesc.innerText = 'Di chuyển Orb của bạn trong Đấu Trường. Ăn hạt nâng cấp, bấm [Space] hoặc Nút Tròn để bắn Laser hạ gục Bots AI!';
+                instructions.innerHTML = '<i class="fa-solid fa-keyboard text-cyber-lime mr-1"></i> Di chuyển: <b>[W,A,S,D]</b> | Bắn Laser: <b>[Spacebar]</b>.';
+                initArenaGame();
+            }
+        }
+
+        function stopCurrentGame() {
+            isGameRunning = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+            if (threeRenderer) {
+                try {
+                    canvas3DContainer.innerHTML = '';
+                    threeRenderer.dispose();
+                    threeRenderer = null;
+                } catch(e) {}
+            }
+        }
+
+        function startGame() {
+            initAudio();
+            gameOverlay.classList.add('hidden');
+            isGameRunning = true;
+            currentScore = 0;
+            scoreDisplay.innerText = '0';
+
+            if (currentGame === 'snake') startSnakeLoop();
+            else if (currentGame === 'runner3d') startRunner3DLoop();
+            else if (currentGame === 'arena') startArenaLoop();
+        }
+
+        function triggerGameOver(finalScore) {
+            playSound('gameover');
+            isGameRunning = false;
+            if (finalScore > highScores[currentGame]) {
+                highScores[currentGame] = finalScore;
+                localStorage.setItem('hs_' + currentGame, finalScore);
+                highScoreDisplay.innerText = finalScore;
+            }
+
+            document.getElementById('overlayTitle').innerText = 'GAME OVER!';
+            document.getElementById('overlayDesc').innerHTML = `Điểm của bạn: <strong class="text-cyber-neon text-xl">${finalScore}</strong><br>Kỷ lục hiện tại: ${highScores[currentGame]}`;
+            document.getElementById('startBtn').innerText = 'CHƠI LẠI';
+            gameOverlay.classList.remove('hidden');
+        }
+
+        /* ------------------------------------------------------------------
+           GAME 1: NEON CYBER SNAKE (2D CANVAS)
+        ------------------------------------------------------------------ */
+        let snake = [];
+        let snakeDir = { x: 1, y: 0 };
+        let nextDir = { x: 1, y: 0 };
+        let food = { x: 0, y: 0, type: 'normal' };
+        let particles = [];
+        const gridSize = 20;
+        const tileCountX = 900 / gridSize;
+        const tileCountY = 540 / gridSize;
+        let snakeSpeedCounter = 0;
+
+        function initSnakeGame() {
+            snake = [
+                { x: 10, y: 15 },
+                { x: 9, y: 15 },
+                { x: 8, y: 15 }
+            ];
+            snakeDir = { x: 1, y: 0 };
+            nextDir = { x: 1, y: 0 };
+            spawnFood();
+            particles = [];
+            drawSnakeScene();
+        }
+
+        function spawnFood() {
+            food.x = Math.floor(Math.random() * tileCountX);
+            food.y = Math.floor(Math.random() * tileCountY);
+            food.type = Math.random() > 0.8 ? 'gold' : 'normal';
+        }
+
+        function startSnakeLoop() {
+            let lastTime = 0;
+            function loop(time) {
+                if (!isGameRunning) return;
+                animationFrameId = requestAnimationFrame(loop);
+
+                if (time - lastTime > 90) { // ~11 FPS step
+                    lastTime = time;
+                    updateSnake();
+                }
+                drawSnakeScene();
+            }
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        function updateSnake() {
+            snakeDir = { ...nextDir };
+            const head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
+
+            // Wall Collision
+            if (head.x < 0 || head.x >= tileCountX || head.y < 0 || head.y >= tileCountY) {
+                triggerGameOver(currentScore);
+                return;
+            }
+
+            // Self Collision
+            for (let i = 0; i < snake.length; i++) {
+                if (snake[i].x === head.x && snake[i].y === head.y) {
+                    triggerGameOver(currentScore);
+                    return;
+                }
+            }
+
+            snake.unshift(head);
+
+            // Eat Food
+            if (head.x === food.x && head.y === food.y) {
+                playSound('eat');
+                const pts = food.type === 'gold' ? 30 : 10;
+                currentScore += pts;
+                scoreDisplay.innerText = currentScore;
+                createParticles(food.x * gridSize + 10, food.y * gridSize + 10, food.type === 'gold' ? '#f59e0b' : '#00f3ff');
+                spawnFood();
+            } else {
+                snake.pop();
+            }
+
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].x += particles[i].vx;
+                particles[i].y += particles[i].vy;
+                particles[i].alpha -= 0.04;
+                if (particles[i].alpha <= 0) particles.splice(i, 1);
+            }
+        }
+
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 12; i++) {
+                particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    color,
+                    alpha: 1.0
+                });
+            }
+        }
+
+        function drawSnakeScene() {
+            // Background Grid
+            ctx2D.fillStyle = '#05070f';
+            ctx2D.fillRect(0, 0, canvas2D.width, canvas2D.height);
+
+            ctx2D.strokeStyle = '#0d1527';
+            ctx2D.lineWidth = 1;
+            for (let x = 0; x < canvas2D.width; x += gridSize) {
+                ctx2D.beginPath(); ctx2D.moveTo(x, 0); ctx2D.lineTo(x, canvas2D.height); ctx2D.stroke();
+            }
+            for (let y = 0; y < canvas2D.height; y += gridSize) {
+                ctx2D.beginPath(); ctx2D.moveTo(0, y); ctx2D.lineTo(canvas2D.width, y); ctx2D.stroke();
+            }
+
+            // Food Glow
+            ctx2D.shadowBlur = 15;
+            ctx2D.shadowColor = food.type === 'gold' ? '#f59e0b' : '#00f3ff';
+            ctx2D.fillStyle = food.type === 'gold' ? '#f59e0b' : '#00f3ff';
+            ctx2D.beginPath();
+            ctx2D.arc(food.x * gridSize + 10, food.y * gridSize + 10, 7, 0, Math.PI * 2);
+            ctx2D.fill();
+
+            // Snake Body
+            for (let i = 0; i < snake.length; i++) {
+                ctx2D.shadowBlur = i === 0 ? 15 : 5;
+                ctx2D.shadowColor = i === 0 ? '#ff007f' : '#00f3ff';
+                ctx2D.fillStyle = i === 0 ? '#ff007f' : '#00f3ff';
+                ctx2D.fillRect(snake[i].x * gridSize + 1, snake[i].y * gridSize + 1, gridSize - 2, gridSize - 2);
+            }
+            ctx2D.shadowBlur = 0;
+
+            // Particles
+            particles.forEach(p => {
+                ctx2D.globalAlpha = p.alpha;
+                ctx2D.fillStyle = p.color;
+                ctx2D.fillRect(p.x, p.y, 4, 4);
+            });
+            ctx2D.globalAlpha = 1.0;
+        }
+
+        /* ------------------------------------------------------------------
+           GAME 2: CYBER SPACE 3D RUNNER (THREE.JS WEBGL)
+        ------------------------------------------------------------------ */
+        let threeScene, threeCamera, threeRenderer;
+        let playerShip;
+        let obstacles = [];
+        let collectibles = [];
+        let runnerSpeed = 0.8;
+        let targetShipX = 0;
+
+        function initRunner3DGame() {
+            canvas3DContainer.innerHTML = '';
+            threeScene = new THREE.Scene();
+            threeScene.fog = new THREE.FogExp2(0x05070f, 0.02);
+
+            threeCamera = new THREE.PerspectiveCamera(60, 900 / 540, 0.1, 1000);
+            threeCamera.position.set(0, 3, 8);
+            threeCamera.lookAt(0, 1, -10);
+
+            threeRenderer = new THREE.WebGLRenderer({ antialias: true });
+            threeRenderer.setSize(900, 540);
+            threeRenderer.setClearColor(0x05070f);
+            canvas3DContainer.appendChild(threeRenderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            threeScene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0x00f3ff, 1.2);
+            dirLight.position.set(0, 10, 5);
+            threeScene.add(dirLight);
+
+            // Tunnel Grid / Floor
+            const gridHelper = new THREE.GridHelper(200, 50, 0x00f3ff, 0x1e293b);
+            gridHelper.position.z = -80;
+            threeScene.add(gridHelper);
+
+            // Player Ship (Cone 3D)
+            const shipGeo = new THREE.ConeGeometry(0.8, 2, 4);
+            const shipMat = new THREE.MeshPhongMaterial({ color: 0xff007f, emissive: 0x9d4edd, flatShading: true });
+            playerShip = new THREE.Mesh(shipGeo, shipMat);
+            playerShip.rotation.x = Math.PI / 2;
+            playerShip.position.set(0, 1, 0);
+            threeScene.add(playerShip);
+
+            obstacles = [];
+            collectibles = [];
+            targetShipX = 0;
+            runnerSpeed = 0.8;
+
+            threeRenderer.render(threeScene, threeCamera);
+        }
+
+        function spawn3DObstacle() {
+            if (Math.random() < 0.08) {
+                const geo = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+                const mat = new THREE.MeshPhongMaterial({ color: 0xef4444, emissive: 0x7f1d1d });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set((Math.random() - 0.5) * 12, 1, -100);
+                threeScene.add(mesh);
+                obstacles.push(mesh);
+            }
+            if (Math.random() < 0.06) {
+                const geo = new THREE.DodecahedronGeometry(0.8);
+                const mat = new THREE.MeshPhongMaterial({ color: 0xf59e0b, emissive: 0xb45309 });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.set((Math.random() - 0.5) * 12, 1, -100);
+                threeScene.add(mesh);
+                collectibles.push(mesh);
+            }
+        }
+
+        function startRunner3DLoop() {
+            function loop() {
+                if (!isGameRunning) return;
+                animationFrameId = requestAnimationFrame(loop);
+
+                // Smooth Ship Horizontal Control
+                playerShip.position.x += (targetShipX - playerShip.position.x) * 0.15;
+                playerShip.rotation.z = -(targetShipX - playerShip.position.x) * 0.3;
+
+                runnerSpeed += 0.0003; // Gradually increase speed
+                spawn3DObstacle();
+
+                // Move & Collision Check Obstacles
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    let obs = obstacles[i];
+                    obs.position.z += runnerSpeed;
+                    obs.rotation.x += 0.03;
+
+                    // Collision with Player
+                    if (Math.abs(obs.position.z - playerShip.position.z) < 1.2 &&
+                        Math.abs(obs.position.x - playerShip.position.x) < 1.2) {
+                        triggerGameOver(Math.floor(currentScore));
+                        return;
+                    }
+
+                    if (obs.position.z > 10) {
+                        threeScene.remove(obs);
+                        obstacles.splice(i, 1);
+                    }
+                }
+
+                // Move Collectibles
+                for (let i = collectibles.length - 1; i >= 0; i--) {
+                    let item = collectibles[i];
+                    item.position.z += runnerSpeed;
+                    item.rotation.y += 0.05;
+
+                    if (Math.abs(item.position.z - playerShip.position.z) < 1.4 &&
+                        Math.abs(item.position.x - playerShip.position.x) < 1.4) {
+                        playSound('eat');
+                        currentScore += 50;
+                        scoreDisplay.innerText = Math.floor(currentScore);
+                        threeScene.remove(item);
+                        collectibles.splice(i, 1);
+                    } else if (item.position.z > 10) {
+                        threeScene.remove(item);
+                        collectibles.splice(i, 1);
+                    }
+                }
+
+                currentScore += 0.2;
+                scoreDisplay.innerText = Math.floor(currentScore);
+
+                threeRenderer.render(threeScene, threeCamera);
+            }
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        /* ------------------------------------------------------------------
+           GAME 3: MULTIPLAYER .IO ARENA BATTLE
+        ------------------------------------------------------------------ */
+        let arenaPlayer = { x: 0, y: 0, radius: 18, color: '#00f3ff', score: 0 };
+        let arenaBots = [];
+        let arenaDots = [];
+        let arenaBullets = [];
+        const arenaSize = 1800;
+
+        function initArenaGame() {
+            arenaPlayer = {
+                x: arenaSize / 2,
+                y: arenaSize / 2,
+                vx: 0, vy: 0,
+                radius: 18,
+                color: '#00f3ff',
+                score: 0
+            };
+
+            arenaDots = [];
+            for (let i = 0; i < 150; i++) {
+                arenaDots.push({
+                    x: Math.random() * arenaSize,
+                    y: Math.random() * arenaSize,
+                    radius: 4,
+                    color: ['#ff007f', '#00f3ff', '#10b981', '#f59e0b', '#9d4edd'][Math.floor(Math.random() * 5)]
+                });
+            }
+
+            arenaBots = [];
+            const botNames = ['CyberBot', 'AlphaX', 'Viper99', 'NeonKing', 'ZeroOne', 'Phantom', 'Titan3D', 'Shadow'];
+            for (let i = 0; i < 8; i++) {
+                arenaBots.push({
+                    name: botNames[i],
+                    x: Math.random() * arenaSize,
+                    y: Math.random() * arenaSize,
+                    vx: (Math.random() - 0.5) * 3,
+                    vy: (Math.random() - 0.5) * 3,
+                    radius: 16 + Math.random() * 8,
+                    color: '#ff007f',
+                    score: Math.floor(Math.random() * 100)
+                });
+            }
+
+            arenaBullets = [];
+            drawArenaScene();
+        }
+
+        function startArenaLoop() {
+            function loop() {
+                if (!isGameRunning) return;
+                animationFrameId = requestAnimationFrame(loop);
+                updateArena();
+                drawArenaScene();
+            }
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        function shootArenaBullet() {
+            playSound('shoot');
+            arenaBullets.push({
+                x: arenaPlayer.x,
+                y: arenaPlayer.y,
+                vx: (nextDir.x || 1) * 10,
+                vy: (nextDir.y || 0) * 10,
+                life: 60,
+                owner: 'player'
+            });
+        }
+
+        function updateArena() {
+            // Player Movement
+            arenaPlayer.x += (nextDir.x || 0) * 4.5;
+            arenaPlayer.y += (nextDir.y || 0) * 4.5;
+            arenaPlayer.x = Math.max(20, Math.min(arenaSize - 20, arenaPlayer.x));
+            arenaPlayer.y = Math.max(20, Math.min(arenaSize - 20, arenaPlayer.y));
+
+            // Eat Dots
+            for (let i = arenaDots.length - 1; i >= 0; i--) {
+                let d = arenaDots[i];
+                let dist = Math.hypot(arenaPlayer.x - d.x, arenaPlayer.y - d.y);
+                if (dist < arenaPlayer.radius + d.radius) {
+                    playSound('eat');
+                    currentScore += 10;
+                    arenaPlayer.score += 10;
+                    scoreDisplay.innerText = currentScore;
+                    arenaDots.splice(i, 1);
+                    arenaDots.push({
+                        x: Math.random() * arenaSize,
+                        y: Math.random() * arenaSize,
+                        radius: 4,
+                        color: ['#ff007f', '#00f3ff', '#10b981', '#f59e0b'][Math.floor(Math.random() * 4)]
+                    });
+                }
+            }
+
+            // Update Bots AI
+            arenaBots.forEach(bot => {
+                bot.x += bot.vx;
+                bot.y += bot.vy;
+                if (bot.x < 30 || bot.x > arenaSize - 30) bot.vx *= -1;
+                if (bot.y < 30 || bot.y > arenaSize - 30) bot.vy *= -1;
+
+                // Collision Player vs Bot
+                let dist = Math.hypot(arenaPlayer.x - bot.x, arenaPlayer.y - bot.y);
+                if (dist < arenaPlayer.radius + bot.radius) {
+                    if (arenaPlayer.score >= bot.score) {
+                        playSound('eat');
+                        currentScore += 100;
+                        bot.x = Math.random() * arenaSize;
+                        bot.y = Math.random() * arenaSize;
+                    } else {
+                        triggerGameOver(currentScore);
+                    }
+                }
+            });
+
+            // Update Bullets
+            for (let i = arenaBullets.length - 1; i >= 0; i--) {
+                let b = arenaBullets[i];
+                b.x += b.vx;
+                b.y += b.vy;
+                b.life--;
+
+                // Hit Bots
+                arenaBots.forEach(bot => {
+                    if (Math.hypot(b.x - bot.x, b.y - bot.y) < bot.radius) {
+                        playSound('hit');
+                        currentScore += 50;
+                        scoreDisplay.innerText = currentScore;
+                        bot.x = Math.random() * arenaSize;
+                        bot.y = Math.random() * arenaSize;
+                        b.life = 0;
+                    }
+                });
+
+                if (b.life <= 0) arenaBullets.splice(i, 1);
+            }
+        }
+
+        function drawArenaScene() {
+            ctx2D.fillStyle = '#05070f';
+            ctx2D.fillRect(0, 0, canvas2D.width, canvas2D.height);
+
+            // Camera follow player
+            ctx2D.save();
+            ctx2D.translate(canvas2D.width / 2 - arenaPlayer.x, canvas2D.height / 2 - arenaPlayer.y);
+
+            // Arena Outer Wall
+            ctx2D.strokeStyle = '#ff007f';
+            ctx2D.lineWidth = 6;
+            ctx2D.strokeRect(0, 0, arenaSize, arenaSize);
+
+            // Grid
+            ctx2D.strokeStyle = '#0d172a';
+            ctx2D.lineWidth = 1;
+            for (let x = 0; x < arenaSize; x += 60) {
+                ctx2D.beginPath(); ctx2D.moveTo(x, 0); ctx2D.lineTo(x, arenaSize); ctx2D.stroke();
+            }
+            for (let y = 0; y < arenaSize; y += 60) {
+                ctx2D.beginPath(); ctx2D.moveTo(0, y); ctx2D.lineTo(arenaSize, y); ctx2D.stroke();
+            }
+
+            // Draw Dots
+            arenaDots.forEach(d => {
+                ctx2D.fillStyle = d.color;
+                ctx2D.beginPath();
+                ctx2D.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+                ctx2D.fill();
+            });
+
+            // Draw Bots
+            arenaBots.forEach(bot => {
+                ctx2D.fillStyle = bot.color;
+                ctx2D.beginPath();
+                ctx2D.arc(bot.x, bot.y, bot.radius, 0, Math.PI * 2);
+                ctx2D.fill();
+
+                ctx2D.fillStyle = '#ffffff';
+                ctx2D.font = '10px Orbitron';
+                ctx2D.textAlign = 'center';
+                ctx2D.fillText(bot.name, bot.x, bot.y - bot.radius - 4);
+            });
+
+            // Draw Bullets
+            ctx2D.fillStyle = '#00f3ff';
+            arenaBullets.forEach(b => {
+                ctx2D.beginPath();
+                ctx2D.arc(b.x, b.y, 5, 0, Math.PI * 2);
+                ctx2D.fill();
+            });
+
+            // Draw Player
+            ctx2D.shadowBlur = 15;
+            ctx2D.shadowColor = '#00f3ff';
+            ctx2D.fillStyle = arenaPlayer.color;
+            ctx2D.beginPath();
+            ctx2D.arc(arenaPlayer.x, arenaPlayer.y, arenaPlayer.radius, 0, Math.PI * 2);
+            ctx2D.fill();
+            ctx2D.shadowBlur = 0;
+
+            ctx2D.fillStyle = '#ffffff';
+            ctx2D.font = 'bold 12px Orbitron';
+            ctx2D.textAlign = 'center';
+            ctx2D.fillText('YOU', arenaPlayer.x, arenaPlayer.y - arenaPlayer.radius - 6);
+
+            ctx2D.restore();
+
+            // Draw Minimap (Top Right Overlay)
+            const mmSize = 90;
+            ctx2D.fillStyle = 'rgba(5, 7, 15, 0.8)';
+            ctx2D.strokeStyle = '#1e293b';
+            ctx2D.lineWidth = 2;
+            ctx2D.fillRect(canvas2D.width - mmSize - 15, 15, mmSize, mmSize);
+            ctx2D.strokeRect(canvas2D.width - mmSize - 15, 15, mmSize, mmSize);
+
+            // Minimap Player Dot
+            const mapX = (canvas2D.width - mmSize - 15) + (arenaPlayer.x / arenaSize) * mmSize;
+            const mapY = 15 + (arenaPlayer.y / arenaSize) * mmSize;
+            ctx2D.fillStyle = '#00f3ff';
+            ctx2D.beginPath(); ctx2D.arc(mapX, mapY, 3, 0, Math.PI * 2); ctx2D.fill();
+        }
+
+        /* ------------------------------------------------------------------
+           GLOBAL KEYBOARD & VIRTUAL TOUCH INPUT CONTROLLERS
+        ------------------------------------------------------------------ */
+        window.addEventListener('keydown', e => {
+            const key = e.key.toLowerCase();
+
+            if (key === 'w' || key === 'arrowup') {
+                nextDir = { x: 0, y: -1 };
+                targetShipX = 0;
+            } else if (key === 's' || key === 'arrowdown') {
+                nextDir = { x: 0, y: 1 };
+                targetShipX = 0;
+            } else if (key === 'a' || key === 'arrowleft') {
+                nextDir = { x: -1, y: 0 };
+                targetShipX = -4;
+            } else if (key === 'd' || key === 'arrowright') {
+                nextDir = { x: 1, y: 0 };
+                targetShipX = 4;
+            } else if (e.code === 'Space') {
+                if (currentGame === 'arena' && isGameRunning) {
+                    shootArenaBullet();
+                }
+            } else if (key === 'p' || key === 'escape') {
+                if (isGameRunning) {
+                    isGameRunning = false;
+                    document.getElementById('overlayTitle').innerText = 'PAUSED';
+                    document.getElementById('overlayDesc').innerText = 'Game đang tạm dừng. Bấm tiếp tục để chơi!';
+                    document.getElementById('startBtn').innerText = 'TIẾP TỤC';
+                    gameOverlay.classList.remove('hidden');
+                }
+            }
+        });
+
+        function handleVirtualInput(dir) {
+            if (dir === 'UP') nextDir = { x: 0, y: -1 };
+            if (dir === 'DOWN') nextDir = { x: 0, y: 1 };
+            if (dir === 'LEFT') {
+                nextDir = { x: -1, y: 0 };
+                targetShipX = -4;
+            }
+            if (dir === 'RIGHT') {
+                nextDir = { x: 1, y: 0 };
+                targetShipX = 4;
+            }
+            if (dir === 'ACTION') {
+                if (currentGame === 'arena' && isGameRunning) shootArenaBullet();
+            }
+        }
+    </script>
+</body>
+</html>

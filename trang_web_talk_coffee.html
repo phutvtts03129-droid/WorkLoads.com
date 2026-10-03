@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk Coffee | The Best Coffee You Can Find Always</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            gold: '#c5a059',
+                            goldLight: '#e2be78',
+                            dark: '#0c0a09',
+                            card: '#161412',
+                            cardHover: '#1f1c18',
+                            textMuted: '#9a9085',
+                            border: 'rgba(197, 160, 89, 0.2)'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0c0a09;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a241e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c5a059;
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #f5e6c8 0%, #c5a059 50%, #9e7b39 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border-glow {
+            box-shadow: 0 0 25px rgba(197, 160, 89, 0.12);
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(circle at 50% 0%, rgba(197, 160, 89, 0.08) 0%, transparent 60%),
+                              radial-gradient(circle at 10% 80%, rgba(50, 35, 20, 0.2) 0%, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-slate-200 font-sans antialiased selection:bg-brand-gold selection:text-black min-h-screen flex flex-col justify-between">
+
+    <!-- Header / Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-brand-dark/85 backdrop-blur-md border-b border-brand-border/40 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-full border border-brand-gold/40 flex items-center justify-center bg-brand-card group-hover:border-brand-gold transition">
+                    <i class="fa-solid fa-mug-hot text-brand-gold text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-serif font-bold text-xl tracking-wider text-white block">TALK COFFEE</span>
+                    <span class="text-[10px] tracking-[0.2em] text-brand-gold uppercase block -mt-1">Specialty Roastery</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="#hero" class="text-white hover:text-brand-gold transition-colors">Trang Chủ</a>
+                <a href="#story" class="text-brand-textMuted hover:text-brand-gold transition-colors">Câu Chuyện</a>
+                <a href="#menu" class="text-brand-textMuted hover:text-brand-gold transition-colors">Thực Đơn</a>
+                <a href="#roastery" class="text-brand-textMuted hover:text-brand-gold transition-colors">Rang Xay</a>
+                <a href="#locations" class="text-brand-textMuted hover:text-brand-gold transition-colors">Chi Nhánh</a>
+            </nav>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-4">
+                <button onclick="openReservationModal()" class="px-5 py-2.5 rounded-full bg-brand-gold text-stone-950 font-semibold text-sm hover:bg-brand-goldLight transition shadow-lg shadow-brand-gold/10 flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Đặt Bàn</span>
+                </button>
+                <button id="mobileMenuBtn" class="md:hidden text-2xl text-white p-2">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-brand-card border-b border-brand-border px-6 py-4 flex flex-col gap-4 text-sm">
+            <a href="#hero" class="text-white py-2">Trang Chủ</a>
+            <a href="#story" class="text-brand-textMuted py-2">Câu Chuyện</a>
+            <a href="#menu" class="text-brand-textMuted py-2">Thực Đơn</a>
+            <a href="#roastery" class="text-brand-textMuted py-2">Rang Xay</a>
+            <a href="#locations" class="text-brand-textMuted py-2">Chi Nhánh</a>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="pt-20 flex-grow bg-pattern">
+
+        <!-- Hero Section (3-Column Layout Visual Concept) -->
+        <section id="hero" class="min-h-[calc(100vh-80px)] flex flex-col justify-center px-6 py-12 max-w-7xl mx-auto">
+            <!-- Header Text -->
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-brand-gold/10 border border-brand-gold/30 text-brand-gold text-xs uppercase tracking-widest font-semibold mb-4">
+                    Yokohama & Saigon Roastery
+                </span>
+                <h1 class="font-serif text-4xl sm:text-6xl font-bold text-white leading-tight mb-4">
+                    The Best Coffee You <br><span class="italic font-normal gold-gradient-text">Find Always</span>
+                </h1>
+                <p class="text-brand-textMuted text-base sm:text-lg">
+                    Trải nghiệm hương vị cà phê thượng hạng với phương pháp pha chế chuẩn mực từ hạt cà phê nguyên bản tuyển chọn.
+                </p>
+            </div>
+
+            <!-- 3-Column Split Visual Banner Showcase -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-4">
+                <!-- Column 1: Farm & Bean -->
+                <div class="group relative rounded-2xl overflow-hidden border border-brand-border/60 bg-brand-card h-[400px] transition-all duration-500 hover:-translate-y-2 hover:border-brand-gold gold-border-glow">
+                    <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format&fit=crop" alt="Nguồn gốc hạt cà phê" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end">
+                        <span class="text-brand-gold text-xs tracking-widest font-semibold uppercase mb-1">01. Origin & Selection</span>
+                        <h3 class="font-serif text-2xl font-bold text-white mb-2">Hạt Cà Phê Tuyển Chọn</h3>
+                        <p class="text-brand-textMuted text-xs leading-relaxed opacity-90">
+                            Nhập khẩu trực tiếp từ các vùng trồng nổi tiếng Ethiopia, Colombia & Da Lat.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Column 2: Artisanal Roasting -->
+                <div class="group relative rounded-2xl overflow-hidden border border-brand-border/60 bg-brand-card h-[400px] transition-all duration-500 hover:-translate-y-2 hover:border-brand-gold gold-border-glow">
+                    <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=800&auto=format&fit=crop" alt="Rang xay thủ công" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end">
+                        <span class="text-brand-gold text-xs tracking-widest font-semibold uppercase mb-1">02. Master Roasting</span>
+                        <h3 class="font-serif text-2xl font-bold text-white mb-2">Nghệ Thuật Rang Xay</h3>
+                        <p class="text-brand-textMuted text-xs leading-relaxed opacity-90">
+                            Công thức rang profile độc quyền bảo tồn trọn vẹn tầng hương hoa quả tự nhiên.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Column 3: Precision Brewing -->
+                <div class="group relative rounded-2xl overflow-hidden border border-brand-border/60 bg-brand-card h-[400px] transition-all duration-500 hover:-translate-y-2 hover:border-brand-gold gold-border-glow">
+                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800&auto=format&fit=crop" alt="Pha chế Pour Over" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 flex flex-col justify-end">
+                        <span class="text-brand-gold text-xs tracking-widest font-semibold uppercase mb-1">03. Perfect Serving</span>
+                        <h3 class="font-serif text-2xl font-bold text-white mb-2">Trải Nghiệm Thưởng Thức</h3>
+                        <p class="text-brand-textMuted text-xs leading-relaxed opacity-90">
+                            Pha chế thủ công tỉ mỉ Pour-over, Syphon và Espresso đạt chuẩn Barista quốc tế.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Bar -->
+            <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-xl bg-brand-card/70 border border-brand-border/40 backdrop-blur-sm text-center">
+                <div>
+                    <div class="font-serif text-3xl font-bold text-brand-gold">100%</div>
+                    <div class="text-xs text-brand-textMuted mt-1">Specialty Arabica</div>
+                </div>
+                <div>
+                    <div class="font-serif text-3xl font-bold text-brand-gold">15+</div>
+                    <div class="text-xs text-brand-textMuted mt-1">Single Origin Beans</div>
+                </div>
+                <div>
+                    <div class="font-serif text-3xl font-bold text-brand-gold">4.9 ★</div>
+                    <div class="text-xs text-brand-textMuted mt-1">Đánh Giá Từ Thực Khách</div>
+                </div>
+                <div>
+                    <div class="font-serif text-3xl font-bold text-brand-gold">03</div>
+                    <div class="text-xs text-brand-textMuted mt-1">Không Gian Trải Nghiệm</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Brand Story Section -->
+        <section id="story" class="py-20 border-t border-brand-border/30 bg-black/40">
+            <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <!-- Text Content -->
+                <div>
+                    <span class="text-brand-gold text-xs font-semibold uppercase tracking-widest block mb-2">Hành Trình Hương Vị</span>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight">
+                        Nơi Những Trò Chuyện <br><span class="gold-gradient-text italic">Bắt Đầu Từ Tách Cà Phê</span>
+                    </h2>
+                    <p class="text-brand-textMuted leading-relaxed mb-4">
+                        Tại <strong class="text-slate-200">Talk Coffee</strong>, chúng tôi tin rằng mỗi hạt cà phê mang trong mình một câu chuyện về thổ nhưỡng, khí hậu và bàn tay chăm sóc của người nông dân.
+                    </p>
+                    <p class="text-brand-textMuted leading-relaxed mb-6">
+                        Chúng tôi kiểm soát nghiêm ngặt từ khâu thu hái quả chín 100%, lên men tự nhiên đến phương pháp rang thủ công nhiệt độ thấp để giữ lại tầng hương nguyên bản nhất.
+                    </p>
+
+                    <!-- Highlights List -->
+                    <div class="space-y-3 mb-8">
+                        <div class="flex items-center gap-3 text-sm text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-gold"></i>
+                            <span>Nguồn hạt Specialty Coffee đạt điểm SCA > 85+</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-gold"></i>
+                            <span>Rang mới mỗi ngày tại chỗ bằng máy rang Giesen chuẩn Hà Lan</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-gold"></i>
+                            <span>Đội ngũ Barista tâm huyết am hiểu sâu sắc về văn hóa cà phê</span>
+                        </div>
+                    </div>
+
+                    <a href="#menu" class="inline-flex items-center gap-2 border-b-2 border-brand-gold pb-1 text-brand-gold font-medium hover:text-brand-goldLight transition">
+                        <span>Khám phá thực đơn đặc sắc</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+
+                <!-- Visual Collage -->
+                <div class="relative">
+                    <div class="rounded-2xl overflow-hidden border border-brand-border shadow-2xl">
+                        <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=800&auto=format&fit=crop" alt="Không gian Talk Coffee" class="w-full h-[450px] object-cover">
+                    </div>
+                    <!-- Small Float Card -->
+                    <div class="absolute -bottom-6 -left-6 bg-brand-card p-5 rounded-xl border border-brand-border shadow-xl max-w-xs hidden sm:block">
+                        <div class="flex items-center gap-3 mb-2">
+                            <i class="fa-solid fa-award text-2xl text-brand-gold"></i>
+                            <div>
+                                <h4 class="font-serif font-bold text-white text-sm">Best Specialty Cafe</h4>
+                                <span class="text-xs text-brand-textMuted">Tokyo & Yokohama Guide 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Menu Section with Filters -->
+        <section id="menu" class="py-20 max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-brand-gold text-xs font-semibold uppercase tracking-widest block mb-2">Thực Đơn Chọn Lọc</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
+                    Thức Uống Signatures
+                </h2>
+                <p class="text-brand-textMuted text-sm">
+                    Mỗi món uống đều được tinh chỉnh tỉ lệ chiết xuất để mang lại sự cân bằng hoàn hảo giữa vị đắng, chua thanh nhẹ và hậu vị ngọt sâu.
+                </p>
+            </div>
+
+            <!-- Menu Category Filter Buttons -->
+            <div class="flex justify-center flex-wrap gap-3 mb-10">
+                <button onclick="filterMenu('all')" class="menu-tab-btn active px-5 py-2 rounded-full border border-brand-gold bg-brand-gold text-stone-950 text-xs font-bold transition">Tất Cả</button>
+                <button onclick="filterMenu('pour')" class="menu-tab-btn px-5 py-2 rounded-full border border-brand-border/60 bg-brand-card text-brand-textMuted hover:text-white text-xs font-bold transition">Manual Pour-Over</button>
+                <button onclick="filterMenu('espresso')" class="menu-tab-btn px-5 py-2 rounded-full border border-brand-border/60 bg-brand-card text-brand-textMuted hover:text-white text-xs font-bold transition">Espresso Bar</button>
+                <button onclick="filterMenu('coldbrew')" class="menu-tab-btn px-5 py-2 rounded-full border border-brand-border/60 bg-brand-card text-brand-textMuted hover:text-white text-xs font-bold transition">Cold Brew & Signatures</button>
+            </div>
+
+            <!-- Menu Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="menuGrid">
+
+                <!-- Item 1 -->
+                <div class="menu-item pour bg-brand-card border border-brand-border/50 rounded-xl p-5 flex gap-4 hover:border-brand-gold/60 transition group">
+                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=300&auto=format&fit=crop" alt="Ethiopia Yirgacheffe" class="w-24 h-24 rounded-lg object-cover group-hover:scale-105 transition">
+                    <div class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-serif font-bold text-white text-base">Ethiopia Yirgacheffe</h3>
+                                <span class="text-brand-gold font-bold text-sm">95.000đ</span>
+                            </div>
+                            <p class="text-brand-textMuted text-xs line-clamp-2">Hương hoa nhài, dâu tây, vị chua thanh mượt & hậu vị trà đen.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-brand-gold/80 bg-brand-gold/10 px-2 py-0.5 rounded">V60 Pour Over</span>
+                            <button onclick="orderItem('Ethiopia Yirgacheffe', '95.000đ')" class="text-xs text-brand-gold hover:underline font-medium">Chọn món +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="menu-item espresso bg-brand-card border border-brand-border/50 rounded-xl p-5 flex gap-4 hover:border-brand-gold/60 transition group">
+                    <img src="https://images.unsplash.com/photo-1534778101976-62847782c213?q=80&w=300&auto=format&fit=crop" alt="Flat White Silk" class="w-24 h-24 rounded-lg object-cover group-hover:scale-105 transition">
+                    <div class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-serif font-bold text-white text-base">Flat White Silk</h3>
+                                <span class="text-brand-gold font-bold text-sm">75.000đ</span>
+                            </div>
+                            <p class="text-brand-textMuted text-xs line-clamp-2">Double shot Espresso kết hợp bọt sữa siêu mịn sánh mượt.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-brand-gold/80 bg-brand-gold/10 px-2 py-0.5 rounded">Espresso Base</span>
+                            <button onclick="orderItem('Flat White Silk', '75.000đ')" class="text-xs text-brand-gold hover:underline font-medium">Chọn món +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="menu-item coldbrew bg-brand-card border border-brand-border/50 rounded-xl p-5 flex gap-4 hover:border-brand-gold/60 transition group">
+                    <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?q=80&w=300&auto=format&fit=crop" alt="Talk Smoked Cold Brew" class="w-24 h-24 rounded-lg object-cover group-hover:scale-105 transition">
+                    <div class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-serif font-bold text-white text-base">Talk Smoked Cold Brew</h3>
+                                <span class="text-brand-gold font-bold text-sm">85.000đ</span>
+                            </div>
+                            <p class="text-brand-textMuted text-xs line-clamp-2">Ủ lạnh 24 giờ xông khói gỗ sồi, nốt hương sô-cô-la đen & vỏ cam.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-brand-gold/80 bg-brand-gold/10 px-2 py-0.5 rounded">Signature</span>
+                            <button onclick="orderItem('Talk Smoked Cold Brew', '85.000đ')" class="text-xs text-brand-gold hover:underline font-medium">Chọn món +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="menu-item pour bg-brand-card border border-brand-border/50 rounded-xl p-5 flex gap-4 hover:border-brand-gold/60 transition group">
+                    <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=300&auto=format&fit=crop" alt="Geisha Panama Special" class="w-24 h-24 rounded-lg object-cover group-hover:scale-105 transition">
+                    <div class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-serif font-bold text-white text-base">Geisha Panama Reserve</h3>
+                                <span class="text-brand-gold font-bold text-sm">180.000đ</span>
+                            </div>
+                            <p class="text-brand-textMuted text-xs line-clamp-2">Dòng hạt huyền thoại với hương đào chín, quả mâm xôi & mật ơ-liu.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-brand-gold/80 bg-brand-gold/10 px-2 py-0.5 rounded">Limited Edition</span>
+                            <button onclick="orderItem('Geisha Panama Reserve', '180.000đ')" class="text-xs text-brand-gold hover:underline font-medium">Chọn món +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="menu-item espresso bg-brand-card border border-brand-border/50 rounded-xl p-5 flex gap-4 hover:border-brand-gold/60 transition group">
+                    <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=300&auto=format&fit=crop" alt="Affogato Vanilla Bean" class="w-24 h-24 rounded-lg object-cover group-hover:scale-105 transition">
+                    <div class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-serif font-bold text-white text-base">Affogato Vanilla Bean</h3>
+                                <span class="text-brand-gold font-bold text-sm">80.000đ</span>
+                            </div>
+                            <p class="text-brand-textMuted text-xs line-clamp-2">1 Shot Espresso nóng rưới trên kem Gelato kem vani Madagascar.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-brand-gold/80 bg-brand-gold/10 px-2 py-0.5 rounded">Dessert Coffee</span>
+                            <button onclick="orderItem('Affogato Vanilla Bean', '80.000đ')" class="text-xs text-brand-gold hover:underline font-medium">Chọn món +</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="menu-item coldbrew bg-brand-card border border-brand-border/50 rounded-xl p-5 flex gap-4 hover:border-brand-gold/60 transition group">
+                    <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=300&auto=format&fit=crop" alt="Matcha Espresso Tonic" class="w-24 h-24 rounded-lg object-cover group-hover:scale-105 transition">
+                    <div class="flex flex-col justify-between flex-grow">
+                        <div>
+                            <div class="flex justify-between items-start mb-1">
+                                <h3 class="font-serif font-bold text-white text-base">Matcha Espresso Tonic</h3>
+                                <span class="text-brand-gold font-bold text-sm">85.000đ</span>
+                            </div>
+                            <p class="text-brand-textMuted text-xs line-clamp-2">Matcha Uji Nhật Bản, Espresso béo thanh hòa quyện Tonic mát lạnh.</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-brand-gold/80 bg-brand-gold/10 px-2 py-0.5 rounded">Fusion Drink</span>
+                            <button onclick="orderItem('Matcha Espresso Tonic', '85.000đ')" class="text-xs text-brand-gold hover:underline font-medium">Chọn món +</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Roastery Experience & Bean Profiles -->
+        <section id="roastery" class="py-20 bg-brand-card/40 border-y border-brand-border/30">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                    <div>
+                        <span class="text-brand-gold text-xs font-semibold uppercase tracking-widest block mb-2">Chuyên Nghệ Rang Xay</span>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white">
+                            Roast Levels & Character
+                        </h2>
+                    </div>
+                    <p class="text-brand-textMuted text-sm max-w-md mt-4 md:mt-0">
+                        Chúng tôi phân loại mức độ rang tinh tế để đáp ứng từng sở thích thưởng thức cà phê riêng biệt của bạn.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Light Roast -->
+                    <div class="p-6 rounded-2xl bg-brand-card border border-brand-border/50 hover:border-brand-gold/50 transition">
+                        <div class="w-12 h-12 rounded-full bg-amber-900/30 border border-amber-600/40 flex items-center justify-center text-amber-400 mb-4">
+                            <i class="fa-solid fa-sun text-lg"></i>
+                        </div>
+                        <h3 class="font-serif font-bold text-white text-xl mb-2">Light Roast (Rang Sáng)</h3>
+                        <p class="text-brand-textMuted text-xs leading-relaxed mb-4">
+                            Giữ trọn hương vị nguyên bản của trái cà phê: vị chua thanh phong phú của trái cây, hương hoa dịu nhẹ và độ sánh nhẹ nhàng.
+                        </p>
+                        <div class="text-xs text-brand-gold font-medium">Phù hợp: Pour-over, Chemex, Aeropress</div>
+                    </div>
+
+                    <!-- Medium Roast -->
+                    <div class="p-6 rounded-2xl bg-brand-card border border-brand-border/50 hover:border-brand-gold/50 transition">
+                        <div class="w-12 h-12 rounded-full bg-amber-800/40 border border-amber-500/50 flex items-center justify-center text-amber-300 mb-4">
+                            <i class="fa-solid fa-fire text-lg"></i>
+                        </div>
+                        <h3 class="font-serif font-bold text-white text-xl mb-2">Medium Roast (Rang Vừa)</h3>
+                        <p class="text-brand-textMuted text-xs leading-relaxed mb-4">
+                            Sự cân bằng tuyệt mỹ giữa vị chua thanh nhẹ, vị ngọt caramel và hậu vị bơ hạt dẻ ấm áp. Thích hợp cho số đông.
+                        </p>
+                        <div class="text-xs text-brand-gold font-medium">Phù hợp: Espresso, Syphon, Cold Brew</div>
+                    </div>
+
+                    <!-- Dark Roast -->
+                    <div class="p-6 rounded-2xl bg-brand-card border border-brand-border/50 hover:border-brand-gold/50 transition">
+                        <div class="w-12 h-12 rounded-full bg-amber-950 border border-amber-700/60 flex items-center justify-center text-amber-500 mb-4">
+                            <i class="fa-solid fa-moon text-lg"></i>
+                        </div>
+                        <h3 class="font-serif font-bold text-white text-xl mb-2">Dark Roast (Rang Đậm)</h3>
+                        <p class="text-brand-textMuted text-xs leading-relaxed mb-4">
+                            Đậm đà, béo ngậy với hương vị sô-cô-la đắng, khói nhẹ và độ đắng đậm sâu lắng. Không còn vị chua.
+                        </p>
+                        <div class="text-xs text-brand-gold font-medium">Phù hợp: Phin truyền thống, Latte, Cappuccino</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Locations & Atmosphere -->
+        <section id="locations" class="py-20 max-w-7xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12">
+                <span class="text-brand-gold text-xs font-semibold uppercase tracking-widest block mb-2">Ghé Thăm Chúng Tôi</span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">
+                    Không Gian Talk Coffee
+                </h2>
+                <p class="text-brand-textMuted text-sm">
+                    Thiết kế tối giản tối ưu ánh sáng tự nhiên và âm nhạc acoustic êm dịu – không gian lý tưởng cho công việc và những cuộc trò chuyện sâu sắc.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Location 1 -->
+                <div class="bg-brand-card border border-brand-border/60 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 items-center">
+                    <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=400&auto=format&fit=crop" alt="Chi nhánh Saigon" class="w-full sm:w-40 h-40 rounded-xl object-cover">
+                    <div>
+                        <span class="text-brand-gold text-xs font-semibold uppercase">Flagship Store</span>
+                        <h3 class="font-serif font-bold text-white text-xl my-1">Talk Coffee - Sài Gòn</h3>
+                        <p class="text-brand-textMuted text-xs mb-3">128 Nguyễn Thị Minh Khai, Phường 6, Quận 3, TP. Hồ Chí Minh</p>
+                        <div class="text-xs text-slate-300 space-y-1 mb-4">
+                            <div><i class="fa-regular fa-clock text-brand-gold w-4"></i> 07:00 - 22:30 Hằng ngày</div>
+                            <div><i class="fa-solid fa-phone text-brand-gold w-4"></i> +84 (028) 3930 8888</div>
+                        </div>
+                        <button onclick="openReservationModal()" class="text-xs px-4 py-2 rounded-full border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-black transition font-semibold">Đặt Bàn Tại Đây</button>
+                    </div>
+                </div>
+
+                <!-- Location 2 -->
+                <div class="bg-brand-card border border-brand-border/60 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 items-center">
+                    <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=400&auto=format&fit=crop" alt="Chi nhánh Yokohama" class="w-full sm:w-40 h-40 rounded-xl object-cover">
+                    <div>
+                        <span class="text-brand-gold text-xs font-semibold uppercase">International Branch</span>
+                        <h3 class="font-serif font-bold text-white text-xl my-1">Talk Coffee - Yokohama</h3>
+                        <p class="text-brand-textMuted text-xs mb-3">2-Chome-14 Minatomirai, Nishi Ward, Yokohama, Kanagawa, Japan</p>
+                        <div class="text-xs text-slate-300 space-y-1 mb-4">
+                            <div><i class="fa-regular fa-clock text-brand-gold w-4"></i> 08:00 - 21:00 Daily</div>
+                            <div><i class="fa-solid fa-phone text-brand-gold w-4"></i> +81 45 222 1111</div>
+                        </div>
+                        <button onclick="openReservationModal()" class="text-xs px-4 py-2 rounded-full border border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-black transition font-semibold">Reserve Table</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-brand-border/40 py-12 text-sm text-brand-textMuted">
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- Col 1 -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-mug-hot text-brand-gold text-xl"></i>
+                    <span class="font-serif font-bold text-white text-lg">TALK COFFEE</span>
+                </div>
+                <p class="text-xs leading-relaxed">
+                    Nơi khởi nguồn cảm hứng từ những tách cà phê Specialty nguyên bản hảo hạng.
+                </p>
+                <div class="flex gap-3 text-base">
+                    <a href="#" class="w-8 h-8 rounded-full bg-brand-card border border-brand-border flex items-center justify-center text-slate-300 hover:text-brand-gold hover:border-brand-gold transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-brand-card border border-brand-border flex items-center justify-center text-slate-300 hover:text-brand-gold hover:border-brand-gold transition"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-8 h-8 rounded-full bg-brand-card border border-brand-border flex items-center justify-center text-slate-300 hover:text-brand-gold hover:border-brand-gold transition"><i class="fa-brands fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <!-- Col 2 -->
+            <div>
+                <h4 class="font-serif font-bold text-white text-sm mb-4">Điều Hương</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#hero" class="hover:text-brand-gold transition">Trang Chủ</a></li>
+                    <li><a href="#story" class="hover:text-brand-gold transition">Về Chúng Tôi</a></li>
+                    <li><a href="#menu" class="hover:text-brand-gold transition">Thực Đơn Specialty</a></li>
+                    <li><a href="#roastery" class="hover:text-brand-gold transition">Góc Rang Xay</a></li>
+                </ul>
+            </div>
+
+            <!-- Col 3 -->
+            <div>
+                <h4 class="font-serif font-bold text-white text-sm mb-4">Liên Hệ</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><i class="fa-solid fa-envelope text-brand-gold mr-2"></i> contact@talkcoffee.com</li>
+                    <li><i class="fa-solid fa-phone text-brand-gold mr-2"></i> +84 (028) 3930 8888</li>
+                    <li><i class="fa-solid fa-location-dot text-brand-gold mr-2"></i> Sài Gòn & Yokohama</li>
+                </ul>
+            </div>
+
+            <!-- Col 4: Newsletter -->
+            <div>
+                <h4 class="font-serif font-bold text-white text-sm mb-4">Đăng Ký Nhận Tin</h4>
+                <p class="text-xs mb-3">Nhận thông báo về các mẻ hạt rang mới & ưu đãi đặc quyền.</p>
+                <div class="flex">
+                    <input type="email" placeholder="Email của bạn..." class="bg-brand-card border border-brand-border rounded-l-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-gold flex-grow">
+                    <button class="bg-brand-gold text-stone-950 text-xs px-4 rounded-r-lg font-bold hover:bg-brand-goldLight transition">Gửi</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 mt-12 pt-6 border-t border-white/5 text-center text-xs text-stone-500 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>© 2026 Talk Coffee Roastery. All rights reserved.</div>
+            <div class="flex gap-4">
+                <a href="#" class="hover:underline">Chính Sách Bảo Mật</a>
+                <a href="#" class="hover:underline">Điều Khoản Dịch Vụ</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Reservation Modal -->
+    <div id="reservationModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-brand-card border border-brand-border rounded-2xl max-w-md w-full p-6 relative gold-border-glow">
+            <button onclick="closeReservationModal()" class="absolute top-4 right-4 text-brand-textMuted hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-utensils text-brand-gold text-2xl mb-2"></i>
+                <h3 class="font-serif font-bold text-white text-2xl">Đặt Bàn Trực Tuyến</h3>
+                <p class="text-brand-textMuted text-xs">Vui lòng điền thông tin để Talk Coffee chuẩn bị không gian chu đáo nhất cho bạn.</p>
+            </div>
+
+            <form onsubmit="handleReservation(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Họ & Tên</label>
+                    <input type="text" required placeholder="Nguyễn Văn A" class="w-full bg-black/60 border border-brand-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Số Điện Thoại</label>
+                    <input type="tel" required placeholder="0901 234 567" class="w-full bg-black/60 border border-brand-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Ngày Đến</label>
+                        <input type="date" required class="w-full bg-black/60 border border-brand-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Giờ Đến</label>
+                        <input type="time" required class="w-full bg-black/60 border border-brand-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Số Lượng Khách</label>
+                    <select class="w-full bg-black/60 border border-brand-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+                        <option value="1">1 Người</option>
+                        <option value="2" selected>2 Người</option>
+                        <option value="4">3 - 4 Người</option>
+                        <option value="6">Nhóm 5+ Người</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Ghi Chú Đặc Biệt</label>
+                    <textarea rows="2" placeholder="Vị trí yên tĩnh, góc cửa sổ..." class="w-full bg-black/60 border border-brand-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-brand-gold text-stone-950 font-bold text-sm hover:bg-brand-goldLight transition mt-2">
+                    Xác Nhận Đặt Bàn
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-brand-card border border-brand-gold text-white px-5 py-3 rounded-xl shadow-2xl z-50 hidden flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-brand-gold text-lg"></i>
+        <span id="toastMsg" class="text-sm">Thao tác thành công!</span>
+    </div>
+
+    <!-- JavaScript Interactions -->
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Filter Menu Categories
+        function filterMenu(category) {
+            const items = document.querySelectorAll('.menu-item');
+            const btns = document.querySelectorAll('.menu-tab-btn');
+
+            btns.forEach(btn => {
+                btn.classList.remove('bg-brand-gold', 'text-stone-950');
+                btn.classList.add('bg-brand-card', 'text-brand-textMuted');
+            });
+            event.target.classList.add('bg-brand-gold', 'text-stone-950');
+            event.target.classList.remove('bg-brand-card', 'text-brand-textMuted');
+
+            items.forEach(item => {
+                if (category === 'all' || item.classList.contains(category)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Reservation Modal Functions
+        function openReservationModal() {
+            document.getElementById('reservationModal').classList.remove('hidden');
+        }
+        function closeReservationModal() {
+            document.getElementById('reservationModal').classList.add('hidden');
+        }
+
+        function handleReservation(e) {
+            e.preventDefault();
+            closeReservationModal();
+            showToast('Đặt bàn thành công! Talk Coffee sẽ xác nhận qua điện thoại trong ít phút.');
+        }
+
+        function orderItem(name, price) {
+            showToast(`Đã thêm "${name}" (${price}) vào danh sách trải nghiệm!`);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

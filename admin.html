@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quản trị - AURA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>body{font-family:Inter,sans-serif}.serif{font-family:'Playfair Display',serif}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}.up{animation:up .5s both}
+@keyframes grow{from{height:0}}.bar{animation:grow .9s cubic-bezier(.16,1,.3,1) both}
+tbody tr{animation:up .35s both}
+.inp{width:100%;padding:.65rem .9rem;border:1px solid #e2e8f0;border-radius:.75rem;outline:none;background:#fff}.inp:focus{border-color:#a855f7;box-shadow:0 0 0 3px #f3e8ff}</style></head>
+<body class="bg-gradient-to-br from-violet-50 via-slate-50 to-sky-50 min-h-screen md:flex">
+<aside class="md:w-64 md:min-h-screen md:sticky md:top-0 md:h-screen bg-gradient-to-b from-indigo-900 to-slate-800 text-slate-200 p-4 flex flex-col">
+ <div class="serif text-2xl text-white flex items-center gap-2"><span class="w-9 h-9 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center">A</span>AURA<span class="text-amber-400 text-sm font-sans font-bold">ADMIN</span></div>
+ <div id="who" class="text-xs text-indigo-200/70 mt-2 mb-4"></div>
+ <nav id="side" class="flex md:flex-col gap-1 overflow-x-auto md:overflow-y-auto flex-1"></nav>
+ <div class="hidden md:block pt-3 border-t border-white/10 mt-3"><a href="index.html" class="block p-2.5 rounded-xl hover:bg-white/10 text-sm"><i class="fa-solid fa-house w-6"></i>Về trang chủ</a>
+ <button onclick="localStorage.removeItem('aura_user');location.href='login.html'" class="w-full text-left p-2.5 rounded-xl hover:bg-red-500/20 text-red-300 text-sm"><i class="fa-solid fa-right-from-bracket w-6"></i>Đăng xuất</button></div>
+</aside>
+<main class="flex-1 p-4 md:p-8 min-w-0"><div id="view"></div></main>
+<div id="modal" class="hidden fixed inset-0 z-50 bg-indigo-950/50 backdrop-blur-sm flex items-center justify-center p-4"><div class="bg-white rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 up" id="mbox"></div></div>
+<div id="toast" class="hidden fixed bottom-6 right-6 z-[60] bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl text-sm"></div>
+<script>
+let ME=null;try{ME=JSON.parse(localStorage.getItem('aura_user'))}catch(e){}
+if(!ME||ME.role!=='admin')location.href='login.html';
+who.textContent='Xin chào, '+ME.name;
+const U=i=>`https://images.unsplash.com/photo-${i}?q=80&w=300&auto=format&fit=crop`;
+const money=n=>Number(n||0).toLocaleString('vi-VN')+'đ',esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SEL={t:'Danh mục'};
+const M={
+sp:{i:'fa-box-open',t:'Quản lý sản phẩm',f:[{k:'img',l:'Ảnh',t:'img'},{k:'name',l:'Tên sản phẩm',t:'text'},{k:'cat',l:'Danh mục',t:'select',o:['Thời trang nữ','Thời trang nam','Phụ kiện']},{k:'price',l:'Giá bán',t:'money'},{k:'stock',l:'Tồn kho',t:'number'},{k:'desc',l:'Mô tả',t:'area',h:1}],
+ seed:[],
+ st:r=>[['fa-box','Sản phẩm',r.length],['fa-cubes','Tổng tồn kho',r.reduce((a,x)=>a+ +x.stock,0)],['fa-sack-dollar','Giá trị kho',money(r.reduce((a,x)=>a+x.price*x.stock,0))],['fa-triangle-exclamation','Sắp hết (≤10)',r.filter(x=>x.stock<=10).length]]},
+nv:{i:'fa-user-tie',t:'Quản lý nhân viên',f:[{k:'img',l:'Ảnh',t:'img'},{k:'name',l:'Họ tên',t:'text'},{k:'role',l:'Chức vụ',t:'select',o:['Quản lý','Thu ngân','Tư vấn bán hàng','Kho','Giao hàng']},{k:'phone',l:'SĐT',t:'text'},{k:'salary',l:'Lương',t:'money'},{k:'status',l:'Trạng thái',t:'select',o:['Đang làm','Nghỉ phép','Đã nghỉ việc']}],
+ seed:[['Trần Thu Hà',0,'0901111222',18000000,0],['Lê Minh Quân',1,'0902333444',9000000,0],['Phạm Ngọc Bích',2,'0903555666',10000000,1],['Võ Hoàng Nam',3,'0904777888',8500000,0],['Đặng Thanh Tùng',4,'0905999000',8000000,0]],
+ st:r=>[['fa-users','Tổng nhân viên',r.length],['fa-user-check','Đang làm',r.filter(x=>x.status==='Đang làm').length],['fa-mug-hot','Nghỉ phép',r.filter(x=>x.status==='Nghỉ phép').length],['fa-wallet','Quỹ lương',money(r.reduce((a,x)=>a+ +x.salary,0))]]},
+dh:{i:'fa-receipt',t:'Quản lý đơn hàng',f:[{k:'code',l:'Mã đơn',t:'text'},{k:'customer',l:'Khách hàng',t:'text'},{k:'total',l:'Tổng tiền',t:'money'},{k:'status',l:'Trạng thái',t:'select',o:['Chờ xác nhận','Đang giao','Hoàn tất','Đã hủy']},{k:'date',l:'Ngày đặt',t:'date'}],
+ seed:[['#1001','Nguyễn Văn A',2800000,1,'2026-10-01'],['#1002','Thu Hà',2600000,2,'2026-09-30'],['#1003','Minh Tuấn',3450000,0,'2026-09-30'],['#1004','Ngọc Anh',1850000,2,'2026-09-28'],['#1005','Hoàng Long',950000,3,'2026-09-27'],['#1006','Mai Lan',4200000,2,'2026-09-25']],
+ st:r=>[['fa-bag-shopping','Tổng đơn',r.length],['fa-hourglass-half','Chờ xác nhận',r.filter(x=>x.status==='Chờ xác nhận').length],['fa-truck-fast','Đang giao',r.filter(x=>x.status==='Đang giao').length],['fa-sack-dollar','Đã thu',money(r.filter(x=>x.status==='Hoàn tất').reduce((a,x)=>a+ +x.total,0))]]},
+kh:{i:'fa-users',t:'Quản lý khách hàng',f:[{k:'img',l:'Ảnh',t:'img'},{k:'name',l:'Họ tên',t:'text'},{k:'email',l:'Email',t:'text'},{k:'tier',l:'Hạng',t:'select',o:['Thường','Bạc','Vàng','Kim cương']},{k:'points',l:'Điểm',t:'number'}],
+ seed:[['Nguyễn Văn A','a@mail.com',2,1200],['Thu Hà','ha@mail.com',1,640],['Minh Tuấn','tuan@mail.com',3,3100],['Ngọc Anh','anh@mail.com',0,120],['Mai Lan','lan@mail.com',2,1800]],
+ st:r=>[['fa-users','Khách hàng',r.length],['fa-gem','Kim cương',r.filter(x=>x.tier==='Kim cương').length],['fa-coins','Tổng điểm',r.reduce((a,x)=>a+ +x.points,0)],['fa-crown','Vàng trở lên',r.filter(x=>['Vàng','Kim cương'].includes(x.tier)).length]]},
+dt:{i:'fa-chart-line',t:'Doanh thu',chart:1,f:[{k:'month',l:'Tháng',t:'text'},{k:'rev',l:'Doanh thu (triệu đ)',t:'number'},{k:'orders',l:'Số đơn',t:'number'}],
+ seed:[['Tháng 1',310,220],['Tháng 2',290,205],['Tháng 3',360,260],['Tháng 4',380,275],['Tháng 5',420,300],['Tháng 6',455,330],['Tháng 7',420,310],['Tháng 8',485,352],['Tháng 9',530,401]],
+ st:r=>[['fa-sack-dollar','Tổng doanh thu',r.reduce((a,x)=>a+ +x.rev,0)+' triệu'],['fa-bag-shopping','Tổng đơn',r.reduce((a,x)=>a+ +x.orders,0)],['fa-arrow-trend-up','Tháng cao nhất',(r.sort?[...r].sort((a,b)=>b.rev-a.rev)[0]?.month:'-')],['fa-calculator','TB / tháng',Math.round(r.reduce((a,x)=>a+ +x.rev,0)/(r.length||1))+' triệu']]},
+kho:{i:'fa-warehouse',t:'Quản lý kho',f:[{k:'name',l:'Sản phẩm',t:'text'},{k:'in',l:'Nhập',t:'number'},{k:'out',l:'Xuất',t:'number'},{k:'left',l:'Còn lại',t:'calc',c:r=>r.in-r.out}],
+ seed:[['Áo Blazer',60,36],['Đồng Hồ Automatic',30,18],['Áo Sơ Mi Cotton',90,50],['Giày Sneaker',70,40],['Kính Aviator',25,20]],
+ st:r=>[['fa-arrow-down','Tổng nhập',r.reduce((a,x)=>a+ +x.in,0)],['fa-arrow-up','Tổng xuất',r.reduce((a,x)=>a+ +x.out,0)],['fa-cubes','Còn lại',r.reduce((a,x)=>a+x.in-x.out,0)],['fa-triangle-exclamation','Sắp hết (≤10)',r.filter(x=>x.in-x.out<=10).length]]},
+km:{i:'fa-ticket',t:'Khuyến mãi',f:[{k:'code',l:'Mã voucher',t:'text'},{k:'value',l:'Giá trị',t:'text'},{k:'expiry',l:'Hạn dùng',t:'date'},{k:'used',l:'Đã dùng',t:'number'},{k:'status',l:'Trạng thái',t:'select',o:['Đang chạy','Tạm dừng','Hết hạn']}],
+ seed:[['AURA2026','200.000đ','2026-10-09',128,0],['FREESHIP','Miễn phí ship','2026-10-31',412,0],['SALE15','Giảm 15%','2026-09-30',89,2],['VIP50','Giảm 50.000đ','2026-12-31',33,1]],
+ st:r=>[['fa-ticket','Voucher',r.length],['fa-bolt','Đang chạy',r.filter(x=>x.status==='Đang chạy').length],['fa-hand-pointer','Lượt dùng',r.reduce((a,x)=>a+ +x.used,0)],['fa-ban','Hết hạn',r.filter(x=>x.status==='Hết hạn').length]]},
+dg:{i:'fa-star',t:'Quản lý đánh giá',f:[{k:'customer',l:'Khách hàng',t:'text'},{k:'product',l:'Sản phẩm',t:'text'},{k:'stars',l:'Số sao',t:'select',o:['5','4','3','2','1']},{k:'content',l:'Nội dung',t:'area'},{k:'status',l:'Hiển thị',t:'select',o:['Hiện','Ẩn']}],
+ seed:[['Ngọc Anh','Áo Blazer',0,'Chất vải rất đẹp, đúng mô tả!',0],['Minh Tuấn','Đồng Hồ',0,'Sang trọng, đóng gói kỹ.',0],['Thu Hà','Túi Xách',1,'Đổi size dễ dàng.',0],['Mai Lan','Giày Sneaker',3,'Hơi chật, cần size lớn hơn.',1]],
+ st:r=>[['fa-comments','Đánh giá',r.length],['fa-star','Sao TB',(r.reduce((a,x)=>a+ +x.stars,0)/(r.length||1)).toFixed(1)],['fa-eye','Đang hiện',r.filter(x=>x.status==='Hiện').length],['fa-eye-slash','Đang ẩn',r.filter(x=>x.status==='Ẩn').length]]},
+cai:{i:'fa-gear',t:'Cài đặt',cfg:1}};
+function M0(k,i){return M[k].f.find(f=>f.o).o[i]}
+// chuyển seed (mảng) -> object
+Object.entries(M).forEach(([k,m])=>{if(!m.seed||!Array.isArray(m.seed[0]))return;const ks=m.f.filter(f=>f.t!=='calc'&&f.t!=='img'&&!f.h);m.seed=m.seed.map(r=>{const o={};ks.forEach((f,i)=>o[f.k]=f.t==='select'&&typeof r[i]==='number'?f.o[r[i]]:r[i]);return o});});
+M.sp.seed=[['584273143981-41c073dfe8f8','Áo Blazer Dáng Rộng Luxe',0,1850000,24],['523275335684-37898b6baf30','Đồng Hồ Automatic Signature',2,3450000,12],['556905055-8f358a7a47b2','Áo Sơ Mi Nam Cotton Ý',1,950000,40],['553062407-98eeb64c6a62','Balo Da Urban Classic',2,1200000,18],['542291026-7eec264c27ff','Giày Sneaker Street Pro',1,1450000,30],['572635196237-14b3f281503f','Kính Mát Aviator Gold',2,690000,5],['515886657613-9f3515b0c78f','Đầm Dạ Hội Satin',0,2100000,9],['441984904996-e0b6ba687e04','Áo Khoác Dạ Premium',0,2350000,14]].map(r=>({img:'https://images.unsplash.com/photo-1'+r[0]+'?q=80&w=300&auto=format&fit=crop',name:r[1],cat:M.sp.f[2].o[r[2]],price:r[3],stock:r[4],desc:'Sản phẩm cao cấp chính hãng AURA.'}));
+const KEY='aura_admin_v1';let DB;
+function load(){try{DB=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+ if(!DB){DB={};Object.entries(M).forEach(([k,m])=>{if(m.seed)DB[k]=m.seed.map((r,i)=>({id:i+1,...r}))});DB.cai={name:'AURA',hotline:'1900 8888',email:'hello@aura.vn',freeship:1000000,address:'Quận 1, TP.HCM'};save()}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast('Bộ nhớ đầy! Hãy dùng ảnh nhỏ hơn.')}}
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.remove('hidden');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add('hidden'),2200)}
+const PAL=['bg-emerald-100 text-emerald-700','bg-amber-100 text-amber-700','bg-sky-100 text-sky-700','bg-rose-100 text-rose-700','bg-violet-100 text-violet-700'];
+let cur='sp',q='',flt='';
+const COL=['from-purple-400 to-indigo-500','from-amber-400 to-orange-500','from-emerald-400 to-teal-500','from-rose-400 to-pink-500'];
+function cell(f,r,m){const v=f.t==='calc'?f.c(r):r[f.k];
+ if(f.t==='img'){return v?`<img src="${esc(v)}" class="w-12 h-12 rounded-xl object-cover shadow" onerror="this.style.display='none'">`:`<span class="w-12 h-12 rounded-full bg-gradient-to-br ${COL[r.id%4]} text-white font-bold flex items-center justify-center">${esc((r.name||'?')[0])}</span>`}
+ if(f.t==='money')return `<b class="text-purple-700">${money(v)}</b>`;
+ if(f.t==='select'){if(f.k==='stars')return `<span class="text-amber-400">${'★'.repeat(+v)}<span class="text-slate-200">${'★'.repeat(5-v)}</span></span>`;return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${PAL[Math.max(0,f.o.indexOf(v))%5]}">${esc(v)}</span>`}
+ if(f.t==='calc')return `<b class="${v<=10?'text-red-500':'text-emerald-600'}">${v}</b>`;
+ if(f.k==='name'||f.k==='code')return `<b>${esc(v)}</b>`;return esc(v)}
+function render(){const m=M[cur];
+ side.innerHTML=Object.entries(M).map(([k,x])=>`<a href="#${k}" class="flex items-center gap-1 whitespace-nowrap p-2.5 rounded-xl text-sm transition ${k===cur?'bg-white/15 text-white font-semibold':'hover:bg-white/10'}"><i class="fa-solid ${x.i} w-6 text-amber-400"></i>${x.t}${DB[k]&&Array.isArray(DB[k])?`<span class="ml-auto text-[10px] bg-white/10 px-2 rounded-full">${DB[k].length}</span>`:''}</a>`).join('');
+ if(m.cfg)return renderCfg();
+ const rows=DB[cur],sf=m.f.find(f=>f.t==='select'&&f.k!=='stars');
+ const list=rows.filter(r=>(!flt||r[sf.k]===flt)&&(!q||JSON.stringify(Object.values(r)).toLowerCase().includes(q.toLowerCase())));
+ const cols=m.f.filter(f=>!f.h);
+ let chart='';if(m.chart){const mx=Math.max(...rows.map(r=>+r.rev),1);chart=`<div class="bg-white rounded-3xl p-6 shadow-sm mt-5 up"><b class="text-slate-700"><i class="fa-solid fa-chart-column text-purple-500 mr-2"></i>Biểu đồ doanh thu (triệu đồng)</b><div class="flex items-end gap-2 md:gap-4 h-56 mt-4">${rows.map((r,i)=>`<div class="flex-1 flex flex-col items-center justify-end h-full group"><span class="text-[11px] font-bold text-purple-700 opacity-0 group-hover:opacity-100 transition">${r.rev}</span><div class="bar w-full rounded-t-xl bg-gradient-to-t from-purple-500 to-sky-300 hover:from-amber-400 hover:to-orange-300 transition" style="height:${r.rev/mx*85}%;animation-delay:${i*70}ms"></div><span class="text-[10px] text-slate-400 mt-1 whitespace-nowrap">${esc(r.month.replace('Tháng ','T'))}</span></div>`).join('')}</div></div>`}
+ view.innerHTML=`<div class="flex flex-wrap items-center gap-3 up"><h1 class="text-2xl font-bold flex-1"><i class="fa-solid ${m.i} text-purple-500 mr-2"></i>${m.t}</h1>
+ <div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input id="qi" value="${esc(q)}" placeholder="Tìm kiếm..." class="inp !pl-10 !w-56"></div>
+ ${sf?`<select id="fi" class="inp !w-auto"><option value="">Tất cả ${sf.l.toLowerCase()}</option>${sf.o.map(o=>`<option ${o===flt?'selected':''}>${o}</option>`).join('')}</select>`:''}
+ <button onclick="openForm()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold hover:shadow-lg transition"><i class="fa-solid fa-plus mr-1"></i>Thêm mới</button></div>
+ <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">${m.st(rows).map((x,i)=>`<div class="bg-white rounded-2xl p-4 shadow-sm hover:-translate-y-1 hover:shadow-lg transition up" style="animation-delay:${i*60}ms"><span class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fa-solid ${x[0]}"></i></span><div class="text-xl font-bold mt-2 truncate">${x[2]}</div><div class="text-xs text-slate-400">${x[1]}</div></div>`).join('')}</div>${chart}
+ <div class="bg-white rounded-3xl shadow-sm mt-5 overflow-x-auto up"><table class="w-full text-sm"><thead class="bg-slate-50 text-slate-500 text-left"><tr>${cols.map(f=>`<th class="p-4 font-semibold">${f.l}</th>`).join('')}<th class="p-4 text-right">Thao tác</th></tr></thead>
+ <tbody>${list.map((r,i)=>`<tr class="border-t border-slate-100 hover:bg-purple-50/40" style="animation-delay:${i*30}ms">${cols.map(f=>`<td class="p-4">${cell(f,r,m)}</td>`).join('')}<td class="p-4 text-right whitespace-nowrap"><button onclick="openForm(${r.id})" class="w-9 h-9 rounded-lg text-sky-600 hover:bg-sky-50" title="Sửa"><i class="fa-solid fa-pen"></i></button><button onclick="del(${r.id})" class="w-9 h-9 rounded-lg text-red-500 hover:bg-red-50" title="Xóa"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('')||`<tr><td colspan="${cols.length+1}" class="p-10 text-center text-slate-400"><i class="fa-regular fa-folder-open text-3xl block mb-2"></i>Không có dữ liệu</td></tr>`}</tbody></table></div>
+ <p class="text-xs text-slate-400 mt-3"><i class="fa-solid fa-database mr-1"></i>Dữ liệu lưu ngay trong trình duyệt (không cần database) • ${list.length}/${rows.length} dòng</p>`;
+ const qi=document.getElementById('qi');qi.oninput=e=>{q=e.target.value;const p=qi.selectionStart;render();const n=document.getElementById('qi');n.focus();n.setSelectionRange(p,p)};
+ const fi=document.getElementById('fi');if(fi)fi.onchange=e=>{flt=e.target.value;render()}}
+function openForm(id){const m=M[cur],r=id?DB[cur].find(x=>x.id===id):{};
+ mbox.innerHTML=`<div class="flex items-center mb-4"><h2 class="text-xl font-bold flex-1">${id?'Sửa':'Thêm'} — ${m.t}</h2><button onclick="closeM()" class="w-9 h-9 rounded-full hover:bg-slate-100"><i class="fa-solid fa-xmark"></i></button></div><div class="space-y-3">${m.f.filter(f=>f.t!=='calc').map(f=>`<label class="block"><span class="text-sm font-semibold text-slate-600">${f.l}</span>${
+ f.t==='select'?`<select data-k="${f.k}" class="inp mt-1">${f.o.map(o=>`<option ${r[f.k]===o?'selected':''}>${o}</option>`).join('')}</select>`:
+ f.t==='area'?`<textarea data-k="${f.k}" rows="3" class="inp mt-1">${esc(r[f.k])}</textarea>`:
+ f.t==='img'?`<div class="flex items-center gap-3 mt-1"><img id="pv" src="${esc(r.img||'')}" class="w-16 h-16 rounded-xl object-cover bg-slate-100" onerror="this.style.opacity=.2"><div class="flex-1 space-y-2"><input type="file" accept="image/*" onchange="pick(this)" class="text-xs"><input data-k="img" id="imgurl" value="${esc(r.img||'')}" placeholder="hoặc dán link ảnh" class="inp !py-1.5 text-xs"></div></div>`:
+ `<input data-k="${f.k}" type="${f.t==='money'||f.t==='number'?'number':f.t==='date'?'date':'text'}" value="${esc(r[f.k])}" class="inp mt-1">`}</label>`).join('')}</div>
+ <div class="flex gap-3 mt-6"><button onclick="closeM()" class="flex-1 py-3 rounded-xl border font-semibold hover:bg-slate-50">Hủy</button><button onclick="saveF(${id||0})" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>Lưu</button></div>`;
+ modal.classList.remove('hidden')}
+function closeM(){modal.classList.add('hidden')}
+function pick(inp){const f=inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(1,400/Math.max(im.width,im.height));c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);const d=c.toDataURL('image/jpeg',.8);imgurl.value=d;pv.src=d;pv.style.opacity=1};im.src=rd.result};rd.readAsDataURL(f)}
+function saveF(id){const m=M[cur],o={};let bad=0;mbox.querySelectorAll('[data-k]').forEach(e=>o[e.dataset.k]=e.value);
+ m.f.forEach(f=>{if(f.t==='number'||f.t==='money')o[f.k]=+o[f.k]||0});
+ const k0=m.f.find(f=>f.t==='text'||f.t==='date');if(!String(o[k0.k]||'').trim()){toast('Vui lòng nhập '+k0.l);return}
+ if(id){Object.assign(DB[cur].find(x=>x.id===id),o)}else{DB[cur].push({id:Math.max(0,...DB[cur].map(x=>x.id))+1,...o})}
+ save();closeM();render();toast(id?'Đã cập nhật ✔':'Đã thêm mới ✔')}
+function del(id){if(!confirm('Bạn chắc chắn muốn xóa mục này?'))return;DB[cur]=DB[cur].filter(x=>x.id!==id);save();render();toast('Đã xóa')}
+function renderCfg(){const c=DB.cai;view.innerHTML=`<h1 class="text-2xl font-bold up"><i class="fa-solid fa-gear text-purple-500 mr-2"></i>Cài đặt</h1>
+ <div class="grid lg:grid-cols-2 gap-5 mt-5"><div class="bg-white rounded-3xl p-6 shadow-sm up space-y-3"><b>Thông tin cửa hàng</b>${[['name','Tên cửa hàng'],['hotline','Hotline'],['email','Email'],['address','Địa chỉ'],['freeship','Miễn phí ship từ (đ)']].map(([k,l])=>`<label class="block"><span class="text-sm text-slate-500">${l}</span><input id="c_${k}" value="${esc(c[k])}" class="inp mt-1"></label>`).join('')}<button onclick="['name','hotline','email','address','freeship'].forEach(k=>DB.cai[k]=document.getElementById('c_'+k).value);save();toast('Đã lưu cài đặt ✔')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>Lưu</button></div>
+ <div class="bg-white rounded-3xl p-6 shadow-sm up space-y-3"><b>Dữ liệu</b><p class="text-sm text-slate-500">Toàn bộ dữ liệu được lưu trong trình duyệt này.</p>
+ <button onclick="const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}));a.download='aura-data.json';a.click()" class="w-full py-3 rounded-xl border hover:bg-sky-50 text-sky-700 font-semibold"><i class="fa-solid fa-download mr-2"></i>Xuất dữ liệu (JSON)</button>
+ <button onclick="if(confirm('Khôi phục toàn bộ dữ liệu mẫu?')){localStorage.removeItem(KEY);load();render();toast('Đã khôi phục dữ liệu mẫu')}" class="w-full py-3 rounded-xl border hover:bg-red-50 text-red-600 font-semibold"><i class="fa-solid fa-rotate-left mr-2"></i>Khôi phục dữ liệu mẫu</button></div></div>`}
+function route(){const k=(location.hash||'#sp').slice(1);cur=M[k]?k:'sp';q='';flt='';render();scrollTo(0,0)}
+addEventListener('hashchange',route);modal.onclick=e=>{if(e.target===modal)closeM()};
+load();route();
+</script></body></html>

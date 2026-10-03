@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebCraft Studio - Giao Diện Web & UI/UX Design System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            400: '#38bdf8',
+                            500: '#06b6d4',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Import Map cho Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .dark .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Canvas tuyết rơi toàn màn hình */
+        #snow-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-300 min-h-screen flex flex-col relative">
+
+    <!-- Canvas Tuyết Rơi phủ toàn trang -->
+    <canvas id="snow-canvas"></canvas>
+
+    <!-- Top Announcement Bar -->
+    <div class="relative z-10 bg-gradient-to-r from-brand-600 to-accent-500 text-white text-xs md:text-sm font-medium py-2 px-4 text-center flex justify-between items-center">
+        <span class="mx-auto flex items-center gap-2">
+            <span class="bg-white/20 px-2 py-0.5 rounded-full text-xs font-semibold">Mới</span>
+            Hệ thống UI/UX Design System 3.0 đã sẵn sàng cho doanh nghiệp!
+        </span>
+        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="sticky top-0 z-50 glass-card transition-all duration-300 border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+            
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/30 group-hover:scale-105 transition-transform">
+                    W
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-extrabold text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
+                        WebCraft <span class="text-brand-600 dark:text-accent-400">UI</span>
+                    </span>
+                    <span class="text-[10px] text-slate-500 font-medium tracking-wider uppercase">UI/UX Studio</span>
+                </div>
+            </a>
+                 
+            <!-- Search Bar -->
+            <div class="hidden md:flex items-center flex-1 max-w-md relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 text-slate-400 text-sm"></i>
+                <input type="text" placeholder="Tìm kiếm component, layout, nguyên tắc UX..." class="w-full pl-10 pr-12 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all">
+                <kbd class="absolute right-3 text-[10px] bg-slate-200 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden lg:flex items-center gap-8 font-medium text-sm">
+                <a href="test.html" class="text-slate-600 hover:text-brand-600 dark:text-slate-300 dark:hover:text-accent-400 transition-colors">Component UI</a>
+                <a href="Capcut.html" class="text-slate-600 hover:text-brand-600 dark:text-slate-300 dark:hover:text-accent-400 transition-colors">Thiết Kế Video</a>
+                <a href="#process" class="text-slate-600 hover:text-brand-600 dark:text-slate-300 dark:hover:text-accent-400 transition-colors">Quy trình UX</a>
+                <a href="#metrics" class="text-slate-600 hover:text-brand-600 dark:text-slate-300 dark:hover:text-accent-400 transition-colors">Hiệu năng</a>
+            </nav>
+
+            <!-- Action Controls -->
+            <div class="flex items-center gap-3">
+                <button id="theme-toggle" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-moon dark:hidden"></i>
+                    <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                </button>
+
+                <a href="#showcase" class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm shadow-md shadow-brand-500/25 transition-all hover:shadow-lg hover:-translate-y-0.5">
+                    Khám phá Demo
+                </a>
+
+                <button id="mobile-menu-btn" class="lg:hidden w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-16 lg:py-24 z-10">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-brand-500/20 to-accent-500/20 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 text-center lg:text-left space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 dark:bg-brand-900/40 border border-brand-200 dark:border-brand-800 text-brand-700 dark:text-brand-300 text-xs font-semibold">
+                        <i class="fa-solid fa-snowflake"></i> Hiệu Ứng Tuyết Rơi Sinh Động
+                    </div>
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
+                        Xây Dựng Web UI & <span class="gradient-text">Trải Nghiệm UX</span> Đỉnh Cao
+                    </h1>
+                    <p class="text-lg text-slate-600 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed">
+                        Nền tảng trực quan cung cấp hệ thống Component chuẩn mực, chuẩn hóa bố cục Grid 12 cột, tối ưu độ phản hồi di động và gia tăng tỷ lệ chuyển đổi cho sản phẩm số.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
+                        <a href="#showcase" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-accent-500 text-white font-semibold shadow-lg shadow-brand-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all text-center">
+                            Trải nghiệm Component <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                        </a>
+                        <a href="#grid-system" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-center">
+                            Xem Bố cục Grid
+                        </a>
+                    </div>
+
+                    <div class="pt-8 border-t border-slate-200 dark:border-slate-800 grid grid-cols-3 gap-4 text-center lg:text-left">
+                        <div>
+                            <p class="font-display font-bold text-2xl text-slate-900 dark:text-white">100+</p>
+                            <p class="text-xs text-slate-500">UI Components</p>
+                        </div>
+                        <div>
+                            <p class="font-display font-bold text-2xl text-brand-600 dark:text-accent-400">WCAG 2.1</p>
+                            <p class="text-xs text-slate-500">Chuẩn Tiếp Cận</p>
+                        </div>
+                        <div>
+                            <p class="font-display font-bold text-2xl text-slate-900 dark:text-white">60fps</p>
+                            <p class="text-xs text-slate-500">Hiệu Ứng Tương Tác</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6">
+                    <div class="relative rounded-2xl p-2 bg-slate-900/10 dark:bg-white/5 border border-slate-200 dark:border-slate-800 shadow-2xl">
+                        
+                        <div class="bg-slate-900 text-slate-400 rounded-t-xl px-4 py-3 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-rose-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block"></span>
+                            </div>
+                            <div class="flex-1 max-w-xs bg-slate-800/80 rounded-md px-3 py-1 text-xs text-center text-slate-400 font-mono truncate">
+                                https://app.webcraft-ui.com/dashboard
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                <i class="fa-solid fa-lock text-emerald-400"></i>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-100 dark:bg-slate-900 rounded-b-xl p-4 sm:p-6 space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center font-bold text-sm">UI</div>
+                                    <span class="font-semibold text-sm text-slate-800 dark:text-slate-200">Bảng Điều Khiển Hệ Thống</span>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 text-xs font-semibold">Active</span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <span class="text-xs text-slate-500 block">Lượt Tương Tác</span>
+                                    <span class="font-display font-bold text-xl text-slate-900 dark:text-white">48,290</span>
+                                    <span class="text-[11px] text-emerald-500 font-medium block mt-1"><i class="fa-solid fa-arrow-trend-up"></i> +14.2% tuần này</span>
+                                </div>
+                                <div class="bg-white dark:bg-slate-800 p-3.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                                    <span class="text-xs text-slate-500 block">Tốc Độ Phản Hồi</span>
+                                    <span class="font-display font-bold text-xl text-brand-600 dark:text-accent-400">0.42s</span>
+                                    <span class="text-[11px] text-emerald-500 font-medium block mt-1"><i class="fa-solid fa-bolt"></i> Siêu mượt</span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-semibold text-slate-700 dark:text-slate-300">Tiến Độ Tối Ưu UX</span>
+                                    <span class="text-brand-600 dark:text-accent-400 font-bold">92%</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-brand-500 to-accent-500 w-[92%] rounded-full"></div>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                                    <span>Mobile-First: Ready</span>
+                                    <span>A11y Score: 98/100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Global Internet Network Globe Section -->
+    <section id="global-network" class="hidden dark:block relative py-20 bg-slate-950 overflow-hidden border-y border-slate-800 z-10 min-h-[640px] md:min-h-[780px]">
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pointer-events-none"></div>
+
+        <!-- Quả địa cầu 3D — canvas phủ TOÀN BỘ section, không còn khung giới hạn -->
+        <div id="globe-container" class="absolute inset-0 w-full h-full">
+            <canvas id="globe-canvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+        </div>
+
+        <div class="relative z-10 h-full min-h-[640px] md:min-h-[780px] flex flex-col pointer-events-none">
+            <div class="max-w-2xl mx-auto text-center px-4 pt-2">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-accent-500/10 border border-accent-500/30 text-accent-400 text-xs font-semibold mb-4">
+                    <i class="fa-solid fa-moon"></i> Chỉ Hiển Thị Ở Chế Độ Tối
+                </div>
+                <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white">
+                    Mạng Lưới Internet <span class="gradient-text">Toàn Cầu</span>
+                </h2>
+                <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+                    Quả địa cầu 3D mô phỏng các tuyến truyền dữ liệu kết nối <strong class="text-white">16 quốc gia</strong> trên khắp thế giới. Nhấn giữ và kéo chuột để xoay theo mọi góc độ.
+                </p>
+            </div>
+
+            <div class="flex-1"></div>
+
+            <div class="flex items-center justify-center gap-2 text-xs text-slate-500 mb-4 pointer-events-none">
+                <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                Kéo chuột để xoay quả địa cầu theo trục X / Y
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto px-4 pb-2 w-full">
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Việt Nam</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Hoa Kỳ</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Anh Quốc</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Đức</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Pháp</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Nhật Bản</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Trung Quốc</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Ấn Độ</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Brazil</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Úc</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Canada</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Nga</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Hàn Quốc</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Singapore</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>UAE</div>
+                <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-300 text-xs"><span class="w-1.5 h-1.5 rounded-full bg-orange-400"></span>Nam Phi</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Component Showcase -->
+    <section id="showcase" class="py-16 bg-white dark:bg-slate-900 border-y border-slate-200 dark:border-slate-800 z-10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white">
+                    Thành Phần UI Component & Tính Năng Trực Quan
+                </h2>
+                <p class="text-slate-600 dark:text-slate-400 mt-3 text-base">
+                    Khám phá các khối chức năng tương tác cốt lõi được tối ưu hóa cho trải nghiệm người dùng hiện đại.
+                </p>
+
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-8" id="filter-bar">
+                    <button class="filter-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-brand-600 text-white shadow-md transition-all" data-category="all">Tất cả</button>
+                    <button class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all" data-category="ui">UI Elements</button>
+                    <button class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all" data-category="ux">Trải nghiệm UX</button>
+                    <button class="filter-btn px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 transition-all" data-category="grid">Bố cục Grid</button>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="component-cards">
+                <div class="component-card glass-card rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between" data-category="ui">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-300 flex items-center justify-center text-xl mb-5">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-900 dark:text-white mb-2">Design System Đồng Bộ</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            Chuẩn hóa thư viện màu sắc, nút bấm, biểu tượng và ô nhập dữ liệu giúp tạo tính nhất quán tuyệt đối trên toàn hệ thống web.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-brand-600 dark:text-accent-400">Reusable Components</span>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="component-card glass-card rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between" data-category="ux">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-accent-500/10 text-accent-500 flex items-center justify-center text-xl mb-5">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-900 dark:text-white mb-2">Micro-Interactions</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            Hiệu ứng phản hồi tương tác mượt mà giúp người dùng nhận biết ngay lập tức trạng thái hành động mà không gây xao nhẫm.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-accent-500">60 FPS Animation</span>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="component-card glass-card rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between" data-category="grid">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl mb-5">
+                            <i class="fa-solid fa-table-cells"></i>
+                        </div>
+                        <h3 class="font-display font-bold text-xl text-slate-900 dark:text-white mb-2">Flex & Grid Responsive</h3>
+                        <p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                            Bố cục linh hoạt tự động canh chỉnh khoảng cách và tỷ lệ mượt mà từ màn hình Mobile nhỏ nhất đến Desktop 4K.
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">12 Columns Standard</span>
+                        <i class="fa-solid fa-chevron-right text-xs text-slate-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grid Simulator -->
+    <section id="grid-system" class="py-16 bg-slate-50 dark:bg-slate-950 z-10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-4">
+                <div>
+                    <span class="text-brand-600 dark:text-accent-400 text-xs font-bold uppercase tracking-wider">Trực quan hóa layout</span>
+                    <h2 class="font-display text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                        Hệ Thống 12-Column Grid Tương Tác
+                    </h2>
+                </div>
+                <div class="flex items-center gap-2 bg-white dark:bg-slate-900 p-1.5 rounded-xl border border-slate-200 dark:border-slate-800" id="grid-control-btns">
+                    <span class="text-xs font-medium text-slate-500 px-2">Chia cột:</span>
+                    <button onclick="updateGridDemo(2, this)" class="grid-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-brand-600 text-white">2 Cột</button>
+                    <button onclick="updateGridDemo(3, this)" class="grid-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">3 Cột</button>
+                    <button onclick="updateGridDemo(4, this)" class="grid-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">4 Cột</button>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl">
+                <div id="grid-demo-container" class="grid grid-cols-2 gap-4 transition-all duration-500">
+                    <div class="grid-box bg-brand-50 dark:bg-brand-950/50 border-2 border-dashed border-brand-300 dark:border-brand-800 rounded-xl p-6 text-center">
+                        <span class="font-display font-bold text-brand-600 dark:text-brand-400 text-lg">Cột 01</span>
+                        <p class="text-xs text-slate-500 mt-1">Chiếm 50% chiều rộng khung hình</p>
+                    </div>
+                    <div class="grid-box bg-brand-50 dark:bg-brand-950/50 border-2 border-dashed border-brand-300 dark:border-brand-800 rounded-xl p-6 text-center">
+                        <span class="font-display font-bold text-brand-600 dark:text-brand-400 text-lg">Cột 02</span>
+                        <p class="text-xs text-slate-500 mt-1">Chiếm 50% chiều rộng khung hình</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Color Contrast Section -->
+    <section class="py-16 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 text-xs font-bold">WCAG 2.1 AA Standard</span>
+                    <h2 class="font-display text-3xl font-extrabold text-slate-900 dark:text-white mt-4 mb-4">
+                        Kiểm Tra Tương Phản & Phối Màu UI
+                    </h2>
+                    <p class="text-slate-600 dark:text-slate-400 text-base leading-relaxed mb-6">
+                        Đảm bảo tỷ lệ tương phản tối thiểu 4.5:1 đối với văn bản thông thường giúp người dùng thị lực kém vẫn lướt nội dung dễ dàng.
+                    </p>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6">
+                    <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">Thử Nghiệm Độ Tương Phản Live</h3>
+                    <div id="contrast-preview" class="p-6 rounded-xl bg-brand-600 text-white transition-all text-center space-y-2">
+                        <span class="font-display font-bold text-xl block">Khung Văn Bản Mẫu UI</span>
+                        <p class="text-sm opacity-90">Tỷ lệ tương phản hiện tại đạt chuẩn WCAG AA</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Màu Nền (Background)</label>
+                            <input type="color" id="bg-color-picker" value="#4f46e5" class="w-full h-10 rounded-lg cursor-pointer bg-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">Màu Chữ (Text)</label>
+                            <input type="color" id="text-color-picker" value="#ffffff" class="w-full h-10 rounded-lg cursor-pointer bg-transparent">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UX Process Timeline Section -->
+    <section id="process" class="py-16 bg-slate-50 dark:bg-slate-950 z-10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-14">
+                <span class="text-brand-600 dark:text-accent-400 text-xs font-bold uppercase tracking-wider">Quy trình thiết kế chuẩn</span>
+                <h2 class="font-display text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
+                    4 Giai Đoạn Phát Triển UI/UX Sản Phẩm
+                </h2>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative space-y-3">
+                    <span class="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-600 dark:text-brand-300 font-bold text-sm flex items-center justify-center">01</span>
+                    <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">Nghiên Cứu UX</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Khảo sát người dùng, xây dựng User Persona và lập bản đồ hành trình trải nghiệm User Journey.
+                    </p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative space-y-3">
+                    <span class="w-8 h-8 rounded-full bg-accent-500/10 text-accent-500 font-bold text-sm flex items-center justify-center">02</span>
+                    <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">Wireframe & IA</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Xây dựng kiến trúc thông tin (Information Architecture) và phác thảo khung xương giao diện low-fi.
+                    </p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative space-y-3">
+                    <span class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-bold text-sm flex items-center justify-center">03</span>
+                    <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">Thiết Kế UI & System</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Thiết kế chi tiết High-Fidelity UI, xây dựng Design System và tạo Prototype mô phỏng tương tác.
+                    </p>
+                </div>
+                <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative space-y-3">
+                    <span class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 font-bold text-sm flex items-center justify-center">04</span>
+                    <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">Kiểm Thử & Tối Ưu</h3>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                        Usability Testing cùng người dùng thật, đo lường chỉ số Core Web Vitals và liên tục cải tiến.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-slate-900 text-slate-400 text-sm py-12 border-t border-slate-800 z-10 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-4 gap-8">
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 text-white font-display font-extrabold text-xl">
+                    <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white font-black text-base">W</div>
+                    WebCraft UI
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Nền tảng thiết kế giao diện Web & hệ thống UI/UX tiên tiến cho sản phẩm số hiện đại.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Sản Phẩm</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" class="hover:text-white transition-colors">UI Component Library</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Design System Kits</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Responsive Templates</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Tài Nguyên</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><a href="#" class="hover:text-white transition-colors">Tài liệu Hướng dẫn</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Quy chuẩn WCAG 2.1</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors">Blog UX/UI</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold text-xs uppercase tracking-wider mb-4">Kết Nối</h4>
+                <div class="flex gap-4 text-base">
+                    <a href="#" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition-all"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition-all"><i class="fa-brands fa-dribbble"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white flex items-center justify-center transition-all"><i class="fa-brands fa-figma"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 pt-6 border-t border-slate-800 text-center text-xs text-slate-500">
+            © 2026 WebCraft UI Studio. Tất cả quyền được bảo lưu.
+        </div>
+    </footer>
+
+    <!-- Interactive JavaScript Logic -->
+    <script>
+        // Dark Mode Toggle Logic
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+        });
+
+        // Filter Buttons Logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const componentCards = document.querySelectorAll('.component-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-brand-600', 'text-white', 'shadow-md');
+                    b.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+                });
+
+                btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+                btn.classList.add('bg-brand-600', 'text-white', 'shadow-md');
+
+                const category = btn.getAttribute('data-category');
+                componentCards.forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Grid Simulator Logic
+        function updateGridDemo(cols, btnElement) {
+            const container = document.getElementById('grid-demo-container');
+            container.className = `grid grid-cols-${cols} gap-4 transition-all duration-500`;
+            container.innerHTML = '';
+            for (let i = 1; i <= cols; i++) {
+                container.innerHTML += `
+                    <div class="grid-box bg-brand-50 dark:bg-brand-950/50 border-2 border-dashed border-brand-300 dark:border-brand-800 rounded-xl p-6 text-center animate-fade-in">
+                        <span class="font-display font-bold text-brand-600 dark:text-brand-400 text-lg">Cột 0${i}</span>
+                        <p class="text-xs text-slate-500 mt-1">Chiếm ${Math.round(100/cols)}% chiều rộng</p>
+                    </div>
+                `;
+            }
+
+            // Cập nhật trạng thái Active cho các nút chọn Cột Grid
+            if (btnElement) {
+                const buttons = document.querySelectorAll('#grid-control-btns .grid-btn');
+                buttons.forEach(b => {
+                    b.classList.remove('bg-brand-600', 'text-white');
+                    b.classList.add('text-slate-600', 'dark:text-slate-400');
+                });
+                btnElement.classList.add('bg-brand-600', 'text-white');
+                btnElement.classList.remove('text-slate-600', 'dark:text-slate-400');
+            }
+        }
+
+        // Color & Contrast Picker Logic
+        const bgColorPicker = document.getElementById('bg-color-picker');
+        const textColorPicker = document.getElementById('text-color-picker');
+        const contrastPreview = document.getElementById('contrast-preview');
+
+        bgColorPicker.addEventListener('input', (e) => {
+            contrastPreview.style.backgroundColor = e.target.value;
+        });
+
+        textColorPicker.addEventListener('input', (e) => {
+            contrastPreview.style.color = e.target.value;
+        });
+    </script>
+
+    <!-- Snowfall Canvas Engine -->
+    <script>
+        const snowCanvas = document.getElementById('snow-canvas');
+        const snowCtx = snowCanvas.getContext('2d');
+        let snowFlakes = [];
+        let snowAnimationId = null;
+
+        function resizeSnowCanvas() {
+            snowCanvas.width = window.innerWidth;
+            snowCanvas.height = window.innerHeight;
+        }
+
+        class Snowflake {
+            constructor() {
+                this.reset(true);
+            }
+
+            reset(initial = false) {
+                this.x = Math.random() * snowCanvas.width;
+                this.y = initial ? Math.random() * snowCanvas.height : -10;
+                this.radius = Math.random() * 3 + 1;
+                this.speedY = Math.random() * 1.5 + 0.8;
+                this.speedX = Math.random() * 0.8 - 0.4;
+                this.opacity = Math.random() * 0.6 + 0.3;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += Math.sin(this.y * 0.01) + this.speedX;
+
+                if (this.y > snowCanvas.height + 10 || this.x < -10 || this.x > snowCanvas.width + 10) {
+                    this.reset(false);
+                }
+            }
+
+            draw() {
+                snowCtx.save();
+                snowCtx.globalAlpha = this.opacity;
+                const isDark = document.documentElement.classList.contains('dark');
+                snowCtx.fillStyle = isDark ? '#ffffff' : '#64748b';
+                
+                if (isDark) {
+                    snowCtx.shadowBlur = 5;
+                    snowCtx.shadowColor = '#38bdf8';
+                }
+
+                snowCtx.beginPath();
+                snowCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                snowCtx.fill();
+                snowCtx.restore();
+            }
+        }
+
+        function initSnow() {
+            snowFlakes = [];
+            const flakeCount = Math.floor((window.innerWidth * window.innerHeight) / 7500);
+            for (let i = 0; i < flakeCount; i++) {
+                snowFlakes.push(new Snowflake());
+            }
+        }
+
+        function animateSnow() {
+            snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+            snowFlakes.forEach(flake => {
+                flake.update();
+                flake.draw();
+            });
+            snowAnimationId = requestAnimationFrame(animateSnow);
+        }
+
+        function startSnowEngine() {
+            resizeSnowCanvas();
+            initSnow();
+            if (!snowAnimationId) {
+                animateSnow();
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            resizeSnowCanvas();
+            initSnow();
+        });
+
+        startSnowEngine();
+    </script>
+
+    <!-- 3D Global Internet Network Globe (Three.js) -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        const container = document.getElementById('globe-container');
+        const canvas = document.getElementById('globe-canvas');
+
+        let scene, camera, renderer, controls, globeGroup;
+        let animationId = null;
+        let initialized = false;
+        const clock = new THREE.Clock();
+        const labelSprites = [];
+
+        const COUNTRIES = [
+            { id: 'vn', name: 'Việt Nam',   lat: 21.03,  lon: 105.85 },
+            { id: 'us', name: 'Hoa Kỳ',     lat: 40.71,  lon: -74.01 },
+            { id: 'uk', name: 'Anh Quốc',   lat: 51.51,  lon: -0.13 },
+            { id: 'de', name: 'Đức',        lat: 52.52,  lon: 13.41 },
+            { id: 'fr', name: 'Pháp',       lat: 48.85,  lon: 2.35 },
+            { id: 'jp', name: 'Nhật Bản',   lat: 35.68,  lon: 139.69 },
+            { id: 'cn', name: 'Trung Quốc', lat: 39.90,  lon: 116.41 },
+            { id: 'in', name: 'Ấn Độ',      lat: 28.61,  lon: 77.21 },
+            { id: 'br', name: 'Brazil',     lat: -23.55, lon: -46.63 },
+            { id: 'au', name: 'Úc',         lat: -33.87, lon: 151.21 },
+            { id: 'ca', name: 'Canada',     lat: 43.65,  lon: -79.38 },
+            { id: 'ru', name: 'Nga',        lat: 55.75,  lon: 37.62 },
+            { id: 'kr', name: 'Hàn Quốc',   lat: 37.57,  lon: 126.98 },
+            { id: 'sg', name: 'Singapore',  lat: 1.35,   lon: 103.82 },
+            { id: 'ae', name: 'UAE',        lat: 25.20,  lon: 55.27 },
+            { id: 'za', name: 'Nam Phi',    lat: -26.20, lon: 28.05 },
+        ];
+
+        const CONNECTIONS = [
+            ['us', 'uk'], ['us', 'de'], ['us', 'jp'], ['us', 'br'], ['us', 'ca'], ['us', 'fr'], ['us', 'au'], ['us', 'kr'],
+            ['uk', 'de'], ['uk', 'fr'], ['uk', 'ae'], ['uk', 'za'], ['uk', 'in'], ['uk', 'br'],
+            ['de', 'ru'], ['de', 'cn'], ['de', 'fr'], ['de', 'ae'],
+            ['jp', 'cn'], ['jp', 'kr'], ['jp', 'au'], ['jp', 'vn'], ['jp', 'sg'],
+            ['cn', 'in'], ['cn', 'sg'], ['cn', 'ru'], ['cn', 'au'], ['cn', 'vn'],
+            ['in', 'ae'], ['in', 'sg'],
+            ['sg', 'au'], ['sg', 'vn'], ['sg', 'ae'],
+            ['br', 'za'],
+            ['ae', 'za'],
+            ['ru', 'kr'],
+            ['vn', 'au'],
+            ['ca', 'fr'],
+        ];
+
+        function latLonToVec3(lat, lon, radius) {
+            const phi = (90 - lat) * (Math.PI / 180);
+            const theta = (lon + 180) * (Math.PI / 180);
+            return new THREE.Vector3(
+                -radius * Math.sin(phi) * Math.cos(theta),
+                radius * Math.cos(phi),
+                radius * Math.sin(phi) * Math.sin(theta)
+            );
+        }
+
+        function createGlowTexture() {
+            const size = 128;
+            const c = document.createElement('canvas');
+            c.width = size; c.height = size;
+            const ctx = c.getContext('2d');
+            const grad = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+            grad.addColorStop(0, 'rgba(255,255,255,1)');
+            grad.addColorStop(0.3, 'rgba(255,200,120,0.85)');
+            grad.addColorStop(1, 'rgba(255,140,60,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, size, size);
+            return new THREE.CanvasTexture(c);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function makeLabelSprite(text) {
+            const fontSize = 30;
+            const c = document.createElement('canvas');
+            const ctx = c.getContext('2d');
+            ctx.font = `600 ${fontSize}px Inter, sans-serif`;
+            const textWidth = ctx.measureText(text).width;
+            c.width = textWidth + 18;
+            c.height = fontSize + 14;
+            ctx.font = `600 ${fontSize}px Inter, sans-serif`;
+            ctx.fillStyle = 'rgba(8,14,32,0.55)';
+            roundRect(ctx, 0, 0, c.width, c.height, 10);
+            ctx.fillStyle = '#ffffff';
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillText(text, c.width / 2, c.height / 2 + 1);
+            const texture = new THREE.CanvasTexture(c);
+            const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false, opacity: 0 });
+            const sprite = new THREE.Sprite(material);
+            const scale = 0.0068;
+            sprite.scale.set(c.width * scale, c.height * scale, 1);
+            return sprite;
+        }
+
+        function createEarthTexture() {
+            const W = 2048, H = 1024;
+            const c = document.createElement('canvas');
+            c.width = W; c.height = H;
+            const ctx = c.getContext('2d');
+
+            const ocean = ctx.createLinearGradient(0, 0, 0, H);
+            ocean.addColorStop(0, '#0c2a5e');
+            ocean.addColorStop(0.5, '#0a1a3f');
+            ocean.addColorStop(1, '#050d20');
+            ctx.fillStyle = ocean;
+            ctx.fillRect(0, 0, W, H);
+
+            ctx.globalAlpha = 0.06;
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 1;
+            for (let y = 30; y < H; y += 55) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(W, y);
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+
+            function project(lon, lat) {
+                return [(lon + 180) / 360 * W, (90 - lat) / 180 * H];
+            }
+
+            function drawLand(points) {
+                ctx.beginPath();
+                points.forEach(([lon, lat], i) => {
+                    const [x, y] = project(lon, lat);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                });
+                ctx.closePath();
+
+                const grad = ctx.createLinearGradient(0, 0, 0, H);
+                grad.addColorStop(0, '#3a6b4a');
+                grad.addColorStop(0.5, '#4a7a3d');
+                grad.addColorStop(1, '#5c8a3a');
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.clip();
+                const xs = points.map(p => project(p[0], p[1])[0]);
+                const ys = points.map(p => project(p[0], p[1])[1]);
+                const minX = Math.min(...xs), maxX = Math.max(...xs);
+                const minY = Math.min(...ys), maxY = Math.max(...ys);
+                const dotCount = Math.max(18, Math.floor(((maxX - minX) * (maxY - minY)) / 1500));
+                for (let i = 0; i < dotCount; i++) {
+                    const x = minX + Math.random() * (maxX - minX);
+                    const y = minY + Math.random() * (maxY - minY);
+                    const r = Math.random() * 1.8 + 0.5;
+                    ctx.beginPath();
+                    ctx.fillStyle = Math.random() > 0.3 ? 'rgba(255,214,140,0.9)' : 'rgba(255,180,90,0.65)';
+                    ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            drawLand([[-165,68],[-140,70],[-95,70],[-80,68],[-70,50],[-60,45],[-65,25],[-80,25],[-97,18],[-105,20],[-117,32],[-124,40],[-124,49],[-130,55],[-140,60],[-165,68]]);
+            drawLand([[-80,10],[-60,10],[-50,0],[-35,-5],[-35,-20],[-40,-23],[-58,-35],[-68,-55],[-72,-45],[-75,-30],[-80,-15],[-80,10]]);
+            drawLand([[-10,36],[-9,43],[0,50],[10,54],[20,55],[30,60],[40,66],[30,70],[20,71],[10,60],[0,52],[-5,44],[-10,36]]);
+            drawLand([[-17,35],[10,37],[32,31],[43,12],[51,12],[45,-1],[40,-15],[35,-25],[20,-35],[14,-23],[12,-5],[9,5],[-5,5],[-10,10],[-17,20],[-17,35]]);
+            drawLand([[40,66],[60,70],[90,75],[130,72],[145,60],[140,45],[130,35],[120,25],[105,10],[95,5],[80,8],[70,20],[60,25],[50,30],[45,40],[40,50],[40,66]]);
+            drawLand([[113,-22],[130,-12],[142,-11],[153,-27],[150,-38],[140,-38],[130,-32],[115,-35],[113,-22]]);
+            drawLand([[-55,60],[-40,70],[-20,75],[-30,83],[-55,72],[-55,60]]);
+
+            return new THREE.CanvasTexture(c);
+        }
+
+        const planes = [];
+        function createPlaneSprite() {
+            const size = 72;
+            const c = document.createElement('canvas');
+            c.width = size; c.height = size;
+            const ctx = c.getContext('2d');
+            ctx.font = `${size * 0.7}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✈️', size / 2, size / 2);
+            const tex = new THREE.CanvasTexture(c);
+            const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+            return new THREE.Sprite(mat);
+        }
+
+        function addPlanes(R) {
+            const count = 4;
+            for (let i = 0; i < count; i++) {
+                const sprite = createPlaneSprite();
+                sprite.scale.set(R * 0.16, R * 0.16, 1);
+                scene.add(sprite);
+                planes.push({
+                    sprite,
+                    tiltX: Math.random() * Math.PI - Math.PI / 2,
+                    tiltZ: Math.random() * Math.PI,
+                    speed: 0.12 + Math.random() * 0.14,
+                    phase: Math.random() * Math.PI * 2,
+                    orbitR: R * (1.22 + Math.random() * 0.18),
+                });
+            }
+        }
+
+        function updatePlanes(t) {
+            planes.forEach((p) => {
+                const angle = t * p.speed + p.phase;
+                const x = Math.cos(angle) * p.orbitR;
+                const z = Math.sin(angle) * p.orbitR;
+                const y1 = -z * Math.sin(p.tiltX);
+                const z1 = z * Math.cos(p.tiltX);
+                const x2 = x * Math.cos(p.tiltZ) - y1 * Math.sin(p.tiltZ);
+                const y2 = x * Math.sin(p.tiltZ) + y1 * Math.cos(p.tiltZ);
+                p.sprite.position.set(x2, y2, z1);
+            });
+        }
+
+        // ---- Mặt Trời + các hành tinh khác bay quanh (Mặt Trời làm TRUNG TÂM, quỹ đạo rộng) ----
+        const orbitingPlanets = [];
+        const PLANET_DATA = [
+            { name: 'Sao Thủy', color: 0xb0aca4, size: 0.1,   orbit: 2.0, speed: 1.1 },
+            { name: 'Sao Kim',  color: 0xe6c99b, size: 0.15,  orbit: 2.7, speed: 0.82 },
+            { name: 'Sao Hỏa',  color: 0xc1552c, size: 0.12,  orbit: 3.5, speed: 0.6 },
+            { name: 'Sao Mộc',  color: 0xd9a468, size: 0.34,  orbit: 4.6, speed: 0.38 },
+            { name: 'Sao Thổ',  color: 0xe3c98a, size: 0.3,   orbit: 5.6, speed: 0.28, ring: true },
+            { name: 'Sao Thiên Vương', color: 0x9be3e0, size: 0.22, orbit: 6.4, speed: 0.2 },
+            { name: 'Sao Hải Vương',   color: 0x5b7fe0, size: 0.22, orbit: 7.1, speed: 0.15 },
+        ];
+
+        function addSolarSystem(glowTexture) {
+            const sunGroup = new THREE.Group();
+            // Mặt Trời nằm CHÍNH GIỮA cảnh, lùi xa hơn để hào quang không tràn kín khung
+            sunGroup.position.set(0, 0, -14);
+            sunGroup.rotation.x = -0.5; // nghiêng quỹ đạo để nhìn thành hình elip rộng, giống ảnh tham khảo
+            scene.add(sunGroup);
+
+            // Mặt Trời — kích thước vừa phải, không lấn át quả địa cầu
+            const sun = new THREE.Mesh(
+                new THREE.SphereGeometry(0.85, 32, 32),
+                new THREE.MeshBasicMaterial({ color: 0xffd27a })
+            );
+            sunGroup.add(sun);
+
+            const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: glowTexture, color: 0xffdd88, transparent: true, opacity: 0.85,
+                blending: THREE.AdditiveBlending, depthWrite: false
+            }));
+            sunGlow.scale.set(3.6, 3.6, 1);
+            sunGroup.add(sunGlow);
+
+            const sunLight = new THREE.PointLight(0xffddaa, 1.3, 20);
+            sunGroup.add(sunLight);
+
+            // Quỹ đạo + các hành tinh
+            PLANET_DATA.forEach((p) => {
+                const orbitPts = [];
+                for (let i = 0; i <= 64; i++) {
+                    const a = (i / 64) * Math.PI * 2;
+                    orbitPts.push(new THREE.Vector3(Math.cos(a) * p.orbit, 0, Math.sin(a) * p.orbit));
+                }
+                const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPts);
+                const orbitMat = new THREE.LineBasicMaterial({ color: 0x64748b, transparent: true, opacity: 0.3 });
+                sunGroup.add(new THREE.LineLoop(orbitGeo, orbitMat));
+
+                const mesh = new THREE.Mesh(
+                    new THREE.SphereGeometry(p.size, 18, 18),
+                    new THREE.MeshStandardMaterial({ color: p.color, roughness: 0.85, metalness: 0.05 })
+                );
+                sunGroup.add(mesh);
+
+                if (p.ring) {
+                    const ring = new THREE.Mesh(
+                        new THREE.RingGeometry(p.size * 1.4, p.size * 2.2, 32),
+                        new THREE.MeshBasicMaterial({ color: 0xcbb98a, side: THREE.DoubleSide, transparent: true, opacity: 0.7 })
+                    );
+                    ring.rotation.x = Math.PI * 0.42;
+                    mesh.add(ring);
+                }
+
+                orbitingPlanets.push({ mesh, orbit: p.orbit, speed: p.speed, phase: Math.random() * Math.PI * 2 });
+            });
+        }
+
+
+        function updateSolarSystem(t) {
+            orbitingPlanets.forEach((p) => {
+                const angle = t * p.speed + p.phase;
+                p.mesh.position.set(Math.cos(angle) * p.orbit, 0, Math.sin(angle) * p.orbit);
+                p.mesh.rotation.y += 0.02;
+            });
+        }
+
+        function addStarfield() {
+            const starCount = 900;
+            const positions = new Float32Array(starCount * 3);
+            for (let i = 0; i < starCount; i++) {
+                const r = 15 + Math.random() * 12;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(Math.random() * 2 - 1);
+                positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = r * Math.cos(phi);
+            }
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.045, transparent: true, opacity: 0.75 });
+            scene.add(new THREE.Points(geo, mat));
+        }
+
+        function initGlobeScene() {
+            if (initialized) return;
+            initialized = true;
+
+            try {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+                camera.position.set(0, 0, 7.4);
+
+                renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+                controls = new OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.08;
+                controls.enablePan = false;
+                controls.minDistance = 5.2;
+                controls.maxDistance = 12;
+                controls.autoRotate = true;
+                controls.autoRotateSpeed = 0.5;
+
+                scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+                const dirLight = new THREE.DirectionalLight(0xffffff, 1.1);
+                dirLight.position.set(5, 3, 5);
+                scene.add(dirLight);
+
+                addStarfield();
+
+                globeGroup = new THREE.Group();
+                scene.add(globeGroup);
+
+                const R = 2.5;
+
+                const earthGeo = new THREE.SphereGeometry(R, 64, 64);
+                const earthMat = new THREE.MeshPhongMaterial({ map: createEarthTexture(), shininess: 10 });
+                globeGroup.add(new THREE.Mesh(earthGeo, earthMat));
+
+                const wireGeo = new THREE.SphereGeometry(R * 1.006, 28, 20);
+                const wireMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.13 });
+                globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
+
+                const atmoGeo = new THREE.SphereGeometry(R * 1.06, 48, 48);
+                const atmoMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.08, side: THREE.BackSide });
+                globeGroup.add(new THREE.Mesh(atmoGeo, atmoMat));
+
+                const glowTexture = createGlowTexture();
+                const positionsById = {};
+
+                COUNTRIES.forEach((c) => {
+                    const pos = latLonToVec3(c.lat, c.lon, R);
+                    positionsById[c.id] = pos;
+
+                    const dot = new THREE.Mesh(
+                        new THREE.SphereGeometry(R * 0.015, 10, 10),
+                        new THREE.MeshBasicMaterial({ color: 0xffa94d })
+                    );
+                    dot.position.copy(pos);
+                    globeGroup.add(dot);
+
+                    const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                        map: glowTexture, color: 0xffa94d, transparent: true,
+                        blending: THREE.AdditiveBlending, depthWrite: false
+                    }));
+                    glowSprite.scale.set(R * 0.1, R * 0.1, 1);
+                    glowSprite.position.copy(pos);
+                    globeGroup.add(glowSprite);
+
+                    const label = makeLabelSprite(c.name);
+                    const labelPos = pos.clone().multiplyScalar(1.1);
+                    label.position.copy(labelPos);
+                    globeGroup.add(label);
+                    labelSprites.push({ sprite: label, pos: labelPos });
+                });
+
+                addPlanes(R);
+                addSolarSystem(glowTexture);
+
+                CONNECTIONS.forEach(([a, b]) => {
+                    const start = positionsById[a];
+                    const end = positionsById[b];
+                    if (!start || !end) return;
+                    const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(R * 1.35);
+                    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+                    const pts = curve.getPoints(48);
+                    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+                    const mat = new THREE.LineBasicMaterial({
+                        color: 0xff8c42, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending
+                    });
+                    globeGroup.add(new THREE.Line(geo, mat));
+                });
+            } catch (err) {
+                console.error('Không thể khởi tạo quả địa cầu 3D:', err);
+            }
+        }
+
+        function resizeRendererToContainer() {
+            if (!renderer || !container) return;
+            const w = container.clientWidth || 400;
+            const h = container.clientHeight || w;
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+
+        window.addEventListener('resize', resizeRendererToContainer);
+
+        function updateLabelVisibility() {
+            if (!camera) return;
+            labelSprites.forEach(({ sprite, pos }) => {
+                const normal = pos.clone().normalize();
+                const viewDir = camera.position.clone().sub(pos).normalize();
+                const facing = normal.dot(viewDir);
+                const opacity = THREE.MathUtils.clamp((facing - 0.05) / 0.45, 0, 1);
+                sprite.material.opacity = opacity;
+                sprite.visible = opacity > 0.02;
+            });
+        }
+
+        function animateGlobe() {
+            animationId = requestAnimationFrame(animateGlobe);
+            if (controls) controls.update();
+            updateLabelVisibility();
+            updatePlanes(clock.getElapsedTime());
+            updateSolarSystem(clock.getElapsedTime());
+            if (renderer && scene && camera) renderer.render(scene, camera);
+        }
+
+        function startGlobe() {
+            initGlobeScene();
+            requestAnimationFrame(() => {
+                resizeRendererToContainer();
+                if (!animationId) animateGlobe();
+            });
+        }
+
+        function stopGlobe() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        function isDarkMode() {
+            return document.documentElement.classList.contains('dark');
+        }
+
+        const darkModeObserver = new MutationObserver(() => {
+            if (isDarkMode()) {
+                startGlobe();
+            } else {
+                stopGlobe();
+            }
+        });
+        darkModeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+        if (isDarkMode()) {
+            startGlobe();
+        }
+    </script>
+</body>
+</html>

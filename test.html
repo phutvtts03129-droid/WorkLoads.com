@@ -1,0 +1,3458 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sliver Studio - Slide & Web Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600;800&family=Montserrat:wght@800&family=Pacifico&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-workspace: #080d19;
+            --bg-panel: #0f172a;
+            --bg-card: #1e293b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --border-color: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-workspace); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* TOP NAVBAR */
+        .top-nav {
+            height: 56px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .brand { font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 8px; }
+        .brand span { color: var(--accent-blue); }
+        .url-bar {
+            background: #020617;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+            border: 1px solid #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 360px;
+        }
+        .url-bar i { color: #10b981; }
+        .nav-actions { display: flex; gap: 10px; align-items: center; }
+        .btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn-ghost { background: transparent; color: var(--text-main); border: 1px solid var(--border-color); }
+        .btn-ghost:hover { background: var(--bg-card); }
+        .btn-primary { background: var(--accent-purple); color: #fff; }
+        .btn-primary:hover { filter: brightness(1.1); }
+        .btn-view { background: #10b981; color: #fff; }
+        .btn-view:hover { background: #059669; }
+
+        /* MAIN BUILDER */
+        .builder-container { flex: 1; display: flex; overflow: hidden; position: relative; }
+
+        /* SIDEBAR TRÁI */
+        .sidebar-left {
+            width: 310px;
+            background: #0b0f19;
+            border-right: 1px solid var(--border-color);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            flex-shrink: 0;
+            z-index: 5;
+        }
+        .sidebar-left::-webkit-scrollbar { width: 5px; }
+        .sidebar-left::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        
+        .section-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 14px;
+        }
+        .section-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .slider-row { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #cbd5e1; }
+        .slider-header { display: flex; justify-content: space-between; align-items: center; }
+        .slider-val { font-size: 11px; color: #ec4899; font-weight: 700; font-family: monospace; }
+        .custom-range {
+            width: 100%;
+            accent-color: var(--accent-purple);
+            height: 4px;
+            background: #1e293b;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        
+        .hint-text { font-size: 11px; color: #64748b; line-height: 1.3; margin-top: -2px; }
+
+        .btn-t1 {
+            width: 100%;
+            padding: 9px;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: #c084fc;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .btn-t1:hover { background: rgba(139, 92, 246, 0.25); border-color: #a855f7; color: #fff; }
+        .btn-t1.active { background: #8b5cf6; color: #fff; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+        .btn-sub {
+            padding: 7px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+        .btn-sub:hover { background: #334155; color: #fff; }
+        .btn-sub.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
+
+        /* DANH SÁCH FONT CHỮ CÓ THANH CUỘN */
+        .font-scroll-list {
+            max-height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 4px;
+        }
+        .font-scroll-list::-webkit-scrollbar { width: 4px; }
+        .font-scroll-list::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        .font-item {
+            padding: 8px 10px;
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .font-item:hover { border-color: var(--accent-purple); background: #1e1b4b; }
+        .font-item .font-name { font-size: 10px; color: #64748b; margin-bottom: 2px; }
+        .font-item .font-preview { font-size: 13px; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* CANVAS AREA */
+        .canvas-area {
+            flex: 1;
+            padding: 16px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+            overflow: auto;
+            position: relative;
+        }
+
+        /* SLIDE NAV BAR */
+        .slide-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            background: var(--bg-panel);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            z-index: 5;
+        }
+        .slide-tab {
+            padding: 6px 12px;
+            background: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .slide-tab.active { background: var(--accent-purple); color: #fff; border-color: var(--accent-purple); }
+        .slide-tab-title { white-space: nowrap; }
+        .slide-tab .del-slide { font-size: 10px; opacity: 0.6; }
+        .slide-tab .del-slide:hover { opacity: 1; color: #f87171; }
+        .add-slide-btn {
+            padding: 6px 10px;
+            background: var(--bg-card);
+            border: 1px dashed var(--accent-blue);
+            color: var(--accent-blue);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .add-slide-btn:hover { background: rgba(59, 130, 246, 0.1); }
+
+        /* MENU DẤU CỘNG KHI TẠO MỚI (SLIDE & DATABASE) */
+        .add-plus-container {
+            position: relative;
+            display: inline-block;
+        }
+        .add-plus-popover {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 100000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            min-width: 140px;
+        }
+        .add-plus-popover.open {
+            display: flex;
+        }
+        .add-plus-popover button {
+            background: #020617;
+            border: 1px solid var(--border-color);
+            color: #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: 0.15s;
+        }
+        .add-plus-popover button:hover {
+            background: var(--accent-purple);
+            color: #fff;
+            border-color: var(--accent-purple);
+        }
+
+        /* THANH CÔNG CỤ NỔI KÉO THẢ */
+        .add-toolbar {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            align-items: center;
+            z-index: 99999;
+            cursor: default;
+            user-select: none;
+        }
+        .add-toolbar .drag-toolbar-handle {
+            cursor: move;
+            color: var(--text-muted);
+            padding: 0 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+        .add-toolbar .drag-toolbar-handle:hover { color: var(--accent-blue); }
+
+        .add-toolbar .tool-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 7px 11px;
+            border-radius: 7px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+        .add-toolbar .tool-btn i { color: var(--accent-blue); }
+        .add-toolbar .tool-btn:hover { background: #263449; border-color: var(--accent-blue); }
+        .add-toolbar .tool-btn.fx-btn { border-color: #a855f7; color: #d8b4fe; }
+        .add-toolbar .tool-btn.fx-btn i { color: #a855f7; }
+
+        .main-fx-select {
+            background: #020617;
+            color: #c084fc;
+            border: 1px solid #a855f7;
+            border-radius: 7px;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            height: 33px;
+        }
+        .main-fx-select option { background: #0f172a; color: #f8fafc; }
+
+        /* POPOVER KHUNG, ICON & GLOBAL FX */
+        .box-picker-popover, .icon-picker, .global-fx-picker {
+            position: absolute;
+            top: 48px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            display: none;
+            z-index: 100000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+        .box-picker-popover { left: 130px; width: 190px; flex-direction: column; gap: 6px; }
+        .box-picker-popover.open { display: flex; }
+
+        /* MỤC CÓ MŨI TÊN MỞ RA SUBMENU (FLYOUT) */
+        .box-picker-parent {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;
+            background: transparent; color: var(--text-main); position: relative;
+        }
+        .box-picker-parent:hover, .box-picker-parent.open { background: var(--accent-blue); color: #fff; }
+        .box-picker-parent span { display: flex; align-items: center; gap: 8px; }
+        .box-flyout {
+            display: none; flex-direction: column; gap: 4px;
+            position: absolute; left: 100%; top: 0; margin-left: 6px;
+            width: 200px; background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 8px; box-shadow: 0 10px 24px rgba(0,0,0,0.5); z-index: 60;
+        }
+        .box-flyout.open { display: flex; }
+        .box-flyout .flyout-section-title {
+            font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase;
+            letter-spacing: 0.5px; margin: 4px 2px 0;
+        }
+        .box-flyout button { text-align: left; }
+
+        .box-picker-popover button {
+            background: #020617; border: 1px solid var(--border-color); color: #cbd5e1;
+            padding: 8px 10px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer;
+        }
+        .box-picker-popover button:hover { background: var(--accent-blue); color: #fff; }
+
+        .icon-picker { left: 270px; width: 260px; grid-template-columns: repeat(6, 1fr); gap: 6px; border-radius: 10px; padding: 10px; }
+        .icon-picker.open { display: grid; }
+        .icon-picker button {
+            background: #020617; border: 1px solid var(--border-color); color: #cbd5e1;
+            border-radius: 6px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .icon-picker button:hover { background: var(--accent-blue); color: #fff; }
+
+        .global-fx-picker { right: 0; width: 220px; flex-direction: column; gap: 6px; max-height: 320px; overflow-y: auto; }
+        .global-fx-picker.open { display: flex; }
+        .global-fx-picker button {
+            background: #020617; border: 1px solid var(--border-color); color: #cbd5e1;
+            padding: 8px 10px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; text-align: left;
+        }
+        .global-fx-picker button:hover, .global-fx-picker button.active { background: #9333ea; color: #fff; }
+
+        /* ELEMENTS PICKER (thư viện vật phẩm) */
+        .elements-picker {
+            position: fixed;
+            top: 118px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100000;
+            width: 320px;
+            max-height: 70vh;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .elements-picker.open { display: flex; }
+        .elements-search {
+            position: relative;
+        }
+        .elements-search input {
+            width: 100%;
+            background: #020617;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            padding: 8px 10px 8px 30px;
+            border-radius: 6px;
+            font-size: 12.5px;
+            outline: none;
+        }
+        .elements-search input:focus { border-color: var(--accent-purple); }
+        .elements-search i { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 12px; }
+        .elements-category { font-size: 10.5px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px; margin: 2px 0 -2px; }
+        .elements-grid-scroll { overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+        .elements-grid-scroll::-webkit-scrollbar { width: 5px; }
+        .elements-grid-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .elements-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+        .element-item {
+            position: relative;
+            background: #020617;
+            border: 1px solid #1e293b;
+            color: #cbd5e1;
+            border-radius: 8px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .element-item:hover { border-color: var(--accent-blue); color: #fff; }
+        .element-item.selected { background: rgba(139, 92, 246, 0.18); border-color: var(--accent-purple); color: #fff; }
+        .element-item.selected::after {
+            content: '\f00c';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: -5px; right: -5px;
+            width: 16px; height: 16px;
+            background: var(--accent-purple);
+            border: 2px solid var(--bg-card);
+            border-radius: 50%;
+            font-size: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+        }
+        .elements-empty { font-size: 12px; color: #64748b; text-align: center; padding: 14px 0; }
+        .elements-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid #1e293b; padding-top: 10px; }
+        .elements-footer span { font-size: 11px; color: #94a3b8; }
+        .elements-add-btn {
+            background: var(--accent-purple); color: #fff; border: none; padding: 8px 14px;
+            border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .elements-add-btn:hover { filter: brightness(1.1); }
+        .elements-add-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* DATABASE MULTI-TABLE UI */
+        .db-table-tab {
+            padding: 7px 12px;
+            background: #0f172a;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .db-table-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+        .db-table-tab .del-db-tab { font-size: 10px; opacity: 0.55; }
+        .db-table-tab .del-db-tab:hover { opacity: 1; color: #f87171; }
+        .db-add-table-btn {
+            padding: 7px 10px; background: transparent; border: 1px dashed #3b82f6; color: #3b82f6;
+            border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
+        }
+        .db-add-table-btn:hover { background: rgba(59,130,246,0.1); }
+
+        /* RENAME TAB */
+        .rename-input {
+            background: #020617; border: 1px solid var(--accent-purple); color: #fff; border-radius: 4px;
+            font-size: 12px; font-weight: 600; padding: 3px 6px; outline: none; width: 90px;
+        }
+
+        /* CANVAS FRAME */
+        .canvas-frame {
+            width: 100%;
+            flex: 1;
+            min-height: 500px;
+            background: #030712;
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1;
+            margin-top: 50px;
+            transition: background 0.3s;
+        }
+        #canvasElements { position: relative; width: 100%; height: 100%; z-index: 2; }
+        .fx-overlay-container { position: absolute; inset: 0; pointer-events: none; z-index: 500; overflow: hidden; }
+
+        [contenteditable="true"] { outline: none; }
+
+        /* EL WRAPPER & TOOLBAR */
+        .el-wrapper { position: absolute; cursor: default; user-select: none; z-index: 2; transition: transform 0.2s, color 0.2s, background-color 0.2s, box-shadow 0.2s; }
+        .el-wrapper.dragging { opacity: 0.85; }
+        .el-wrapper .el-toolbar {
+            position: absolute;
+            top: -46px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 6px;
+            background: #111827;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+            z-index: 999;
+            white-space: nowrap;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+            align-items: center;
+        }
+        .el-wrapper:hover .el-toolbar,
+        .el-wrapper.selected .el-toolbar { display: flex; }
+
+        .el-toolbar button, .el-toolbar label {
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            font-size: 13px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            padding: 0 6px;
+            transition: 0.15s;
+        }
+        .el-toolbar button:hover, .el-toolbar label:hover { background: #1f2937; color: #fff; }
+        .el-toolbar .drag-handle { cursor: move; color: #3b82f6; width: 24px; }
+        .el-toolbar .drag-handle:hover { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .el-toolbar .delete-btn:hover { background: rgba(239,68,68,0.2); color: #f87171; }
+
+        .color-picker-btn { position: relative; display: flex; align-items: center; justify-content: center; }
+        .color-picker-btn input[type="color"] { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+        .font-select, .size-select, .link-select {
+            background: #030712;
+            color: #f3f4f6;
+            border: 1px solid #374151;
+            border-radius: 5px;
+            padding: 2px 6px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+            height: 28px;
+        }
+        .link-select { color: #60a5fa; border-color: #3b82f6; font-weight: 600; }
+        .font-select option, .size-select option, .link-select option { background: #0f172a; color: #f8fafc; }
+
+        .el-wrapper.selected > :not(.el-toolbar) {
+            outline: 1.5px dashed rgba(59, 130, 246, 0.9);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        /* NÚT KÉO GIÃN KÍCH THƯỚC GÓC DƯỚI PHẢI */
+        .resize-handle-br {
+            position: absolute;
+            right: -6px;
+            bottom: -6px;
+            width: 12px;
+            height: 12px;
+            background: #3b82f6;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            cursor: se-resize;
+            display: none;
+            z-index: 100;
+        }
+        .el-wrapper.selected .resize-handle-br { display: block; }
+
+        .free-icon { font-size: 46px; color: var(--accent-blue); line-height: 1; display: block; }
+        .free-text {
+            font-size: 28px;
+            color: #ffffff;
+            min-width: 100px;
+            padding: 2px 4px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border: none !important;
+            outline: none !important;
+            font-family: 'Inter', sans-serif;
+            transition: filter 0.2s;
+            text-align: left;
+        }
+        .free-box { width: 180px; height: 120px; background-color: #1e293b; border: 2px solid #3b82f6; border-radius: 8px; }
+        
+        .free-overlay { 
+            width: 220px; 
+            height: 140px; 
+            background-color: rgba(59, 130, 246, 0.5); 
+            backdrop-filter: blur(4px); 
+            border: 1px dashed #60a5fa; 
+            border-radius: 8px; 
+            transition: background-color 0.2s;
+        }
+
+        .free-button-box { display: inline-flex; align-items: center; justify-content: center; padding: 10px 24px; background-color: var(--accent-purple); color: #ffffff; font-weight: 600; font-size: 15px; border-radius: 8px; cursor: pointer; border: none; text-align: center; }
+        .free-button-box[data-btn-kind="search"] { background-color: #0ea5e9; }
+        .free-button-box[data-btn-kind="add"] { background-color: #10b981; }
+
+        /* KHUNG NHẬP (INPUT) */
+        .free-input {
+            width: 220px; height: 44px; padding: 0 14px; font-size: 15px; color: var(--text-main);
+            background-color: #0f172a; border: 2px solid #3b82f6; border-radius: 8px; outline: none;
+        }
+        .free-input.variant-underline { background: transparent; border: none; border-bottom: 2px solid #3b82f6; border-radius: 0; }
+        .free-input.variant-pill { border-radius: 999px; }
+        .free-box.variant-outline { background-color: transparent; }
+        .free-box.variant-rounded { border-radius: 999px; }
+
+        /* NÚT LIÊN KẾT (LINK) TRÊN TOOLBAR PHẦN TỬ */
+        .link-btn { position: relative; }
+        .link-btn i { color: #f59e0b; }
+        .link-btn.linked i { color: #22c55e; }
+        .link-btn::after {
+            content: ''; position: absolute; bottom: 2px; right: 2px; width: 6px; height: 6px;
+            border-radius: 50%; background: #f59e0b; border: 1px solid #0f172a;
+        }
+        .link-btn.linked::after { background: #22c55e; }
+
+        /* MODAL LIÊN KẾT DỮ LIỆU (INPUT/NÚT <-> SLIDE/DATABASE) */
+        .link-modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(2,6,23,0.7);
+            z-index: 200; align-items: center; justify-content: center;
+        }
+        .link-modal-overlay.open { display: flex; }
+        .link-modal {
+            width: 380px; max-height: 70vh; background: var(--bg-panel); border: 1px solid var(--border-color);
+            border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+        }
+        .link-modal-header {
+            display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color); font-weight: 800; font-size: 14px;
+        }
+        .link-modal-header button { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; }
+        .link-modal-body { padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .link-modal-body .link-crumbs { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+        .link-option-btn {
+            display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+            background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
+            cursor: pointer; font-size: 13px; text-align: left;
+        }
+        .link-option-btn:hover { border-color: var(--accent-blue); background: #1e293b; }
+        .link-number-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+        .link-number-grid button {
+            padding: 8px 0; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-main); cursor: pointer; font-size: 13px;
+        }
+        .link-number-grid button:hover, .link-number-grid button.active { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
+        .link-modal-empty { font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px 0; }
+
+        /* TOAST THÔNG BÁO Ở CHẾ ĐỘ XEM TRƯỚC */
+        .app-toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: #0f172a; border: 1px solid #22c55e; color: #f8fafc; padding: 10px 18px;
+            border-radius: 8px; font-size: 13px; z-index: 999; opacity: 0; transition: 0.25s;
+            pointer-events: none;
+        }
+        .app-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* HÌNH ẢNH & BỘ LỌC */
+        .free-image-container { position: relative; display: inline-block; width: 220px; height: auto; }
+        .free-image-container img { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 6px; transition: filter 0.15s, transform 0.15s; }
+        .free-image-container video { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 6px; transition: filter 0.15s, transform 0.15s; background: #000; }
+        .free-image-container canvas.video-bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: none; border-radius: 6px; }
+        .free-image-container.bg-removed-active video { visibility: hidden; }
+        .free-image-container.bg-removed-active canvas.video-bg-canvas { display: block; }
+
+        /* MODAL XOÁ NỀN BẰNG CỌ */
+        .eraser-modal {
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 30000;
+            display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+        }
+        .eraser-modal.open { display: flex; }
+        .eraser-toolbar { display: flex; gap: 12px; background: #0f172a; padding: 10px 16px; border-radius: 8px; border: 1px solid #1e293b; margin-bottom: 12px; align-items: center; }
+        .eraser-canvas-container { border: 2px dashed #334155; border-radius: 8px; background: repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%) 50% / 20px 20px; max-width: 80vw; max-height: 70vh; overflow: auto; }
+        #eraserCanvas { cursor: crosshair; display: block; }
+
+        /* HIỆU ỨNG VẬT THỂ (đã tinh chỉnh cho mượt & chân thật hơn) */
+        .el-wrapper[class*="hover-"] { transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, filter 0.35s ease; }
+        .hover-scale:hover { transform: scale(1.08) !important; }
+        .hover-scale-down:hover { transform: scale(0.93) !important; }
+        .hover-rotate:hover { transform: rotate(6deg) scale(1.04) !important; }
+        .hover-bounce:hover { animation: bounceFx 0.55s cubic-bezier(0.28, 0.84, 0.42, 1) infinite alternate; }
+        .hover-glow:hover { box-shadow: 0 0 18px rgba(59,130,246,0.55), 0 0 42px rgba(168,85,247,0.45) !important; filter: drop-shadow(0 0 8px rgba(96,165,250,0.7)); }
+
+        @keyframes bounceFx { from { transform: translateY(0) scale(1); } to { transform: translateY(-9px) scale(1.02); } }
+
+        .entry-fade { animation: fadeIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .entry-slide { animation: slideUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .entry-zoom { animation: zoomIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .entry-pulse { animation: pulseFx 1.6s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+        @keyframes fadeIn { from { opacity: 0; filter: blur(2px); } to { opacity: 1; filter: blur(0); } }
+        @keyframes slideUp { 0% { opacity: 0; transform: translateY(34px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { 0% { opacity: 0; transform: scale(0.45); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes pulseFx { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.045); filter: brightness(1.12); } }
+
+        /* SIDEBAR PHẢI (LAYER MANAGEMENT) */
+        .sidebar-right {
+            width: 260px;
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border-color);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex-shrink: 0;
+            z-index: 5;
+        }
+        .layer-item {
+            padding: 9px 12px;
+            background: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 12.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        .layer-item.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+        .layer-item .layer-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .layer-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
+        .layer-item:hover .layer-actions { opacity: 1; }
+        .layer-btn { background: transparent; border: none; color: inherit; cursor: pointer; padding: 2px 4px; font-size: 11px; border-radius: 3px; }
+        .layer-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* MODAL PREVIEW */
+        .preview-modal {
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); z-index: 20000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .preview-modal.open { display: flex; }
+        .preview-header { position: absolute; top: 16px; right: 20px; z-index: 20001; }
+        .preview-stage {
+            width: 90vw; max-width: 1000px; height: 60vh; max-height: 600px;
+            background: #030712; background-size: cover; background-position: center; border: 1px solid var(--border-color);
+            border-radius: 12px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.8); overflow: hidden;
+        }
+
+        .clickable-link { cursor: pointer !important; transition: transform 0.15s, opacity 0.15s; }
+        .clickable-link:hover { opacity: 0.85; transform: scale(1.02); }
+
+        /* ANIMATION HIỆU ỨNG TRANG */
+        .particle { position: absolute; pointer-events: none; opacity: 0.9; will-change: transform, opacity; }
+        .particle-rain-drop {
+            position: absolute; pointer-events: none;
+            width: 2px; border-radius: 2px;
+            background: linear-gradient(to bottom, rgba(191,219,254,0) 0%, rgba(191,219,254,0.9) 60%, rgba(255,255,255,0.95) 100%);
+            filter: drop-shadow(0 0 2px rgba(147,197,253,0.6));
+        }
+        .spark-burst { position: absolute; pointer-events: none; border-radius: 50%; will-change: transform, opacity; }
+
+        @keyframes fallSway {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); }
+            50% { transform: translateY(250px) translateX(var(--sway, 15px)) rotate(180deg); }
+            100% { transform: translateY(560px) translateX(calc(var(--sway, 15px) * -1)) rotate(360deg); }
+        }
+        @keyframes floatUpSway {
+            0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 0.2; }
+            50% { transform: translateY(-250px) scale(1) rotate(15deg); opacity: 1; }
+            100% { transform: translateY(-520px) scale(1.2) rotate(-15deg); opacity: 0; }
+        }
+        @keyframes rainFast {
+            0% { transform: translateY(-10px) scaleY(0.6); opacity: 0; }
+            10% { opacity: 1; }
+            85% { opacity: 0.9; }
+            100% { transform: translateY(560px) scaleY(1.1); opacity: 0; }
+        }
+        @keyframes rainRipple {
+            0% { transform: scale(0); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+        @keyframes fireworkTrail {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-140px) scale(0.4); opacity: 0; }
+        }
+        @keyframes fireworkSpark {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(0.2); opacity: 0; }
+        }
+        @keyframes twinkleFloat {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-10px) scale(1) rotate(20deg); }
+            80% { opacity: 1; }
+            100% { transform: translateY(-60px) scale(0.7) rotate(80deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-nav">
+        <div class="brand"><i class="fa-solid fa-layer-group"></i> SLIVER <span>.STUDIO</span></div>
+        <div class="url-bar"><i class="fa-solid fa-lock"></i> https://sliver.app/editor/slide-to-web-studio</div>
+        <div class="nav-actions">
+            <button class="btn btn-view" onclick="openPreviewModal()"><i class="fa-solid fa-eye"></i> View Website</button>
+            <button class="btn btn-primary" onclick="alert('Đã lưu dự án thành công!')"><i class="fa-solid fa-paper-plane"></i> Publish Web</button>
+        </div>
+    </div>
+
+    <div class="builder-container" id="builderContainer">
+        
+        <!-- SIDEBAR TRÁI -->
+        <div class="sidebar-left">
+            
+            <!-- 0. CHỈNH NỀN SLIDE (MỚI) -->
+            <div class="section-group">
+                <div class="section-title"><i class="fa-solid fa-paint-roller"></i> Phủ Nền Slide</div>
+                <div class="grid-2">
+                    <label class="btn-sub color-picker-btn" style="color: #60a5fa;" title="Màu đơn / Solid color">
+                        <i class="fa-solid fa-palette"></i> Màu nền
+                        <input type="color" id="slideBgColorInput" value="#030712" onchange="setSlideBgColor(this.value)">
+                    </label>
+                    <button class="btn-sub" style="color: #c084fc;" onclick="triggerSlideBgUpload()"><i class="fa-solid fa-image"></i> Ảnh nền</button>
+                    <input type="file" id="slideBgFileInput" accept="image/*" style="display: none;" onchange="handleSlideBgFileSelect(event)">
+                </div>
+                <div class="grid-2">
+                    <button class="btn-sub" onclick="setSlideBgGradient('linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)')">🌌 Gradient 1</button>
+                    <button class="btn-sub" onclick="setSlideBgGradient('linear-gradient(135deg, #18181b 0%, #312e81 100%)')">🌆 Gradient 2</button>
+                </div>
+                <button class="btn-sub" style="color: #ef4444;" onclick="resetSlideBg()"><i class="fa-solid fa-rotate-left"></i> Reset Nền Mặc Định</button>
+            </div>
+
+            <!-- 1. KÍCH THƯỚC -->
+            <div class="section-group">
+                <div class="section-title"><i class="fa-solid fa-ruler-combined"></i> Kích Thước</div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Rộng</span><span class="slider-val" id="valWidth">0px</span></div>
+                    <input type="range" class="custom-range" id="inputWidth" min="50" max="800" value="220" oninput="updateImageSize()">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Cao</span><span class="slider-val" id="valHeight">0px</span></div>
+                    <input type="range" class="custom-range" id="inputHeight" min="50" max="600" value="160" oninput="updateImageSize()">
+                </div>
+                <div class="hint-text">Kéo góc dưới-phải của ảnh để tự do giãn kích thước</div>
+                <button class="btn-t1" onclick="cropImageFree()"><i class="fa-solid fa-crop-simple"></i> Cắt ảnh (crop tự do)</button>
+            </div>
+
+            <!-- 2. XOÁ NỀN -->
+            <div class="section-group">
+                <div class="section-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Xoá Nền</div>
+                <div class="slider-row">
+                    <div class="slider-header"><span style="color:#94a3b8">Xoá theo màu nền (tự động)</span></div>
+                    <div class="slider-header"><span>Độ nhạy màu</span><span class="slider-val" id="valBgSensitivity">40</span></div>
+                    <input type="range" class="custom-range" id="bgSensitivity" min="1" max="100" value="40">
+                </div>
+                <button class="btn-t1" onclick="triggerAutoBgT1()"><i class="fa-solid fa-sparkles"></i> Xoá nền tự động</button>
+
+                <div class="slider-row" style="margin-top: 4px;">
+                    <div class="slider-header"><span style="color:#94a3b8">Xoá nền bằng cọ (thủ công)</span></div>
+                    <div class="slider-header"><span>Kích thước cọ</span><span class="slider-val" id="valBrushSize">28</span></div>
+                    <input type="range" class="custom-range" id="brushSizeT1" min="5" max="80" value="28" oninput="syncBrushSize(this.value)">
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn-sub" style="color:#facc15;" onclick="triggerEraserMode('erase')"><i class="fa-solid fa-paint-brush"></i> Cọ xoá</button>
+                    <button class="btn-sub" style="color:#f59e0b;" onclick="triggerEraserMode('restore')"><i class="fa-solid fa-rotate-left"></i> Cọ khôi phục</button>
+                </div>
+                <div class="grid-2">
+                    <button class="btn-sub" style="background:#15803d; color:#fff;" onclick="saveEraserResult()"><i class="fa-solid fa-check"></i> Xong</button>
+                    <button class="btn-sub" style="background:#475569; color:#fff;" onclick="closeEraserModal()"><i class="fa-solid fa-xmark"></i> Huỷ</button>
+                </div>
+            </div>
+
+            <!-- 3. BỘ LỌC & BIẾN ĐỔI -->
+            <div class="section-group">
+                <div class="section-title"><i class="fa-solid fa-sliders"></i> Bộ Lọc & Biến Đổi</div>
+                
+                <div class="slider-row">
+                    <div class="slider-header"><span>Độ sáng</span><span class="slider-val" id="valBrightness">100%</span></div>
+                    <input type="range" class="custom-range" id="filterBrightness" min="0" max="200" value="100" oninput="applyFilters()">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Tương phản</span><span class="slider-val" id="valContrast">100%</span></div>
+                    <input type="range" class="custom-range" id="filterContrast" min="0" max="200" value="100" oninput="applyFilters()">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Bão hoà</span><span class="slider-val" id="valSaturate">100%</span></div>
+                    <input type="range" class="custom-range" id="filterSaturate" min="0" max="200" value="100" oninput="applyFilters()">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Độ mờ nét</span><span class="slider-val" id="valBlur">0px</span></div>
+                    <input type="range" class="custom-range" id="filterBlur" min="0" max="20" value="0" oninput="applyFilters()">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Độ trong suốt</span><span class="slider-val" id="valOpacity">100%</span></div>
+                    <input type="range" class="custom-range" id="filterOpacity" min="0" max="100" value="100" oninput="applyFilters()">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Xoay tự do</span><span class="slider-val" id="valRotate">0°</span></div>
+                    <input type="range" class="custom-range" id="filterRotate" min="0" max="360" value="0" oninput="applyFilters()">
+                </div>
+
+                <div class="grid-2">
+                    <button class="btn-sub" onclick="rotateSelected(-90)"><i class="fa-solid fa-rotate-left"></i> -90°</button>
+                    <button class="btn-sub" onclick="rotateSelected(90)"><i class="fa-solid fa-rotate-right"></i> +90°</button>
+                </div>
+                <div class="grid-2">
+                    <button class="btn-sub" onclick="flipSelected('h')"><i class="fa-solid fa-arrows-left-right"></i> Lật ngang</button>
+                    <button class="btn-sub" onclick="flipSelected('v')"><i class="fa-solid fa-arrows-up-down"></i> Lật dọc</button>
+                </div>
+                <div class="grid-2">
+                    <button class="btn-sub" style="color:#60a5fa;" onclick="addTextElement()"><i class="fa-solid fa-font"></i> Thêm chữ</button>
+                    <button class="btn-sub" style="color:#22c55e;" onclick="resetFilters()"><i class="fa-solid fa-arrow-rotate-left"></i> Reset lọc</button>
+                </div>
+            </div>
+
+            <!-- 4. TÙY CHỈNH VĂN BẢN NÂNG CAO (MỚI) -->
+            <div class="section-group">
+                <div class="section-title"><i class="fa-solid fa-heading"></i> Chỉnh Định Dạng Văn Bản</div>
+                <div class="grid-3">
+                    <button class="btn-sub" title="Căn trái" onclick="setTextAlign('left')"><i class="fa-solid fa-align-left"></i></button>
+                    <button class="btn-sub" title="Căn giữa" onclick="setTextAlign('center')"><i class="fa-solid fa-align-center"></i></button>
+                    <button class="btn-sub" title="Căn phải" onclick="setTextAlign('right')"><i class="fa-solid fa-align-right"></i></button>
+                </div>
+                <div class="grid-3">
+                    <button class="btn-sub" id="btnFormatBold" title="In đậm" onclick="toggleTextFormat('bold')"><i class="fa-solid fa-bold"></i></button>
+                    <button class="btn-sub" id="btnFormatItalic" title="In nghiêng" onclick="toggleTextFormat('italic')"><i class="fa-solid fa-italic"></i></button>
+                    <button class="btn-sub" id="btnFormatUnderline" title="Gạch chân" onclick="toggleTextFormat('underline')"><i class="fa-solid fa-underline"></i></button>
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Khoảng cách chữ (Tracking)</span><span class="slider-val" id="valLetterSpacing">0px</span></div>
+                    <input type="range" class="custom-range" id="inputLetterSpacing" min="-2" max="15" value="0" oninput="changeLetterSpacing(this.value)">
+                </div>
+                <div class="slider-row">
+                    <div class="slider-header"><span>Chiều cao dòng (Line height)</span><span class="slider-val" id="valLineHeight">1.2</span></div>
+                    <input type="range" class="custom-range" id="inputLineHeight" min="0.8" max="3" step="0.1" value="1.2" oninput="changeLineHeight(this.value)">
+                </div>
+            </div>
+
+            <!-- 5. FONT CHỮ -->
+            <div class="section-group">
+                <div class="section-title"><i class="fa-solid fa-font"></i> Font Chữ Đẹp</div>
+                <div class="font-scroll-list">
+                    <div class="font-item" onclick="applyFontToSelected('Montserrat')">
+                        <div class="font-name">Montserrat</div>
+                        <div class="font-preview" style="font-family: 'Montserrat';">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Playfair Display')">
+                        <div class="font-name">Playfair Display</div>
+                        <div class="font-preview" style="font-family: 'Playfair Display';">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Poppins')">
+                        <div class="font-name">Poppins</div>
+                        <div class="font-preview" style="font-family: 'Inter'; font-weight:700;">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Roboto')">
+                        <div class="font-name">Roboto</div>
+                        <div class="font-preview" style="font-family: 'Roboto';">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Dancing Script')">
+                        <div class="font-name">Dancing Script</div>
+                        <div class="font-preview" style="font-family: 'Dancing Script';">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Pacifico')">
+                        <div class="font-name">Pacifico</div>
+                        <div class="font-preview" style="font-family: 'Pacifico';">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Inter')">
+                        <div class="font-name">Inter</div>
+                        <div class="font-preview" style="font-family: 'Inter';">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Arial')">
+                        <div class="font-name">Arial Standard</div>
+                        <div class="font-preview" style="font-family: sans-serif;">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Courier New')">
+                        <div class="font-name">Courier New</div>
+                        <div class="font-preview" style="font-family: monospace;">Aa Bb Việt Nam 123</div>
+                    </div>
+                    <div class="font-item" onclick="applyFontToSelected('Georgia')">
+                        <div class="font-name">Georgia Serif</div>
+                        <div class="font-preview" style="font-family: serif;">Aa Bb Việt Nam 123</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. HIỆU ỨNG TRANG -->
+            <div class="section-group" style="border-bottom:none;">
+                <div class="section-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:#c084fc;"></i> Hiệu Ứng Trang</div>
+                <button class="btn-t1" style="border-color:#a855f7; color:#d8b4fe;" onclick="toggleGlobalFxPicker(event)"><i class="fa-solid fa-sparkles"></i> Mở Menu Hiệu Ứng Trang</button>
+            </div>
+
+        </div>
+
+        <!-- CANVAS AREA -->
+        <div class="canvas-area">
+            <div class="slide-bar" id="slideBar"></div>
+
+            <!-- THANH CÔNG CỤ NỔI KÉO THẢ -->
+            <div class="add-toolbar" id="draggableToolbar">
+                <div class="drag-toolbar-handle" id="toolbarDragHandle" title="Nhấn giữ để kéo di chuyển thanh công cụ">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                </div>
+
+                <button class="tool-btn" onclick="addTextElement()"><i class="fa-solid fa-font"></i> Thêm văn bản</button>
+                <button class="tool-btn" id="boxToolBtn" onclick="toggleBoxPicker(event)"><i class="fa-solid fa-vector-square"></i> Thêm Khung / Nút <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i></button>
+                
+                <div class="box-picker-popover" id="boxPicker">
+                    <div class="box-picker-parent" id="parentNormal" onmouseenter="showBoxFlyout('flyoutNormal')" onclick="showBoxFlyout('flyoutNormal', event)">
+                        <span><i class="fa-solid fa-square"></i> Khung Thường</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <div class="box-flyout" id="flyoutNormal">
+                            <div class="flyout-section-title">1. Khung thường (các kiểu khung)</div>
+                            <button onclick="addBoxElement('normal','solid')"><i class="fa-solid fa-square"></i> Khung Trơn</button>
+                            <button onclick="addBoxElement('normal','outline')"><i class="fa-regular fa-square"></i> Khung Viền</button>
+                            <button onclick="addBoxElement('normal','rounded')"><i class="fa-solid fa-circle"></i> Khung Bo Tròn</button>
+                            <div class="flyout-section-title">2. Khung nhập (có thể gõ chữ)</div>
+                            <button onclick="addInputElement('basic')"><i class="fa-solid fa-i-cursor"></i> Ô Nhập Cơ Bản</button>
+                            <button onclick="addInputElement('underline')"><i class="fa-solid fa-underline"></i> Ô Nhập Gạch Chân</button>
+                            <button onclick="addInputElement('pill')"><i class="fa-solid fa-circle-dot"></i> Ô Nhập Bo Tròn</button>
+                        </div>
+                    </div>
+                    <div class="box-picker-parent" id="parentButton" onmouseenter="showBoxFlyout('flyoutButton')" onclick="showBoxFlyout('flyoutButton', event)">
+                        <span><i class="fa-solid fa-toggle-on"></i> Khung Nút Bấm</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <div class="box-flyout" id="flyoutButton">
+                            <button onclick="addButtonElement('submit')"><i class="fa-solid fa-paper-plane"></i> Nút Nhập</button>
+                            <button onclick="addButtonElement('search')"><i class="fa-solid fa-magnifying-glass"></i> Nút Tìm Kiếm</button>
+                            <button onclick="addButtonElement('add')"><i class="fa-solid fa-plus"></i> Nút Thêm</button>
+                        </div>
+                    </div>
+                    <button onclick="addBoxElement('overlay')"><i class="fa-solid fa-clone"></i> Khung Lớp Phủ (Mờ)</button>
+                </div>
+
+                <!-- MODAL LIÊN KẾT INPUT/NÚT TỚI DATABASE HOẶC SLIDE -->
+                <div class="link-modal-overlay" id="linkModalOverlay" onclick="if(event.target===this) closeLinkModal()">
+                    <div class="link-modal">
+                        <div class="link-modal-header">
+                            <span id="linkModalTitle">🔗 Liên kết dữ liệu</span>
+                            <button onclick="closeLinkModal()"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <div class="link-modal-body" id="linkModalBody"></div>
+                    </div>
+                </div>
+                <div id="appToast" class="app-toast"></div>
+
+                <button class="tool-btn" onclick="triggerImageUpload()"><i class="fa-solid fa-image"></i> Thêm Hình Ảnh</button>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageFileSelect(event)">
+
+                <button class="tool-btn" onclick="triggerVideoUpload()"><i class="fa-solid fa-video"></i> Thêm Video</button>
+                <input type="file" id="videoInput" accept="video/*" style="display: none;" onchange="handleVideoFileSelect(event)">
+
+                <button class="tool-btn" id="iconToolBtn" onclick="toggleIconPicker(event)"><i class="fa-solid fa-icons"></i> Thêm icon</button>
+                <div class="icon-picker" id="iconPicker"></div>
+
+                <button class="tool-btn" id="elementsToolBtn" onclick="toggleElementsPicker(event)"><i class="fa-solid fa-shapes"></i> Elements</button>
+                <div class="elements-picker" id="elementsPicker">
+                    <div class="elements-search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="elementsSearchInput" placeholder="Tìm kiếm vật phẩm bất kỳ..." oninput="renderElementsGrid(this.value)">
+                    </div>
+                    <div class="elements-grid-scroll" id="elementsGridScroll"></div>
+                    <div class="elements-footer">
+                        <span id="elementsSelectedCount">Đã chọn: 0</span>
+                        <button class="elements-add-btn" id="elementsAddBtn" onclick="addSelectedElementsToCanvas()" disabled><i class="fa-solid fa-plus"></i> Thêm vào Canvas</button>
+                    </div>
+                </div>
+
+                <select class="main-fx-select" id="mainHoverFxSelect" title="⚡ Hiệu ứng Hover vật thể đang chọn" onchange="applySelectedObjectHoverFx(this.value)">
+                    <option value="">⚡ Hover FX...</option>
+                    <option value="hover-scale">Phóng to (Scale Up)</option>
+                    <option value="hover-scale-down">Thu nhỏ (Scale Down)</option>
+                    <option value="hover-rotate">Xoay nhẹ (Rotate)</option>
+                    <option value="hover-bounce">Nảy (Bounce)</option>
+                    <option value="hover-glow">Phát sáng (Glow)</option>
+                </select>
+
+                <select class="main-fx-select" id="mainEntryFxSelect" title="✨ Hiệu ứng xuất hiện vật thể đang chọn" onchange="applySelectedObjectEntryFx(this.value)">
+                    <option value="">✨ Entry FX...</option>
+                    <option value="entry-fade">Fade In</option>
+                    <option value="entry-slide">Slide Up</option>
+                    <option value="entry-zoom">Zoom In</option>
+                    <option value="entry-pulse">Nhịp đập (Pulse)</option>
+                </select>
+
+                <button class="tool-btn fx-btn" id="globalFxBtn" onclick="toggleGlobalFxPicker(event)"><i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Hiệu ứng trang <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i></button>
+                <div class="global-fx-picker" id="globalFxPicker">
+                    <button onclick="applyGlobalFx('none')">🚫 Không hiệu ứng</button>
+                    <button onclick="applyGlobalFx('snow')">❄️ 1. Tuyết rơi (Snow)</button>
+                    <button onclick="applyGlobalFx('sakura')">🌸 2. Hoa đào rơi (Sakura)</button>
+                    <button onclick="applyGlobalFx('sparkles')">✨ 3. Mưa sao tinh tú</button>
+                    <button onclick="applyGlobalFx('fireworks')">🎆 4. Pháo hoa rực rỡ</button>
+                    <button onclick="applyGlobalFx('rain')">🌧️ 5. Mưa rào lãng mạn</button>
+                    <button onclick="applyGlobalFx('balloons')">🎈 6. Bóng bay sự kiện</button>
+                    <button onclick="applyGlobalFx('hearts')">💖 7. Trái tim yêu thương</button>
+                    <button onclick="applyGlobalFx('leaves')">🍂 8. Lá thu rơi</button>
+                    <button onclick="applyGlobalFx('matrix')">🌌 9. Vũ trụ ngân hà</button>
+                    <button onclick="applyGlobalFx('bubbles')">🫧 10. Bọt khí biển khơi</button>
+                </div>
+            </div>
+
+            <!-- CANVAS FRAME -->
+            <div class="canvas-frame" id="canvasFrame">
+                <div class="fx-overlay-container" id="fxOverlay"></div>
+                <div id="canvasElements"></div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR PHẢI -->
+        <div class="sidebar-right">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Canvas Layers</div>
+            <div id="layersList"></div>
+            <div class="hint-text" style="margin-top: 10px;">
+                💡 <b>Mẹo Phím Tắt:</b><br>
+                - <b>Delete/Backspace:</b> Xóa chọn<br>
+                - <b>Ctrl + D:</b> Nhân bản vật thể<br>
+                - <b>Ctrl + Z:</b> Hoàn tác xóa<br>
+                - <b>Mũi tên:</b> Nhích vị trí (+Shift = 10px)
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PREVIEW -->
+    <div class="preview-modal" id="previewModal">
+        <div class="preview-header">
+            <button class="btn btn-ghost" style="color: #fff; background: rgba(255,255,255,0.1);" onclick="closePreviewModal()"><i class="fa-solid fa-xmark"></i> Thoát Chế Độ View</button>
+        </div>
+        <div class="preview-stage" id="previewStage"></div>
+    </div>
+
+    <!-- MODAL XOÁ NỀN BẰNG CỌ -->
+    <div class="eraser-modal" id="eraserModal">
+        <div class="eraser-toolbar">
+            <button class="btn btn-ghost" id="eraserModeBtn" onclick="setEraserMode('erase')"><i class="fa-solid fa-eraser"></i> Cọ Xoá</button>
+            <button class="btn btn-ghost" id="restoreModeBtn" onclick="setEraserMode('restore')"><i class="fa-solid fa-rotate-left"></i> Khôi Phục</button>
+            <span style="font-size: 12px; color: #94a3b8;">Kích thước cọ:</span>
+            <input type="range" id="brushSize" min="5" max="80" value="28" style="cursor: pointer;" oninput="syncBrushSize(this.value)">
+            <button class="btn btn-primary" onclick="saveEraserResult()"><i class="fa-solid fa-check"></i> Lưu Ảnh</button>
+            <button class="btn btn-ghost" onclick="closeEraserModal()"><i class="fa-solid fa-xmark"></i> Hủy</button>
+        </div>
+        <div class="eraser-canvas-container">
+            <canvas id="eraserCanvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const availableIcons = ['fa-heart', 'fa-star', 'fa-check', 'fa-house', 'fa-user', 'fa-gear', 'fa-envelope', 'fa-bell', 'fa-camera', 'fa-image', 'fa-music', 'fa-location-dot', 'fa-thumbs-up', 'fa-fire', 'fa-lightbulb', 'fa-bookmark', 'fa-cloud', 'fa-paper-plane'];
+
+        /* THƯ VIỆN ELEMENTS (có thể tìm kiếm & chọn nhiều vật phẩm bất kỳ) */
+        const elementLibrary = [
+            { cat: 'Hình khối', icon: 'fa-square', tags: 'vuong square khoi' },
+            { cat: 'Hình khối', icon: 'fa-circle', tags: 'tron circle khoi' },
+            { cat: 'Hình khối', icon: 'fa-play', tags: 'tam giac triangle' },
+            { cat: 'Hình khối', icon: 'fa-diamond', tags: 'kim cuong diamond' },
+            { cat: 'Hình khối', icon: 'fa-hexagon', tags: 'luc giac hexagon' },
+            { cat: 'Hình khối', icon: 'fa-star-of-life', tags: 'ngoi sao khoi' },
+            { cat: 'Mũi tên', icon: 'fa-arrow-right', tags: 'mui ten phai arrow' },
+            { cat: 'Mũi tên', icon: 'fa-arrow-left', tags: 'mui ten trai arrow' },
+            { cat: 'Mũi tên', icon: 'fa-arrow-up', tags: 'mui ten len arrow' },
+            { cat: 'Mũi tên', icon: 'fa-arrow-down', tags: 'mui ten xuong arrow' },
+            { cat: 'Mũi tên', icon: 'fa-arrows-rotate', tags: 'xoay quay refresh' },
+            { cat: 'Mũi tên', icon: 'fa-arrow-right-long', tags: 'mui ten dai arrow' },
+            { cat: 'Trang trí', icon: 'fa-star', tags: 'ngoi sao star' },
+            { cat: 'Trang trí', icon: 'fa-heart', tags: 'trai tim yeu thuong heart' },
+            { cat: 'Trang trí', icon: 'fa-crown', tags: 'vuong mien crown' },
+            { cat: 'Trang trí', icon: 'fa-gem', tags: 'ngoc gem kim cuong' },
+            { cat: 'Trang trí', icon: 'fa-fire', tags: 'lua fire hot' },
+            { cat: 'Trang trí', icon: 'fa-bolt', tags: 'sam set bolt' },
+            { cat: 'Trang trí', icon: 'fa-sun', tags: 'mat troi sun' },
+            { cat: 'Trang trí', icon: 'fa-moon', tags: 'mat trang moon' },
+            { cat: 'Trang trí', icon: 'fa-snowflake', tags: 'tuyet snow' },
+            { cat: 'Trang trí', icon: 'fa-leaf', tags: 'la cay leaf' },
+            { cat: 'Trang trí', icon: 'fa-gift', tags: 'qua tang gift' },
+            { cat: 'Trang trí', icon: 'fa-ribbon', tags: 'ruy bang ribbon' },
+            { cat: 'Mạng xã hội', icon: 'fa-facebook', style: 'fa-brands', tags: 'facebook social' },
+            { cat: 'Mạng xã hội', icon: 'fa-instagram', style: 'fa-brands', tags: 'instagram social' },
+            { cat: 'Mạng xã hội', icon: 'fa-tiktok', style: 'fa-brands', tags: 'tiktok social' },
+            { cat: 'Mạng xã hội', icon: 'fa-youtube', style: 'fa-brands', tags: 'youtube social' },
+            { cat: 'Mạng xã hội', icon: 'fa-x-twitter', style: 'fa-brands', tags: 'twitter x social' },
+            { cat: 'Mạng xã hội', icon: 'fa-linkedin', style: 'fa-brands', tags: 'linkedin social' },
+            { cat: 'Kinh doanh', icon: 'fa-briefcase', tags: 'cong viec business briefcase' },
+            { cat: 'Kinh doanh', icon: 'fa-chart-line', tags: 'bieu do chart thong ke' },
+            { cat: 'Kinh doanh', icon: 'fa-chart-pie', tags: 'bieu do tron pie chart' },
+            { cat: 'Kinh doanh', icon: 'fa-coins', tags: 'tien coin xu' },
+            { cat: 'Kinh doanh', icon: 'fa-handshake', tags: 'bat tay hop tac' },
+            { cat: 'Kinh doanh', icon: 'fa-rocket', tags: 'ten lua rocket startup' },
+            { cat: 'Kinh doanh', icon: 'fa-bullseye', tags: 'muc tieu target' },
+            { cat: 'Kinh doanh', icon: 'fa-trophy', tags: 'cup trophy thanh tich' },
+        ];
+        let selectedElementIcons = [];
+
+        function toggleElementsPicker(e) {
+            if (e) e.stopPropagation();
+            const picker = document.getElementById('elementsPicker');
+            const isOpen = picker.classList.contains('open');
+            document.getElementById('boxPicker').classList.remove('open');
+            document.getElementById('iconPicker').classList.remove('open');
+            document.getElementById('globalFxPicker').classList.remove('open');
+            if (isOpen) {
+                picker.classList.remove('open');
+                return;
+            }
+            const btn = document.getElementById('elementsToolBtn');
+            const rect = btn.getBoundingClientRect();
+            let left = rect.left;
+            if (left + 320 > window.innerWidth - 10) left = window.innerWidth - 330;
+            picker.style.left = left + 'px';
+            picker.style.top = (rect.bottom + 8) + 'px';
+            picker.classList.add('open');
+            if (!document.getElementById('elementsSearchInput').value) renderElementsGrid('');
+            document.getElementById('elementsSearchInput').focus();
+        }
+
+        function renderElementsGrid(filterText = '') {
+            const scrollBox = document.getElementById('elementsGridScroll');
+            const q = filterText.trim().toLowerCase();
+            const filtered = elementLibrary.filter(el => !q || el.tags.includes(q) || el.icon.includes(q));
+
+            if (filtered.length === 0) {
+                scrollBox.innerHTML = `<div class="elements-empty"><i class="fa-solid fa-magnifying-glass" style="margin-bottom:6px;display:block;font-size:18px;"></i>Không tìm thấy vật phẩm nào phù hợp.</div>`;
+                return;
+            }
+
+            const categories = [...new Set(filtered.map(el => el.cat))];
+            scrollBox.innerHTML = categories.map(cat => `
+                <div>
+                    <div class="elements-category">${cat}</div>
+                    <div class="elements-grid">
+                        ${filtered.filter(el => el.cat === cat).map(el => `
+                            <div class="element-item ${selectedElementIcons.includes(el.icon) ? 'selected' : ''}"
+                                 title="${el.icon.replace('fa-', '').replace(/-/g, ' ')}"
+                                 onclick="toggleElementSelect('${el.icon}')">
+                                <i class="${el.style || 'fa-solid'} ${el.icon}"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleElementSelect(icon) {
+            const idx = selectedElementIcons.indexOf(icon);
+            if (idx === -1) selectedElementIcons.push(icon);
+            else selectedElementIcons.splice(idx, 1);
+
+            renderElementsGrid(document.getElementById('elementsSearchInput').value);
+            document.getElementById('elementsSelectedCount').innerText = `Đã chọn: ${selectedElementIcons.length}`;
+            document.getElementById('elementsAddBtn').disabled = selectedElementIcons.length === 0;
+        }
+
+        function addSelectedElementsToCanvas() {
+            if (selectedElementIcons.length === 0) return;
+            selectedElementIcons.forEach((icon, index) => {
+                const libItem = elementLibrary.find(el => el.icon === icon);
+                addLibraryElement(icon, libItem && libItem.style ? libItem.style : 'fa-solid', index);
+            });
+            selectedElementIcons = [];
+            document.getElementById('elementsSelectedCount').innerText = 'Đã chọn: 0';
+            document.getElementById('elementsAddBtn').disabled = true;
+            renderElementsGrid(document.getElementById('elementsSearchInput').value);
+            document.getElementById('elementsPicker').classList.remove('open');
+        }
+
+        function addLibraryElement(iconName, iconStyle, offsetIndex = 0) {
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const iconHTML = `<i class="${iconStyle} ${iconName} free-icon"></i>`;
+            const left = 130 + (offsetIndex % 6) * 40;
+            const top = 130 + Math.floor(offsetIndex / 6) * 40;
+            const wrapper = buildWrapper(id, 'icon', iconHTML, left, top);
+            container.appendChild(wrapper);
+            addLayer(id, `Element (${iconName.replace('fa-', '')})`, 'fa-shapes');
+            selectLayerById(id);
+        }
+
+        let items = [
+            { id: 'slide-1', title: 'Slide 1', type: 'slide', elements: '', layers: [], globalFx: 'none', background: '#030712' },
+            { id: 'slide-2', title: 'Slide 2', type: 'slide', elements: '', layers: [], globalFx: 'none', background: '#030712' }
+        ];
+        let currentItemId = 'slide-1';
+        let layerCounter = 0;
+        let selectedId = null;
+        let activeLayers = [];
+        let activeGlobalFxTimer = null;
+
+        let filterStates = {};
+        let deletedHistoryStack = []; // Lịch sử xóa dùng cho Ctrl + Z
+
+        let currentEditingImgId = null;
+        let eraserCanvas = document.getElementById('eraserCanvas');
+        let eraserCtx = eraserCanvas.getContext('2d');
+        let originalImgData = null;
+        let isDrawing = false;
+        let eraserToolMode = 'erase';
+
+        function genId() {
+            layerCounter += 1;
+            return 'el-' + Date.now() + '-' + layerCounter;
+        }
+
+        function initIconPicker() {
+            const picker = document.getElementById('iconPicker');
+            picker.innerHTML = availableIcons.map(icon => 
+                `<button onclick="addIconElement('${icon}')"><i class="fa-solid ${icon}"></i></button>`
+            ).join('');
+        }
+
+        function initDraggableToolbar() {
+            const toolbar = document.getElementById('draggableToolbar');
+            const handle = document.getElementById('toolbarDragHandle');
+            let isDragging = false;
+            let offsetX = 0, offsetY = 0;
+
+            handle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                const rect = toolbar.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                toolbar.style.transform = 'none';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                let left = e.clientX - offsetX;
+                let top = e.clientY - offsetY;
+
+                left = Math.max(10, Math.min(left, window.innerWidth - toolbar.offsetWidth - 10));
+                top = Math.max(10, Math.min(top, window.innerHeight - toolbar.offsetHeight - 10));
+
+                toolbar.style.left = left + 'px';
+                toolbar.style.top = top + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.userSelect = '';
+                }
+            });
+        }
+
+        function initPasteImageListener() {
+            window.addEventListener('paste', (e) => {
+                const itemsList = (e.clipboardData || e.originalEvent.clipboardData).items;
+                for (let index in itemsList) {
+                    const item = itemsList[index];
+                    if (item.kind === 'file' && item.type.indexOf('image') !== -1) {
+                        const blob = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            addImageElement(event.target.result);
+                        };
+                        reader.readAsDataURL(blob);
+                    }
+                }
+            });
+        }
+
+        /* KHỞI TẠO HỆ THỐNG PHÍM TẮT MỚI */
+        function initKeyboardShortcuts() {
+            window.addEventListener('keydown', (e) => {
+                const isEditingText = document.activeElement && document.activeElement.getAttribute('contenteditable') === 'true';
+                if (isEditingText) return; // Nếu đang nhập chữ thì không trigger phím tắt canvas
+
+                // Phím Xóa phần tử
+                if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
+                    e.preventDefault();
+                    removeElement(selectedId);
+                }
+
+                // Ctrl + D: Nhân bản vật thể đang chọn
+                if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
+                    e.preventDefault();
+                    duplicateSelectedElement();
+                }
+
+                // Ctrl + Z: Hoàn tác phần tử đã bị xóa
+                if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
+                    e.preventDefault();
+                    undoDeleteElement();
+                }
+
+                // Các phím Mũi tên: Di chuyển vật thể
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && selectedId) {
+                    e.preventDefault();
+                    const step = e.shiftKey ? 10 : 1;
+                    const wrapper = document.getElementById(selectedId);
+                    if (!wrapper) return;
+
+                    let left = parseFloat(wrapper.style.left) || 0;
+                    let top = parseFloat(wrapper.style.top) || 0;
+
+                    if (e.key === 'ArrowLeft') left -= step;
+                    if (e.key === 'ArrowRight') left += step;
+                    if (e.key === 'ArrowUp') top -= step;
+                    if (e.key === 'ArrowDown') top += step;
+
+                    wrapper.style.left = left + 'px';
+                    wrapper.style.top = top + 'px';
+                }
+            });
+        }
+
+        function triggerImageUpload() {
+            document.getElementById('imageInput').click();
+        }
+
+        function handleImageFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    addImageElement(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addImageElement(src) {
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const imgHTML = `<div class="free-image-container" id="container-${id}"><img src="${src}" id="img-target-${id}" alt="uploaded-img" /></div>`;
+            const wrapper = buildWrapper(id, 'image', imgHTML, 60, 60);
+            container.appendChild(wrapper);
+            addLayer(id, 'Hình Ảnh', 'fa-image');
+            selectLayerById(id);
+        }
+
+        function triggerVideoUpload() {
+            document.getElementById('videoInput').click();
+        }
+
+        function handleVideoFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const url = URL.createObjectURL(file);
+                addVideoElement(url);
+            }
+        }
+
+        function addVideoElement(src) {
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const vidHTML = `<div class="free-image-container" id="container-${id}">
+                <video src="${src}" id="vid-target-${id}" autoplay muted loop playsinline></video>
+                <canvas class="video-bg-canvas" id="vidcanvas-target-${id}"></canvas>
+            </div>`;
+            const wrapper = buildWrapper(id, 'video', vidHTML, 60, 60);
+            container.appendChild(wrapper);
+            addLayer(id, 'Video', 'fa-video');
+            selectLayerById(id);
+        }
+
+        function toggleVideoPlay(id) {
+            const vid = document.getElementById(`vid-target-${id}`);
+            const icon = document.getElementById(`playIcon-${id}`);
+            if (!vid) return;
+            if (vid.paused) {
+                vid.play();
+                if (icon) icon.className = 'fa-solid fa-pause';
+            } else {
+                vid.pause();
+                if (icon) icon.className = 'fa-solid fa-play';
+            }
+        }
+
+        function toggleVideoMute(id) {
+            const vid = document.getElementById(`vid-target-${id}`);
+            const icon = document.getElementById(`muteIcon-${id}`);
+            if (!vid) return;
+            vid.muted = !vid.muted;
+            if (icon) icon.className = vid.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+        }
+
+        const videoBgLoops = {};
+
+        function toggleVideoBgRemoval(id) {
+            const container = document.getElementById(`container-${id}`);
+            const vid = document.getElementById(`vid-target-${id}`);
+            const canvas = document.getElementById(`vidcanvas-target-${id}`);
+            const icon = document.getElementById(`bgIcon-${id}`);
+            if (!container || !vid || !canvas) return;
+
+            if (videoBgLoops[id]) {
+                cancelAnimationFrame(videoBgLoops[id]);
+                delete videoBgLoops[id];
+                container.classList.remove('bg-removed-active');
+                if (icon) icon.style.color = '#a855f7';
+                return;
+            }
+
+            container.classList.add('bg-removed-active');
+            if (icon) icon.style.color = '#22c55e';
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            function renderFrame() {
+                const w = vid.videoWidth, h = vid.videoHeight;
+                if (w && h) {
+                    if (canvas.width !== w || canvas.height !== h) {
+                        canvas.width = w;
+                        canvas.height = h;
+                    }
+                    const sensitivitySlider = document.getElementById('bgSensitivity');
+                    const sensitivity = sensitivitySlider ? (parseInt(sensitivitySlider.value) || 40) : 40;
+                    const threshold = 255 - (sensitivity * 1.5);
+
+                    ctx.drawImage(vid, 0, 0, w, h);
+                    const frame = ctx.getImageData(0, 0, w, h);
+                    const data = frame.data;
+                    for (let i = 0; i < data.length; i += 4) {
+                        if (data[i] > threshold && data[i + 1] > threshold && data[i + 2] > threshold) {
+                            data[i + 3] = 0;
+                        }
+                    }
+                    ctx.putImageData(frame, 0, 0);
+                }
+                videoBgLoops[id] = requestAnimationFrame(renderFrame);
+            }
+            renderFrame();
+        }
+
+        function buildWrapper(id, type, innerHTML, left, top) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'el-wrapper';
+            wrapper.id = id;
+            wrapper.dataset.type = type;
+            wrapper.dataset.targetHref = "";
+            wrapper.dataset.hoverFx = "";
+            wrapper.dataset.entryFx = "";
+            wrapper.dataset.originalColor = "";
+            wrapper.dataset.hoverColor = "";
+            wrapper.dataset.linkMode = "";
+            wrapper.dataset.linkDbPage = "";
+            wrapper.dataset.linkTable = "";
+            wrapper.dataset.linkCol = "";
+            wrapper.dataset.linkSlide = "";
+            wrapper.dataset.linkNumber = "";
+            wrapper.dataset.recordId = "rec_" + id;
+            wrapper.style.left = left + 'px';
+            wrapper.style.top = top + 'px';
+            wrapper.style.zIndex = '2';
+
+            filterStates[id] = {
+                brightness: 100, contrast: 100, saturate: 100, blur: 0, opacity: 100, rotate: 0, flipH: 1, flipV: 1
+            };
+
+            const optionsHTML = items.map(s => `<option value="${s.id}">${s.title}</option>`).join('');
+
+            const imageTools = type === 'image' ? `
+                <button title="⚡ Xoá nền Tự động" onclick="autoRemoveBg('${id}')"><i class="fa-solid fa-wand-magic-sparkles" style="color:#a855f7;"></i></button>
+                <button title="🖌️ Xoá nền bằng Cọ thủ công" onclick="openEraserModal('${id}')"><i class="fa-solid fa-eraser" style="color:#60a5fa;"></i></button>
+            ` : '';
+
+            const videoTools = type === 'video' ? `
+                <button title="▶️ / ⏸️ Phát - Tạm dừng video" onclick="toggleVideoPlay('${id}')"><i class="fa-solid fa-play" id="playIcon-${id}"></i></button>
+                <button title="🔇 / 🔊 Tắt - Bật tiếng video" onclick="toggleVideoMute('${id}')"><i class="fa-solid fa-volume-xmark" id="muteIcon-${id}"></i></button>
+                <button title="🪄 Xoá nền nhân vật Video (bật/tắt)" onclick="toggleVideoBgRemoval('${id}')"><i class="fa-solid fa-wand-magic-sparkles" style="color:#a855f7;" id="bgIcon-${id}"></i></button>
+            ` : '';
+
+            const linkDataTool = (type === 'input' || type === 'button') ? `
+                <button class="link-btn" id="linkBtn-${id}" title="🔗 Liên kết tới Database hoặc Slide" onclick="openLinkModal('${id}')"><i class="fa-solid fa-link"></i></button>
+            ` : '';
+
+            const toolbarHTML = `
+                <div class="el-toolbar">
+                    <button class="drag-handle" title="Kéo di chuyển"><i class="fa-solid fa-up-down-left-right"></i></button>
+                    ${imageTools}
+                    ${videoTools}
+                    ${linkDataTool}
+                    <label class="color-picker-btn" title="Màu chính">
+                        <i class="fa-solid fa-palette"></i>
+                        <input type="color" value="#3b82f6" onchange="changeColor('${id}', this.value)">
+                    </label>
+
+                    <label class="color-picker-btn" title="🎨 Màu khi Rê chuột (Hover Color)">
+                        <i class="fa-solid fa-wand-magic" style="color: #c084fc;"></i>
+                        <input type="color" value="#8b5cf6" onchange="changeHoverColor('${id}', this.value)">
+                    </label>
+
+                    <button title="Đưa lên trên" onclick="changeZIndex('${id}', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                    <button title="Hạ xuống dưới" onclick="changeZIndex('${id}', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                    <button title="📋 Nhân bản (Ctrl+D)" onclick="duplicateSelectedElement()"><i class="fa-solid fa-clone"></i></button>
+
+                    <select class="font-select" title="Đổi Font chữ" onchange="changeFont('${id}', this.value)">
+                        <option value="Inter">Inter</option>
+                        <option value="Roboto">Roboto</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Playfair Display">Playfair Display</option>
+                        <option value="Dancing Script">Dancing Script</option>
+                        <option value="Pacifico">Pacifico</option>
+                    </select>
+
+                    <select class="size-select" title="Đổi Kích cỡ chữ" onchange="changeFontSize('${id}', this.value)">
+                        <option value="16px">16px</option>
+                        <option value="20px">20px</option>
+                        <option value="28px" selected>28px</option>
+                        <option value="36px">36px</option>
+                        <option value="48px">48px</option>
+                        <option value="64px">64px</option>
+                    </select>
+
+                    <select class="link-select" title="🔗 Href tới Slide" onchange="setWrapperHref('${id}', this.value)">
+                        <option value="">🔗 Href tới...</option>
+                        ${optionsHTML}
+                    </select>
+
+                    <button class="delete-btn" title="Xoá phần tử"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `;
+
+            const resizeHandleHTML = `<div class="resize-handle-br" title="Kéo để đổi kích thước"></div>`;
+
+            wrapper.innerHTML = toolbarHTML + innerHTML + resizeHandleHTML;
+            
+            attachDragHandlers(wrapper);
+            attachResizeHandler(wrapper);
+            attachHoverColorEvent(wrapper);
+
+            wrapper.querySelector('.delete-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                removeElement(id);
+            });
+            wrapper.addEventListener('mousedown', () => selectLayerById(id));
+            return wrapper;
+        }
+
+        function attachResizeHandler(wrapper) {
+            const handle = wrapper.querySelector('.resize-handle-br');
+            if (!handle) return;
+
+            handle.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                const startX = e.clientX;
+                const startY = e.clientY;
+
+                const target = wrapper.querySelector('.free-image-container, .free-box, .free-overlay, .free-input, img');
+                if (!target) return;
+
+                const startWidth = target.offsetWidth;
+                const startHeight = target.offsetHeight;
+
+                function onMouseMove(ev) {
+                    const newW = Math.max(30, startWidth + (ev.clientX - startX));
+                    const newH = Math.max(30, startHeight + (ev.clientY - startY));
+                    
+                    target.style.width = newW + 'px';
+                    target.style.height = newH + 'px';
+
+                    if (selectedId === wrapper.id) {
+                        document.getElementById('inputWidth').value = newW;
+                        document.getElementById('inputHeight').value = newH;
+                        document.getElementById('valWidth').innerText = newW + 'px';
+                        document.getElementById('valHeight').innerText = newH + 'px';
+                    }
+                }
+
+                function onMouseUp() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            });
+        }
+
+        function updateImageSize() {
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const target = wrapper.querySelector('.free-image-container, .free-box, .free-overlay, .free-input, img');
+            const w = document.getElementById('inputWidth').value;
+            const h = document.getElementById('inputHeight').value;
+
+            document.getElementById('valWidth').innerText = w + 'px';
+            document.getElementById('valHeight').innerText = h + 'px';
+
+            if (target) {
+                target.style.width = w + 'px';
+                target.style.height = h + 'px';
+            }
+        }
+
+        function cropImageFree() {
+            if (!selectedId) { alert('Vui lòng chọn 1 hình ảnh để crop!'); return; }
+            const wrapper = document.getElementById(selectedId);
+            const img = wrapper ? wrapper.querySelector('img') : null;
+            if (!img) { alert('Phần tử được chọn không phải là hình ảnh!'); return; }
+            alert('Chế độ Crop Tự Do: Kéo thả các viền trên hình ảnh để hoàn tất cắt ảnh!');
+        }
+
+        function triggerAutoBgT1() {
+            if (!selectedId) { alert('Vui lòng chọn 1 hình ảnh để xoá nền!'); return; }
+            autoRemoveBg(selectedId);
+        }
+
+        function triggerEraserMode(mode) {
+            if (!selectedId) { alert('Vui lòng chọn 1 hình ảnh trước!'); return; }
+            openEraserModal(selectedId);
+            setEraserMode(mode);
+        }
+
+        function syncBrushSize(val) {
+            document.getElementById('valBrushSize').innerText = val;
+            document.getElementById('brushSize').value = val;
+            document.getElementById('brushSizeT1').value = val;
+        }
+
+        function applyFilters() {
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const target = wrapper.querySelector('img, video, .free-text, .free-box, .free-icon, .free-overlay');
+            if (!target) return;
+
+            const b = document.getElementById('filterBrightness').value;
+            const c = document.getElementById('filterContrast').value;
+            const s = document.getElementById('filterSaturate').value;
+            const bl = document.getElementById('filterBlur').value;
+            const op = document.getElementById('filterOpacity').value;
+            const rot = document.getElementById('filterRotate').value;
+
+            document.getElementById('valBrightness').innerText = b + '%';
+            document.getElementById('valContrast').innerText = c + '%';
+            document.getElementById('valSaturate').innerText = s + '%';
+            document.getElementById('valBlur').innerText = bl + 'px';
+            document.getElementById('valOpacity').innerText = op + '%';
+            document.getElementById('valRotate').innerText = rot + '°';
+
+            const st = filterStates[selectedId] || { flipH: 1, flipV: 1 };
+            st.brightness = b; st.contrast = c; st.saturate = s; st.blur = bl; st.opacity = op; st.rotate = rot;
+            filterStates[selectedId] = st;
+
+            target.style.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) blur(${bl}px) opacity(${op / 100})`;
+            wrapper.style.transform = `rotate(${rot}deg) scale(${st.flipH}, ${st.flipV})`;
+        }
+
+        function rotateSelected(deg) {
+            if (!selectedId) return;
+            const slider = document.getElementById('filterRotate');
+            let val = (parseInt(slider.value) + deg) % 360;
+            if (val < 0) val += 360;
+            slider.value = val;
+            applyFilters();
+        }
+
+        function flipSelected(direction) {
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const st = filterStates[selectedId] || { flipH: 1, flipV: 1 };
+            if (direction === 'h') st.flipH *= -1;
+            if (direction === 'v') st.flipV *= -1;
+            filterStates[selectedId] = st;
+            applyFilters();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterBrightness').value = 100;
+            document.getElementById('filterContrast').value = 100;
+            document.getElementById('filterSaturate').value = 100;
+            document.getElementById('filterBlur').value = 0;
+            document.getElementById('filterOpacity').value = 100;
+            document.getElementById('filterRotate').value = 0;
+            if (selectedId) filterStates[selectedId] = { flipH: 1, flipV: 1 };
+            applyFilters();
+        }
+
+        function applyFontToSelected(fontName) {
+            if (!selectedId) { alert('Vui lòng chọn 1 đoạn văn bản trên Canvas!'); return; }
+            changeFont(selectedId, fontName);
+        }
+
+        /* CHỨC NĂNG VĂN BẢN NÂNG CAO MỚI */
+        function setTextAlign(align) {
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const target = wrapper.querySelector('.free-text, .free-button-box');
+            if (target) target.style.textAlign = align;
+        }
+
+        function toggleTextFormat(styleType) {
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const target = wrapper.querySelector('.free-text, .free-button-box');
+            if (target) return;
+
+            if (styleType === 'bold') {
+                target.style.fontWeight = target.style.fontWeight === 'bold' || target.style.fontWeight === '700' ? 'normal' : 'bold';
+                document.getElementById('btnFormatBold').classList.toggle('active', target.style.fontWeight === 'bold');
+            } else if (styleType === 'italic') {
+                target.style.fontStyle = target.style.fontStyle === 'italic' ? 'normal' : 'italic';
+                document.getElementById('btnFormatItalic').classList.toggle('active', target.style.fontStyle === 'italic');
+            } else if (styleType === 'underline') {
+                target.style.textDecoration = target.style.textDecoration === 'underline' ? 'none' : 'underline';
+                document.getElementById('btnFormatUnderline').classList.toggle('active', target.style.textDecoration === 'underline');
+            }
+        }
+
+        function changeLetterSpacing(val) {
+            document.getElementById('valLetterSpacing').innerText = val + 'px';
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const target = wrapper.querySelector('.free-text, .free-button-box');
+            if (target) target.style.letterSpacing = val + 'px';
+        }
+
+        function changeLineHeight(val) {
+            document.getElementById('valLineHeight').innerText = val;
+            if (!selectedId) return;
+            const wrapper = document.getElementById(selectedId);
+            if (!wrapper) return;
+            const target = wrapper.querySelector('.free-text, .free-button-box');
+            if (target) target.style.lineHeight = val;
+        }
+
+        /* CHỨC NĂNG ĐỔI NỀN SLIDE MỚI */
+        function triggerSlideBgUpload() {
+            document.getElementById('slideBgFileInput').click();
+        }
+
+        function handleSlideBgFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setSlideBgImage(`url('${event.target.result}')`);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function setSlideBgColor(color) {
+            const frame = document.getElementById('canvasFrame');
+            frame.style.background = color;
+            saveSlideBgState(color);
+        }
+
+        function setSlideBgGradient(gradientStr) {
+            const frame = document.getElementById('canvasFrame');
+            frame.style.background = gradientStr;
+            saveSlideBgState(gradientStr);
+        }
+
+        function setSlideBgImage(imgUrl) {
+            const frame = document.getElementById('canvasFrame');
+            frame.style.background = `${imgUrl} center/cover no-repeat`;
+            saveSlideBgState(`${imgUrl} center/cover no-repeat`);
+        }
+
+        function resetSlideBg() {
+            setSlideBgColor('#030712');
+            document.getElementById('slideBgColorInput').value = '#030712';
+        }
+
+        function saveSlideBgState(bgValue) {
+            const currentItem = items.find(s => s.id === currentItemId);
+            if (currentItem) currentItem.background = bgValue;
+        }
+
+        function autoRemoveBg(id) {
+            const img = document.getElementById(`img-target-${id}`);
+            if (!img) return;
+
+            const sensitivity = parseInt(document.getElementById('bgSensitivity').value) || 40;
+            const tempCanvas = document.createElement('canvas');
+            const ctx = tempCanvas.getContext('2d');
+            tempCanvas.width = img.naturalWidth || img.width;
+            tempCanvas.height = img.naturalHeight || img.height;
+
+            ctx.drawImage(img, 0, 0);
+            const imgData = ctx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imgData.data;
+
+            const threshold = 255 - (sensitivity * 1.5);
+
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i] > threshold && data[i + 1] > threshold && data[i + 2] > threshold) {
+                    data[i + 3] = 0;
+                }
+            }
+
+            ctx.putImageData(imgData, 0, 0);
+            img.src = tempCanvas.toDataURL();
+        }
+
+        function openEraserModal(id) {
+            currentEditingImgId = id;
+            const img = document.getElementById(`img-target-${id}`);
+            if (!img) return;
+
+            const modal = document.getElementById('eraserModal');
+            modal.classList.add('open');
+
+            eraserCanvas.width = img.naturalWidth || img.width || 500;
+            eraserCanvas.height = img.naturalHeight || img.height || 400;
+
+            eraserCtx.clearRect(0, 0, eraserCanvas.width, eraserCanvas.height);
+            eraserCtx.drawImage(img, 0, 0, eraserCanvas.width, eraserCanvas.height);
+            originalImgData = eraserCtx.getImageData(0, 0, eraserCanvas.width, eraserCanvas.height);
+
+            initEraserEvents();
+            setEraserMode('erase');
+        }
+
+        function setEraserMode(mode) {
+            eraserToolMode = mode;
+            document.getElementById('eraserModeBtn').style.background = mode === 'erase' ? 'var(--accent-blue)' : '';
+            document.getElementById('restoreModeBtn').style.background = mode === 'restore' ? 'var(--accent-blue)' : '';
+        }
+
+        function initEraserEvents() {
+            eraserCanvas.onmousedown = (e) => { isDrawing = true; drawEraser(e); };
+            eraserCanvas.onmousemove = (e) => { if (isDrawing) drawEraser(e); };
+            eraserCanvas.onmouseup = () => { isDrawing = false; eraserCtx.beginPath(); };
+        }
+
+        function drawEraser(e) {
+            const rect = eraserCanvas.getBoundingClientRect();
+            const scaleX = eraserCanvas.width / rect.width;
+            const scaleY = eraserCanvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            const size = document.getElementById('brushSize').value;
+
+            eraserCtx.lineWidth = size;
+            eraserCtx.lineCap = 'round';
+
+            if (eraserToolMode === 'erase') {
+                eraserCtx.globalCompositeOperation = 'destination-out';
+                eraserCtx.lineTo(x, y);
+                eraserCtx.stroke();
+                eraserCtx.beginPath();
+                eraserCtx.moveTo(x, y);
+            } else {
+                eraserCtx.globalCompositeOperation = 'source-over';
+                eraserCtx.save();
+                eraserCtx.beginPath();
+                eraserCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+                eraserCtx.clip();
+                
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = eraserCanvas.width;
+                tempCanvas.height = eraserCanvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.putImageData(originalImgData, 0, 0);
+
+                eraserCtx.drawImage(tempCanvas, 0, 0);
+                eraserCtx.restore();
+            }
+        }
+
+        function saveEraserResult() {
+            if (currentEditingImgId) {
+                const img = document.getElementById(`img-target-${currentEditingImgId}`);
+                if (img) img.src = eraserCanvas.toDataURL();
+            }
+            closeEraserModal();
+        }
+
+        function closeEraserModal() {
+            document.getElementById('eraserModal').classList.remove('open');
+        }
+
+        function renderSlideBar() {
+            const bar = document.getElementById('slideBar');
+            bar.innerHTML = items.map((s) => `
+                <div class="slide-tab ${s.id === currentItemId ? 'active' : ''}" onclick="switchSlide('${s.id}')" title="Nhấp đúp để đổi tên trang">
+                    <i class="fa-solid ${s.type === 'database' ? 'fa-database' : 'fa-desktop'}"></i>
+                    <span class="slide-tab-title" id="title-${s.id}" ondblclick="event.stopPropagation(); startRenameTab('${s.id}')">${escapeHtml(s.title)}</span>
+                    ${items.length > 1 ? `<i class="fa-solid fa-xmark del-slide" onclick="event.stopPropagation(); deleteSlide('${s.id}')" title="Xóa trang"></i>` : ''}
+                </div>
+            `).join('') + `
+                <div class="add-plus-container">
+                    <button class="add-slide-btn" onclick="toggleAddPlusPopover(event)"><i class="fa-solid fa-plus"></i></button>
+                    <div class="add-plus-popover" id="addPlusPopover">
+                        <button onclick="addNewSlide()"><i class="fa-solid fa-desktop"></i> Slide</button>
+                        <button onclick="addNewDatabase()"><i class="fa-solid fa-database"></i> Database</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(str) {
+            return String(str ?? '').replace(/[&<>"']/g, (m) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        // CHỨC NĂNG SỬA (EDIT) TÊN TRANG/SLIDE/DATABASE - nhấp đúp vào tên tab để đổi tên
+        function startRenameTab(slideId) {
+            const titleSpan = document.getElementById(`title-${slideId}`);
+            if (!titleSpan) return;
+            const item = items.find(s => s.id === slideId);
+            if (!item) return;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'rename-input';
+            input.value = item.title;
+            titleSpan.replaceWith(input);
+            input.focus();
+            input.select();
+
+            const commit = () => {
+                const newTitle = input.value.trim() || item.title;
+                item.title = newTitle;
+                renderSlideBar();
+                refreshAllHrefSelects();
+            };
+            input.addEventListener('blur', commit);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') input.blur();
+                if (e.key === 'Escape') { input.value = item.title; input.blur(); }
+            });
+        }
+
+        function toggleAddPlusPopover(e) {
+            e.stopPropagation();
+            const pop = document.getElementById('addPlusPopover');
+            if (pop) pop.classList.toggle('open');
+        }
+
+        function addNewDatabase() {
+            const pop = document.getElementById('addPlusPopover');
+            if (pop) pop.classList.remove('open');
+            saveCurrentSlideState();
+            const dbCount = items.filter(i => i.type === 'database').length + 1;
+            const newId = 'database-' + Date.now();
+            items.push({ 
+                id: newId, 
+                title: 'Database ' + dbCount, 
+                type: 'database', 
+                elements: '', 
+                layers: [], 
+                globalFx: 'none', 
+                background: '#030712' 
+            });
+            currentItemId = newId;
+            renderSlideBar();
+            loadSlideState(newId);
+        }
+
+        function switchSlide(slideId) {
+            if (currentItemId === slideId) return;
+            saveCurrentSlideState();
+            currentItemId = slideId;
+            renderSlideBar();
+            loadSlideState(slideId);
+        }
+
+        function addNewSlide() {
+            const pop = document.getElementById('addPlusPopover');
+            if (pop) pop.classList.remove('open');
+            saveCurrentSlideState();
+            const slideCount = items.filter(i => i.type === 'slide').length + 1;
+            const newId = 'slide-' + Date.now();
+            items.push({ 
+                id: newId, 
+                title: 'Slide ' + slideCount, 
+                type: 'slide', 
+                elements: '', 
+                layers: [], 
+                globalFx: 'none', 
+                background: '#030712' 
+            });
+            currentItemId = newId;
+            renderSlideBar();
+            loadSlideState(newId);
+        }
+
+        function deleteSlide(slideId) {
+            if (items.length <= 1) return;
+            items = items.filter(s => s.id !== slideId);
+            if (currentItemId === slideId) currentItemId = items[0].id;
+            renderSlideBar();
+            loadSlideState(currentItemId);
+        }
+
+        function saveCurrentSlideState() {
+            const currentItem = items.find(s => s.id === currentItemId);
+            if (!currentItem) return;
+            const container = document.getElementById('canvasElements');
+            currentItem.elements = container.innerHTML;
+            currentItem.layers = [...activeLayers];
+        }
+
+        function loadSlideState(slideId) {
+            const slide = items.find(s => s.id === slideId);
+            const container = document.getElementById('canvasElements');
+            const frame = document.getElementById('canvasFrame');
+            if (!slide) return;
+
+            frame.style.background = slide.background || '#030712';
+            
+          if (slide.type === 'database') {
+                ensureDbTables(slide);
+                renderDatabasePage();
+            } else {
+                container.innerHTML = slide.elements || '';
+            }
+
+            activeLayers = slide.layers ? [...slide.layers] : [];
+            selectedId = null;
+            
+            container.querySelectorAll('.el-wrapper').forEach(wrapper => {
+                attachDragHandlers(wrapper);
+                attachResizeHandler(wrapper);
+                attachHoverColorEvent(wrapper);
+                const delBtn = wrapper.querySelector('.delete-btn');
+                if (delBtn) delBtn.onclick = (e) => { e.stopPropagation(); removeElement(wrapper.id); };
+
+                wrapper.onmousedown = () => selectLayerById(wrapper.id);
+            });
+
+            refreshAllHrefSelects();
+            applyGlobalFx(slide.globalFx || 'none', false);
+            renderLayers();
+        }
+
+        /* ======================================================
+           HỆ THỐNG DATABASE — hỗ trợ NHIỀU BẢNG cho mỗi trang Database,
+           thêm/xoá cột, và nhập DỮ LIỆU BẤT KỲ (không chỉ cấu trúc bảng).
+           ====================================================== */
+        function escapeAttr(str) {
+            return String(str ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        }
+
+        function getCurrentDbSlide() {
+            return items.find(s => s.id === currentItemId);
+        }
+
+        function ensureDbTables(slide) {
+            if (!slide.tables || slide.tables.length === 0) {
+                slide.tables = [{
+                    id: 'tbl_' + Date.now(),
+                    name: 'users',
+                    columns: [
+                        { id: 1, name: 'id', type: 'INT', constraint: 'PRIMARY KEY AUTO_INCREMENT' },
+                        { id: 2, name: 'title', type: 'VARCHAR(255)', constraint: 'NOT NULL' },
+                        { id: 3, name: 'created_at', type: 'DATETIME', constraint: 'NULL' }
+                    ],
+                    rows: []
+                }];
+            }
+            if (!slide.activeTableId || !slide.tables.find(t => t.id === slide.activeTableId)) {
+                slide.activeTableId = slide.tables[0].id;
+            }
+        }
+
+        function getActiveDbTable(slide) {
+            return slide.tables.find(t => t.id === slide.activeTableId) || slide.tables[0];
+        }
+
+        function renderDatabasePage(colFilter = '') {
+            const slide = getCurrentDbSlide();
+            if (!slide || slide.type !== 'database') return;
+            ensureDbTables(slide);
+            const container = document.getElementById('canvasElements');
+            const table = getActiveDbTable(slide);
+
+            const tabsHTML = slide.tables.map(t => `
+                <div class="db-table-tab ${t.id === table.id ? 'active' : ''}" onclick="switchDbTable('${t.id}')">
+                    <i class="fa-solid fa-table"></i> ${escapeHtml(t.name)}
+                    ${slide.tables.length > 1 ? `<i class="fa-solid fa-xmark del-db-tab" title="Xóa bảng" onclick="event.stopPropagation(); deleteDbTable('${t.id}')"></i>` : ''}
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div style="padding: 24px; color: #f8fafc; font-family: sans-serif; height: 100%; overflow-y: auto;">
+
+                    <!-- Danh sách các bảng (Tables) trong Database này -->
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap: wrap; margin-bottom: 18px;">
+                        ${tabsHTML}
+                        <button class="db-add-table-btn" onclick="addDbTable()"><i class="fa-solid fa-plus"></i> Thêm Bảng</button>
+                    </div>
+
+                    <!-- Header & Actions của bảng đang chọn -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-database" style="color: #3b82f6; font-size: 20px;"></i>
+                            <span style="font-size: 14px; color: #94a3b8; font-weight: 600;">Tên Bảng:</span>
+                            <input type="text" value="${escapeAttr(table.name)}" placeholder="Nhập tên bảng..." onchange="renameDbTable('${table.id}', this.value)" style="background: #0f172a; border: 1px solid #334155; color: #38bdf8; padding: 6px 12px; border-radius: 6px; font-weight: 700; font-size: 16px; outline: none; width: 180px;" />
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <div style="position: relative;">
+                                <input type="text" oninput="renderSchemaRows(this.value)" placeholder="Tìm kiếm cột..." style="background: #0f172a; border: 1px solid #334155; color: #f8fafc; padding: 6px 12px 6px 30px; border-radius: 6px; font-size: 13px; outline: none;" />
+                                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 12px;"></i>
+                            </div>
+                            <button onclick="addDbColumn()" style="background: #2563eb; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-plus"></i> Thêm Cột
+                            </button>
+                            <button onclick="showTableSQL()" style="background: transparent; color: #c084fc; border: 1px solid #7c3aed; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-code"></i> Xem SQL
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bảng cấu trúc cột (Schema) -->
+                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 16px; margin-bottom: 22px;">
+                        <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px;">
+                            <i class="fa-solid fa-list-ul"></i> Cấu Trúc Bảng (Schema)
+                        </div>
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid #334155; color: #94a3b8;">
+                                    <th style="padding: 10px; width: 50px;">ID</th>
+                                    <th style="padding: 10px;">Tên Trường</th>
+                                    <th style="padding: 10px;">Kiểu Dữ Liệu</th>
+                                    <th style="padding: 10px;">Ràng Buộc (Constraint)</th>
+                                    <th style="padding: 10px; text-align: center; width: 90px;">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="db-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Dữ liệu bảng: nhập dữ liệu BẤT KỲ theo đúng cột đã khai báo -->
+                    <div style="background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 16px;">
+                        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                            <div style="font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.6px;">
+                                <i class="fa-solid fa-table-cells"></i> Dữ Liệu Bảng (nhập bất kỳ)
+                            </div>
+                            <button onclick="addDbRow()" style="background: #10b981; color: #fff; border: none; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-plus"></i> Thêm Dòng Dữ Liệu
+                            </button>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; min-width: 480px;">
+                                <thead>
+                                    <tr id="db-data-head" style="border-bottom: 1px solid #334155; color: #94a3b8;"></tr>
+                                </thead>
+                                <tbody id="db-data-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            renderSchemaRows(colFilter);
+            renderDataTable();
+        }
+
+        function renderSchemaRows(filterText = '') {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const tbody = document.getElementById('db-table-body');
+            if (!tbody) return;
+
+            const filtered = table.columns.filter(col => col.name.toLowerCase().includes(filterText.toLowerCase()));
+
+            tbody.innerHTML = filtered.length ? filtered.map((col, idx) => `
+                <tr style="border-bottom: 1px solid #1e293b;">
+                    <td style="padding: 10px;">${idx + 1}</td>
+                    <td style="padding: 10px;">
+                        <input type="text" value="${escapeAttr(col.name)}" onchange="updateDbColName(${col.id}, this.value)" style="background: transparent; border: 1px solid transparent; color: #60a5fa; font-weight: bold; padding: 4px; border-radius: 4px; outline: none; width: 100%;" onfocus="this.style.borderColor='#334155'" onblur="this.style.borderColor='transparent'" />
+                    </td>
+                    <td style="padding: 10px;">
+                        <select onchange="updateDbColType(${col.id}, this.value)" style="background: #020617; border: 1px solid #334155; color: #c084fc; padding: 6px 10px; border-radius: 6px; font-size: 13px; outline: none; cursor: pointer;">
+                            <option value="INT" ${col.type === 'INT' ? 'selected' : ''}>INT</option>
+                            <option value="BIGINT" ${col.type === 'BIGINT' ? 'selected' : ''}>BIGINT</option>
+                            <option value="VARCHAR(255)" ${col.type === 'VARCHAR(255)' ? 'selected' : ''}>VARCHAR(255)</option>
+                            <option value="TEXT" ${col.type === 'TEXT' ? 'selected' : ''}>TEXT</option>
+                            <option value="DATETIME" ${col.type === 'DATETIME' ? 'selected' : ''}>DATETIME</option>
+                            <option value="BOOLEAN" ${col.type === 'BOOLEAN' ? 'selected' : ''}>BOOLEAN</option>
+                            <option value="FLOAT" ${col.type === 'FLOAT' ? 'selected' : ''}>FLOAT</option>
+                        </select>
+                    </td>
+                    <td style="padding: 10px;">
+                        <select onchange="updateDbColConstraint(${col.id}, this.value)" style="background: #020617; border: 1px solid #334155; color: #10b981; padding: 6px 10px; border-radius: 6px; font-size: 13px; outline: none; cursor: pointer;">
+                            <option value="PRIMARY KEY AUTO_INCREMENT" ${col.constraint.includes('PRIMARY') ? 'selected' : ''}>PRIMARY KEY AUTO_INCREMENT</option>
+                            <option value="NOT NULL" ${col.constraint === 'NOT NULL' ? 'selected' : ''}>NOT NULL</option>
+                            <option value="UNIQUE" ${col.constraint === 'UNIQUE' ? 'selected' : ''}>UNIQUE</option>
+                            <option value="NULL" ${col.constraint === 'NULL' ? 'selected' : ''}>NULL</option>
+                        </select>
+                    </td>
+                    <td style="padding: 10px; text-align: center;">
+                        <button onclick="deleteDbColumn(${col.id})" title="Xóa cột" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 4px 8px; font-size: 14px;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('') : `<tr><td colspan="5" style="padding: 16px; text-align:center; color:#64748b;">Không tìm thấy cột nào phù hợp.</td></tr>`;
+        }
+
+        function renderDataTable() {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const thead = document.getElementById('db-data-head');
+            const tbody = document.getElementById('db-data-body');
+            if (!thead || !tbody) return;
+
+            thead.innerHTML = table.columns.map(c => `<th style="padding: 10px;">${escapeHtml(c.name)}</th>`).join('') + `<th style="padding: 10px; text-align:center; width: 70px;">Xóa</th>`;
+
+            tbody.innerHTML = table.rows.length ? table.rows.map(row => `
+                <tr style="border-bottom: 1px solid #1e293b;">
+                    ${table.columns.map(c => `
+                        <td style="padding: 6px 8px;">
+                            <input type="text" value="${escapeAttr(row.values[c.id] ?? '')}" placeholder="Nhập dữ liệu..." oninput="updateDbCell('${row.id}', ${c.id}, this.value)" style="width: 100%; background: #020617; border: 1px solid #1e293b; color: #f1f5f9; padding: 6px 8px; border-radius: 4px; outline: none; font-size: 12.5px;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#1e293b'" />
+                        </td>
+                    `).join('')}
+                    <td style="text-align: center;">
+                        <button onclick="deleteDbRow('${row.id}')" title="Xóa dòng" style="background: transparent; border: none; color: #ef4444; cursor: pointer; padding: 4px 8px; font-size: 14px;">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('') : `<tr><td colspan="${table.columns.length + 1}" style="padding: 18px; text-align:center; color:#64748b;">Chưa có dữ liệu nào. Nhấn "Thêm Dòng Dữ Liệu" để nhập dữ liệu bất kỳ.</td></tr>`;
+        }
+
+        function switchDbTable(tableId) {
+            const slide = getCurrentDbSlide();
+            slide.activeTableId = tableId;
+            renderDatabasePage();
+        }
+
+        function addDbTable() {
+            const slide = getCurrentDbSlide();
+            ensureDbTables(slide);
+            const name = prompt('Nhập tên bảng mới:', 'table_' + (slide.tables.length + 1));
+            if (!name || !name.trim()) return;
+            const newTable = {
+                id: 'tbl_' + Date.now(),
+                name: name.trim(),
+                columns: [
+                    { id: Date.now() + 1, name: 'id', type: 'INT', constraint: 'PRIMARY KEY AUTO_INCREMENT' }
+                ],
+                rows: []
+            };
+            slide.tables.push(newTable);
+            slide.activeTableId = newTable.id;
+            renderDatabasePage();
+        }
+
+        function deleteDbTable(tableId) {
+            const slide = getCurrentDbSlide();
+            if (slide.tables.length <= 1) { alert('Database phải có ít nhất 1 bảng!'); return; }
+            if (!confirm('Xóa bảng này? Toàn bộ dữ liệu trong bảng sẽ mất.')) return;
+            slide.tables = slide.tables.filter(t => t.id !== tableId);
+            if (slide.activeTableId === tableId) slide.activeTableId = slide.tables[0].id;
+            renderDatabasePage();
+        }
+
+        function renameDbTable(tableId, newName) {
+            const slide = getCurrentDbSlide();
+            const t = slide.tables.find(x => x.id === tableId);
+            if (t) t.name = newName.trim() || t.name;
+            renderDatabasePage();
+        }
+
+        function addDbColumn() {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const newCol = { id: Date.now(), name: 'cot_moi', type: 'VARCHAR(255)', constraint: 'NULL' };
+            table.columns.push(newCol);
+            table.rows.forEach(r => { r.values[newCol.id] = ''; });
+            renderSchemaRows('');
+            renderDataTable();
+        }
+
+        function deleteDbColumn(colId) {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            table.columns = table.columns.filter(c => c.id !== colId);
+            table.rows.forEach(r => { delete r.values[colId]; });
+            renderSchemaRows('');
+            renderDataTable();
+        }
+
+        function updateDbColName(colId, val) {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const col = table.columns.find(c => c.id === colId);
+            if (col) col.name = val;
+            renderDataTable();
+        }
+
+        function updateDbColType(colId, val) {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const col = table.columns.find(c => c.id === colId);
+            if (col) col.type = val;
+        }
+
+        function updateDbColConstraint(colId, val) {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const col = table.columns.find(c => c.id === colId);
+            if (col) col.constraint = val;
+        }
+
+        function addDbRow() {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const values = {};
+            table.columns.forEach(c => { values[c.id] = ''; });
+            table.rows.push({ id: 'row_' + Date.now() + Math.random().toString(36).slice(2, 6), values });
+            renderDataTable();
+        }
+
+        function deleteDbRow(rowId) {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            table.rows = table.rows.filter(r => r.id !== rowId);
+            renderDataTable();
+        }
+
+        function updateDbCell(rowId, colId, val) {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const row = table.rows.find(r => r.id === rowId);
+            if (row) row.values[colId] = val;
+        }
+
+        function showTableSQL() {
+            const slide = getCurrentDbSlide();
+            const table = getActiveDbTable(slide);
+            const colDefs = table.columns.map(c => `  ${c.name} ${c.type}${c.constraint && c.constraint !== 'NULL' ? ' ' + c.constraint : ''}`).join(',\n');
+            let sql = `CREATE TABLE ${table.name} (\n${colDefs}\n);`;
+
+            if (table.rows.length) {
+                const colNames = table.columns.map(c => c.name).join(', ');
+                const insertLines = table.rows.map(r => {
+                    const vals = table.columns.map(c => {
+                        const v = r.values[c.id] ?? '';
+                        return `'${String(v).replace(/'/g, "''")}'`;
+                    }).join(', ');
+                    return `INSERT INTO ${table.name} (${colNames}) VALUES (${vals});`;
+                }).join('\n');
+                sql += '\n\n' + insertLines;
+            }
+            alert(sql);
+        }
+
+        function applySelectedObjectHoverFx(fxClass) {
+            if (!selectedId) { alert('Vui lòng chọn 1 phần tử trên Canvas!'); return; }
+            setObjectHoverFx(selectedId, fxClass);
+        }
+
+        function applySelectedObjectEntryFx(fxClass) {
+            if (!selectedId) { alert('Vui lòng chọn 1 phần tử trên Canvas!'); return; }
+            setObjectEntryFx(selectedId, fxClass);
+        }
+
+        function changeHoverColor(id, color) {
+            const wrapper = document.getElementById(id);
+            if (wrapper) wrapper.dataset.hoverColor = color;
+        }
+
+        function attachHoverColorEvent(wrapper) {
+            wrapper.addEventListener('mouseenter', () => {
+                const hoverColor = wrapper.dataset.hoverColor;
+                if (!hoverColor) return;
+                const target = wrapper.querySelector('.free-text, .free-icon, .free-box, .free-button-box, .free-overlay, .free-input');
+                if (!target) return;
+
+                if (wrapper.dataset.type === 'box' || wrapper.dataset.type === 'normal' || wrapper.dataset.type === 'button' || wrapper.dataset.type === 'overlay' || wrapper.dataset.type === 'input') {
+                    wrapper.dataset.originalColor = target.style.backgroundColor || '';
+                    target.style.backgroundColor = hoverColor;
+                } else {
+                    wrapper.dataset.originalColor = target.style.color || '';
+                    target.style.color = hoverColor;
+                }
+            });
+
+         wrapper.addEventListener('mouseleave', () => {
+                const hoverColor = wrapper.dataset.hoverColor;
+                if (!hoverColor) return;
+                const target = wrapper.querySelector('.free-text, .free-icon, .free-box, .free-button-box, .free-overlay, .free-input');
+                if (!target) return;
+
+                if (wrapper.dataset.type === 'box' || wrapper.dataset.type === 'normal' || wrapper.dataset.type === 'button' || wrapper.dataset.type === 'overlay' || wrapper.dataset.type === 'input') {
+                    target.style.backgroundColor = wrapper.dataset.originalColor || '';
+                } else {
+                    target.style.color = wrapper.dataset.originalColor || '';
+                }
+            });
+        }
+
+        function setObjectHoverFx(id, fxClass) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+
+            const hoverClasses = ['hover-scale', 'hover-scale-down', 'hover-rotate', 'hover-bounce', 'hover-glow'];
+            hoverClasses.forEach(cls => wrapper.classList.remove(cls));
+
+            if (fxClass) wrapper.classList.add(fxClass);
+            wrapper.dataset.hoverFx = fxClass || "";
+        }
+
+        function setObjectEntryFx(id, fxClass) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+
+            const entryClasses = ['entry-fade', 'entry-slide', 'entry-zoom', 'entry-pulse'];
+            entryClasses.forEach(cls => wrapper.classList.remove(cls));
+
+            if (fxClass) wrapper.classList.add(fxClass);
+            wrapper.dataset.entryFx = fxClass || "";
+        }
+
+        function setWrapperHref(id, targetSlideId) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+            wrapper.dataset.targetHref = targetSlideId || "";
+        }
+
+        // SỬA LỖI HREF: danh sách trong dropdown "Href tới..." được build lại
+        // mỗi lần tải slide, để luôn khớp với danh sách Slide/Database MỚI NHẤT,
+        // và tự chọn đúng giá trị đã lưu trước đó (trước đây dropdown luôn bị reset về rỗng).
+        function refreshHrefSelect(wrapper) {
+            const sel = wrapper.querySelector('.link-select');
+            if (!sel) return;
+            const current = wrapper.dataset.targetHref || "";
+            const optionsHTML = items.map(s =>
+                `<option value="${s.id}" ${s.id === current ? 'selected' : ''}>${s.type === 'database' ? '🗄️' : '🖥️'} ${s.title}</option>`
+            ).join('');
+            sel.innerHTML = `<option value="">🔗 Href tới...</option>` + optionsHTML;
+            sel.value = current;
+        }
+
+        function refreshAllHrefSelects() {
+            document.querySelectorAll('#canvasElements .el-wrapper').forEach(refreshHrefSelect);
+        }
+
+        function addTextElement() {
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const textHTML = `<div class="free-text" contenteditable="true" spellcheck="false">Nhập văn bản tại đây...</div>`;
+            const wrapper = buildWrapper(id, 'text', textHTML, 100, 100);
+            container.appendChild(wrapper);
+            addLayer(id, 'Văn Bản', 'fa-font');
+            selectLayerById(id);
+        }
+
+        function addBoxElement(boxType, styleVariant) {
+            toggleBoxPicker();
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            let innerHTML = '';
+            let layerTitle = 'Khung';
+            let iconClass = 'fa-square';
+
+            if (boxType === 'button') {
+                innerHTML = `<div class="free-button-box">Nút Bấm</div>`;
+                layerTitle = 'Nút Bấm';
+                iconClass = 'fa-toggle-on';
+            } else if (boxType === 'overlay') {
+                innerHTML = `<div class="free-overlay"></div>`;
+                layerTitle = 'Lớp Phủ Mờ';
+                iconClass = 'fa-clone';
+            } else {
+                const variantClass = styleVariant ? ` variant-${styleVariant}` : '';
+                innerHTML = `<div class="free-box${variantClass}"></div>`;
+            }
+
+            const wrapper = buildWrapper(id, boxType, innerHTML, 120, 120);
+            container.appendChild(wrapper);
+            addLayer(id, layerTitle, iconClass);
+            selectLayerById(id);
+        }
+
+        /* KHUNG NHẬP — Ô nhập liệu người dùng có thể gõ chữ, có thể liên kết Database/Slide */
+        function addInputElement(styleVariant) {
+            toggleBoxPicker();
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const variantClass = styleVariant ? ` variant-${styleVariant}` : '';
+            const innerHTML = `<input type="text" class="free-input${variantClass}" placeholder="Nhập nội dung..." />`;
+            const wrapper = buildWrapper(id, 'input', innerHTML, 120, 120);
+            container.appendChild(wrapper);
+            addLayer(id, 'Khung Nhập', 'fa-i-cursor');
+            selectLayerById(id);
+        }
+
+        /* KHUNG NÚT BẤM (có 3 loại): Nút Nhập, Nút Tìm Kiếm, Nút Thêm */
+        function addButtonElement(kind) {
+            toggleBoxPicker();
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const labelMap = { submit: 'Gửi', search: 'Tìm kiếm', add: 'Thêm mới' };
+            const iconMap = { submit: 'fa-paper-plane', search: 'fa-magnifying-glass', add: 'fa-plus' };
+            const label = labelMap[kind] || 'Nút Bấm';
+            const innerHTML = `<div class="free-button-box" contenteditable="true" spellcheck="false" data-btn-kind="${kind}">${label}</div>`;
+            const wrapper = buildWrapper(id, 'button', innerHTML, 120, 120);
+            wrapper.dataset.btnKind = kind;
+            container.appendChild(wrapper);
+            addLayer(id, 'Nút: ' + label, iconMap[kind] || 'fa-toggle-on');
+            selectLayerById(id);
+        }
+
+        function addIconElement(iconName) {
+            toggleIconPicker();
+            const id = genId();
+            const container = document.getElementById('canvasElements');
+            const iconHTML = `<i class="fa-solid ${iconName} free-icon"></i>`;
+            const wrapper = buildWrapper(id, 'icon', iconHTML, 150, 150);
+            container.appendChild(wrapper);
+            addLayer(id, `Icon (${iconName})`, 'fa-icons');
+            selectLayerById(id);
+        }
+
+        function toggleBoxPicker(e) {
+            if (e) e.stopPropagation();
+            const boxPicker = document.getElementById('boxPicker');
+            boxPicker.classList.toggle('open');
+            document.getElementById('iconPicker').classList.remove('open');
+            document.getElementById('globalFxPicker').classList.remove('open');
+            document.getElementById('elementsPicker').classList.remove('open');
+            document.querySelectorAll('.box-flyout').forEach(f => f.classList.remove('open'));
+        }
+
+        function showBoxFlyout(flyoutId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.box-flyout').forEach(f => f.classList.toggle('open', f.id === flyoutId));
+            document.querySelectorAll('.box-picker-parent').forEach(p => p.classList.toggle('open', p.querySelector('.box-flyout') && p.querySelector('.box-flyout').id === flyoutId));
+        }
+
+        function toggleIconPicker(e) {
+            if (e) e.stopPropagation();
+            const iconPicker = document.getElementById('iconPicker');
+            iconPicker.classList.toggle('open');
+            document.getElementById('boxPicker').classList.remove('open');
+            document.getElementById('globalFxPicker').classList.remove('open');
+            document.getElementById('elementsPicker').classList.remove('open');
+        }
+
+        function toggleGlobalFxPicker(e) {
+            if (e) e.stopPropagation();
+            const fxPicker = document.getElementById('globalFxPicker');
+            fxPicker.classList.toggle('open');
+            document.getElementById('boxPicker').classList.remove('open');
+            document.getElementById('iconPicker').classList.remove('open');
+            document.getElementById('elementsPicker').classList.remove('open');
+        }
+
+        function changeColor(id, color) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+
+            const textEl = wrapper.querySelector('.free-text');
+            const iconEl = wrapper.querySelector('.free-icon');
+            const boxEl = wrapper.querySelector('.free-box, .free-button-box, .free-overlay, .free-input');
+
+            if (textEl) textEl.style.color = color;
+            if (iconEl) iconEl.style.color = color;
+            if (boxEl) boxEl.style.backgroundColor = color;
+        }
+
+        function changeFont(id, fontName) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+            const textEl = wrapper.querySelector('.free-text, .free-button-box');
+            if (textEl) textEl.style.fontFamily = fontName;
+        }
+
+        function changeFontSize(id, size) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+            const textEl = wrapper.querySelector('.free-text, .free-button-box');
+            if (textEl) textEl.style.fontSize = size;
+        }
+
+        function changeZIndex(id, step) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+            let currentZ = parseInt(wrapper.style.zIndex) || 1;
+            currentZ = Math.max(1, currentZ + step);
+            wrapper.style.zIndex = currentZ;
+        }
+
+        function duplicateSelectedElement() {
+            if (!selectedId) return;
+            const sourceWrapper = document.getElementById(selectedId);
+            if (!sourceWrapper) return;
+
+            const newId = genId();
+            const container = document.getElementById('canvasElements');
+
+            // Lấy phần NỘI DUNG THẬT của phần tử (bỏ thanh công cụ + nút resize cũ),
+            // rồi dựng lại wrapper hoàn toàn mới bằng buildWrapper() để mọi nút trên
+            // thanh công cụ (màu, liên kết 🔗, href, xoá...) đều gắn đúng ID MỚI,
+            // tránh lỗi bản sao bị "dính" ID của phần tử gốc.
+            const contentClone = sourceWrapper.cloneNode(true);
+            contentClone.querySelectorAll('.el-toolbar, .resize-handle-br').forEach(el => el.remove());
+            const innerHTML = contentClone.innerHTML;
+
+            const type = sourceWrapper.dataset.type;
+            let left = (parseFloat(sourceWrapper.style.left) || 0) + 20;
+            let top = (parseFloat(sourceWrapper.style.top) || 0) + 20;
+
+            const clone = buildWrapper(newId, type, innerHTML, left, top);
+
+            // Sao chép lại toàn bộ cấu hình (liên kết Database/Slide, href, hiệu ứng...)
+            // từ phần tử gốc sang bản sao, TRỪ recordId (giữ nguyên riêng cho mỗi bản sao).
+            ['targetHref', 'hoverFx', 'entryFx', 'hoverColor', 'linkMode', 'linkDbPage', 'linkTable', 'linkCol', 'linkSlide', 'linkNumber', 'btnKind']
+                .forEach(key => { clone.dataset[key] = sourceWrapper.dataset[key] || ''; });
+
+            const fxClasses = ['hover-scale', 'hover-scale-down', 'hover-rotate', 'hover-bounce', 'hover-glow', 'entry-fade', 'entry-slide', 'entry-zoom', 'entry-pulse'];
+            fxClasses.forEach(cls => { if (sourceWrapper.classList.contains(cls)) clone.classList.add(cls); });
+
+            clone.style.transform = sourceWrapper.style.transform || '';
+            clone.style.zIndex = sourceWrapper.style.zIndex || '2';
+
+            container.appendChild(clone);
+
+            filterStates[newId] = Object.assign({}, filterStates[selectedId]);
+            refreshHrefSelect(clone);
+            updateLinkBadge(clone);
+
+            addLayer(newId, `Bản sao (${type})`, 'fa-clone');
+            selectLayerById(newId);
+        }
+
+        function removeElement(id) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+
+            if (typeof videoBgLoops !== 'undefined' && videoBgLoops[id]) {
+                cancelAnimationFrame(videoBgLoops[id]);
+                delete videoBgLoops[id];
+            }
+
+            deletedHistoryStack.push({
+                id: id,
+                html: wrapper.outerHTML,
+                filterState: filterStates[id],
+                layer: activeLayers.find(l => l.id === id)
+            });
+
+            wrapper.remove();
+            activeLayers = activeLayers.filter(l => l.id !== id);
+            delete filterStates[id];
+            
+            if (selectedId === id) selectedId = null;
+            renderLayers();
+        }
+
+        function undoDeleteElement() {
+            if (deletedHistoryStack.length === 0) return;
+            const restoredItem = deletedHistoryStack.pop();
+            const container = document.getElementById('canvasElements');
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = restoredItem.html;
+            const restoredWrapper = tempDiv.firstElementChild;
+
+            container.appendChild(restoredWrapper);
+
+            if (restoredItem.filterState) filterStates[restoredItem.id] = restoredItem.filterState;
+            if (restoredItem.layer) activeLayers.push(restoredItem.layer);
+
+            attachDragHandlers(restoredWrapper);
+            attachResizeHandler(restoredWrapper);
+            attachHoverColorEvent(restoredWrapper);
+
+            const delBtn = restoredWrapper.querySelector('.delete-btn');
+            if (delBtn) delBtn.onclick = (e) => { e.stopPropagation(); removeElement(restoredItem.id); };
+            restoredWrapper.onmousedown = () => selectLayerById(restoredItem.id);
+
+            renderLayers();
+            selectLayerById(restoredItem.id);
+        }
+
+        function attachDragHandlers(wrapper) {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            const dragHandles = wrapper.querySelectorAll('.drag-handle, .free-box, .free-button-box, .free-overlay, .free-icon, .free-image-container');
+
+            dragHandles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    if (e.target.getAttribute('contenteditable') === 'true') return;
+                    isDragging = true;
+                    wrapper.classList.add('dragging');
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialLeft = parseFloat(wrapper.style.left) || 0;
+                    initialTop = parseFloat(wrapper.style.top) || 0;
+
+                    document.addEventListener('mousemove', onMouseMove);
+                    document.addEventListener('mouseup', onMouseUp);
+                });
+            });
+
+            function onMouseMove(e) {
+                if (!isDragging) return;
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                let newLeft = initialLeft + dx;
+                let newTop = initialTop + dy;
+
+                // Giới hạn không cho phần tử bị kéo ra ngoài khu vực Canvas
+                const canvas = document.getElementById('canvasElements');
+                if (canvas) {
+                    const maxLeft = Math.max(0, canvas.clientWidth - wrapper.offsetWidth);
+                    const maxTop = Math.max(0, canvas.clientHeight - wrapper.offsetHeight);
+                    newLeft = Math.min(Math.max(newLeft, 0), maxLeft);
+                    newTop = Math.min(Math.max(newTop, 0), maxTop);
+                }
+
+                wrapper.style.left = newLeft + 'px';
+                wrapper.style.top = newTop + 'px';
+            }
+
+            function onMouseUp() {
+                isDragging = false;
+                wrapper.classList.remove('dragging');
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+        }
+
+        function addLayer(id, name, icon) {
+            activeLayers.unshift({ id, name, icon });
+            renderLayers();
+        }
+
+        function renderLayers() {
+            const layersContainer = document.getElementById('layersList');
+            layersContainer.innerHTML = activeLayers.map(l => {
+                const wrapperEl = document.getElementById(l.id);
+                const isLinkable = wrapperEl && (wrapperEl.dataset.type === 'input' || wrapperEl.dataset.type === 'button');
+                const linkBtnHTML = isLinkable
+                    ? `<button class="layer-btn" title="🔗 Mở liên kết CHẮC CHẮN đúng phần tử này" onclick="event.stopPropagation(); openLinkModal('${l.id}')"><i class="fa-solid fa-link" style="color:#f59e0b;"></i></button>`
+                    : '';
+                return `
+                <div class="layer-item ${l.id === selectedId ? 'active' : ''}" onclick="selectLayerById('${l.id}')">
+                    <i class="fa-solid ${l.icon}"></i>
+                    <span class="layer-label">${l.name}</span>
+                    <div class="layer-actions">
+                        ${linkBtnHTML}
+                        <button class="layer-btn" title="Lên trên" onclick="event.stopPropagation(); changeZIndex('${l.id}', 1)"><i class="fa-solid fa-chevron-up"></i></button>
+                        <button class="layer-btn" title="Xuống dưới" onclick="event.stopPropagation(); changeZIndex('${l.id}', -1)"><i class="fa-solid fa-chevron-down"></i></button>
+                        <button class="layer-btn" title="Xóa" onclick="event.stopPropagation(); removeElement('${l.id}')"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        function selectLayerById(id) {
+            selectedId = id;
+            document.querySelectorAll('.el-wrapper').forEach(el => {
+                el.classList.toggle('selected', el.id === id);
+            });
+
+            renderLayers();
+            syncSidebarWithSelected(id);
+        }
+
+        function syncSidebarWithSelected(id) {
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+
+            const target = wrapper.querySelector('.free-image-container, .free-box, .free-overlay, .free-input, img');
+            if (target) {
+                const w = target.offsetWidth || parseInt(target.style.width) || 220;
+                const h = target.offsetHeight || parseInt(target.style.height) || 160;
+                document.getElementById('inputWidth').value = w;
+                document.getElementById('inputHeight').value = h;
+                document.getElementById('valWidth').innerText = w + 'px';
+                document.getElementById('valHeight').innerText = h + 'px';
+            }
+
+            const st = filterStates[id] || { brightness: 100, contrast: 100, saturate: 100, blur: 0, opacity: 100, rotate: 0 };
+            document.getElementById('filterBrightness').value = st.brightness;
+            document.getElementById('filterContrast').value = st.contrast;
+            document.getElementById('filterSaturate').value = st.saturate;
+            document.getElementById('filterBlur').value = st.blur;
+            document.getElementById('filterOpacity').value = st.opacity;
+            document.getElementById('filterRotate').value = st.rotate;
+
+            document.getElementById('valBrightness').innerText = st.brightness + '%';
+            document.getElementById('valContrast').innerText = st.contrast + '%';
+            document.getElementById('valSaturate').innerText = st.saturate + '%';
+            document.getElementById('valBlur').innerText = st.blur + 'px';
+            document.getElementById('valOpacity').innerText = st.opacity + '%';
+            document.getElementById('valRotate').innerText = st.rotate + '°';
+
+            document.getElementById('mainHoverFxSelect').value = wrapper.dataset.hoverFx || "";
+            document.getElementById('mainEntryFxSelect').value = wrapper.dataset.entryFx || "";
+        }
+
+        function applyGlobalFx(fxType, saveState = true) {
+            const fxOverlay = document.getElementById('fxOverlay');
+            fxOverlay.innerHTML = '';
+            if (activeGlobalFxTimer) clearInterval(activeGlobalFxTimer);
+
+            if (saveState) {
+                const currentItem = items.find(s => s.id === currentItemId);
+                if (currentItem) currentItem.globalFx = fxType;
+            }
+
+            const globalFxBtn = document.getElementById('globalFxBtn');
+            if (globalFxBtn) globalFxBtn.classList.toggle('active', fxType !== 'none');
+
+            document.querySelectorAll('.global-fx-picker button').forEach(btn => btn.classList.remove('active'));
+
+            if (fxType === 'none') return;
+
+            const particleSymbols = {
+                snow: ['❄', '❅', '❆'],
+                sakura: ['🌸', '🌺'],
+                sparkles: ['✨', '⭐', '🌟'],
+                fireworks: ['💥', '🎆', '✨'],
+                rain: ['💧', '🌧️'],
+                balloons: ['🎈', '🔴', '🟡', '🔵'],
+                hearts: ['💖', '❤️', '💕', '💗'],
+                leaves: ['🍂', '🍁', '🍃'],
+                matrix: ['0', '1', '⚡', '🌌'],
+                bubbles: ['🫧', '⚪', '🫧']
+            };
+
+            const symbols = particleSymbols[fxType] || ['✨'];
+
+            // MƯA (RAIN) chân thực hơn: dùng các vệt mưa dạng gradient thay vì emoji,
+            // kèm gợn nước nhỏ khi "chạm đất" để tăng cảm giác thật.
+            if (fxType === 'rain') {
+                activeGlobalFxTimer = setInterval(() => {
+                    const drop = document.createElement('div');
+                    drop.className = 'particle-rain-drop';
+                    const h = Math.random() * 16 + 14;
+                    drop.style.left = Math.random() * 100 + '%';
+                    drop.style.top = '-20px';
+                    drop.style.height = h + 'px';
+                    drop.style.opacity = (Math.random() * 0.4 + 0.5).toFixed(2);
+                    drop.style.transform = `rotate(${Math.random() * 4 - 2}deg)`;
+                    const duration = (Math.random() * 0.35 + 0.45).toFixed(2);
+                    drop.style.animation = `rainFast ${duration}s linear forwards`;
+                    fxOverlay.appendChild(drop);
+                    setTimeout(() => drop.remove(), duration * 1000 + 50);
+                }, 60);
+                return;
+            }
+
+            // PHÁO HOA (FIREWORKS) chân thực hơn: tên lửa bay lên rồi nổ thành nhiều tia sáng toả ra.
+            if (fxType === 'fireworks') {
+                const colors = ['#facc15', '#f87171', '#60a5fa', '#a78bfa', '#4ade80', '#fb923c'];
+                activeGlobalFxTimer = setInterval(() => {
+                    const originX = Math.random() * 70 + 15;
+                    const originY = Math.random() * 35 + 15;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+
+                    // tia bay lên (trail) trước khi nổ
+                    const trail = document.createElement('div');
+                    trail.className = 'particle';
+                    trail.innerText = '✨';
+                    trail.style.left = originX + '%';
+                    trail.style.top = (originY + 20) + '%';
+                    trail.style.fontSize = '14px';
+                    trail.style.animation = `fireworkTrail 0.35s ease-out forwards`;
+                    fxOverlay.appendChild(trail);
+                    setTimeout(() => trail.remove(), 400);
+
+                    // sau khi bay lên xong thì nổ thành cụm tia sáng toả ra mọi hướng
+                    setTimeout(() => {
+                        const sparkCount = 10 + Math.floor(Math.random() * 6);
+                        for (let i = 0; i < sparkCount; i++) {
+                            const angle = (Math.PI * 2 * i) / sparkCount + Math.random() * 0.3;
+                            const distance = Math.random() * 55 + 35;
+                            const spark = document.createElement('div');
+                            spark.className = 'spark-burst';
+                            const size = Math.random() * 4 + 3;
+                            spark.style.left = originX + '%';
+                            spark.style.top = originY + '%';
+                            spark.style.width = size + 'px';
+                            spark.style.height = size + 'px';
+                            spark.style.background = color;
+                            spark.style.boxShadow = `0 0 6px 2px ${color}`;
+                            spark.style.setProperty('--tx', (Math.cos(angle) * distance) + 'px');
+                            spark.style.setProperty('--ty', (Math.sin(angle) * distance) + 'px');
+                            spark.style.animation = `fireworkSpark ${(Math.random() * 0.4 + 0.7).toFixed(2)}s ease-out forwards`;
+                            fxOverlay.appendChild(spark);
+                            setTimeout(() => spark.remove(), 1200);
+                        }
+                        // lõi ánh sáng trung tâm khi nổ
+                        const core = document.createElement('div');
+                        core.className = 'particle';
+                        core.innerText = '💥';
+                        core.style.left = originX + '%';
+                        core.style.top = originY + '%';
+                        core.style.fontSize = '22px';
+                        core.style.filter = `drop-shadow(0 0 10px ${color})`;
+                        core.style.animation = `zoomIn 0.3s ease-out forwards, fadeIn 0.5s 0.2s ease-in forwards`;
+                        fxOverlay.appendChild(core);
+                        setTimeout(() => core.remove(), 600);
+                    }, 380);
+                }, 750);
+                return;
+            }
+
+            activeGlobalFxTimer = setInterval(() => {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                p.style.left = Math.random() * 100 + '%';
+
+                if (fxType === 'snow' || fxType === 'sakura' || fxType === 'leaves') {
+                    p.style.top = '-20px';
+                    p.style.fontSize = (Math.random() * 12 + 10) + 'px';
+                    p.style.setProperty('--sway', (Math.random() * 30 + 8) + 'px');
+                    p.style.filter = fxType === 'snow' ? 'drop-shadow(0 0 3px rgba(255,255,255,0.75))' : 'drop-shadow(0 0 2px rgba(0,0,0,0.25))';
+                    p.style.opacity = (Math.random() * 0.35 + 0.65).toFixed(2);
+                    p.style.animation = `fallSway ${Math.random() * 3 + 3.5}s cubic-bezier(0.45,0,0.55,1) forwards`;
+                } else if (fxType === 'balloons' || fxType === 'bubbles' || fxType === 'hearts') {
+                    p.style.bottom = '-20px';
+                    p.style.fontSize = (Math.random() * 16 + 14) + 'px';
+                    p.style.filter = fxType === 'hearts' ? 'drop-shadow(0 0 4px rgba(244,114,182,0.6))' : 'none';
+                    p.style.animation = `floatUpSway ${Math.random() * 4 + 4}s ease-in forwards`;
+                } else if (fxType === 'sparkles' || fxType === 'matrix') {
+                    p.style.top = Math.random() * 100 + '%';
+                    p.style.fontSize = (Math.random() * 14 + 11) + 'px';
+                    p.style.filter = 'drop-shadow(0 0 4px rgba(250,204,21,0.7))';
+                    p.style.animation = `twinkleFloat ${(Math.random() * 1.5 + 1.8).toFixed(2)}s ease-in-out forwards`;
+                } else {
+                    p.style.top = Math.random() * 100 + '%';
+                    p.style.fontSize = (Math.random() * 14 + 10) + 'px';
+                    p.style.animation = `fadeIn 1s ease forwards`;
+                }
+
+                fxOverlay.appendChild(p);
+                setTimeout(() => p.remove(), 6000);
+            }, 300);
+        }
+
+        /* ======================================================
+           HỆ THỐNG LIÊN KẾT: Khung Nhập / Nút Bấm  <->  Database / Slide
+           ====================================================== */
+        let linkModalTargetId = null;
+        let tempLink = {};
+
+        function showToast(msg) {
+            const toast = document.getElementById('appToast');
+            if (!toast) { alert(msg); return; }
+            toast.innerText = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._t);
+            toast._t = setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        function getAllDbPages() { return items.filter(i => i.type === 'database'); }
+        function getAllSlides() { return items.filter(i => i.type !== 'database'); }
+
+        function elementLabel(wrapper) {
+            if (wrapper.dataset.type === 'input') {
+                const field = wrapper.querySelector('.free-input');
+                return field && field.value ? `Khung Nhập ("${field.value}")` : 'Khung Nhập';
+            }
+            const box = wrapper.querySelector('.free-button-box');
+            return box ? `Nút "${(box.textContent || '').trim()}"` : 'Nút Bấm';
+        }
+
+        function openLinkModal(id) {
+            linkModalTargetId = id;
+            tempLink = {};
+            selectLayerById(id); // luôn chọn đúng phần tử đang liên kết, tránh nhầm với phần tử khác đang được chọn trước đó
+            document.getElementById('linkModalOverlay').classList.add('open');
+            const wrapper = document.getElementById(id);
+            if (!wrapper) return;
+            const label = elementLabel(wrapper);
+
+            if (wrapper.dataset.type === 'input') {
+                document.getElementById('linkModalTitle').innerText = `🔗 Liên kết ${label} (Bước 1/4)`;
+                renderLinkStepChooseDbPage(1, () =>
+                    renderLinkStepChooseTable(2, () =>
+                        renderLinkStepChooseColumn(3, () =>
+                            renderLinkStepAskPairing(4))));
+            } else {
+                document.getElementById('linkModalTitle').innerText = `🔗 Chọn Slide & Số cho ${label} (khớp với Khung Nhập)`;
+                renderLinkStepChooseSlide(1, () => renderLinkStepChooseNumber(2, finishButtonLink));
+            }
+        }
+
+        function closeLinkModal() {
+            document.getElementById('linkModalOverlay').classList.remove('open');
+            linkModalTargetId = null;
+        }
+
+        function elementBanner(wrapper) {
+            const label = elementLabel(wrapper);
+            const kind = wrapper.dataset.type === 'input' ? '📝 Khung Nhập' : '🔘 Nút Bấm';
+            return `<div style="background:#0f172a;border:1px solid #f59e0b;color:#fbbf24;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;margin-bottom:6px;">🎯 Đang liên kết: ${kind} — ${label}</div>`;
+        }
+
+        function crumbHTML(step, totalSteps, label) {
+            const wrapper = document.getElementById(linkModalTargetId);
+            const elLabel = wrapper ? elementLabel(wrapper) : '';
+            const total = wrapper && wrapper.dataset.type !== 'input' ? 2 : totalSteps;
+            document.getElementById('linkModalTitle').innerText = `🔗 ${elLabel} — ${label} (Bước ${step}/${total})`;
+        }
+
+        function setModalBody(html) {
+            const wrapper = document.getElementById(linkModalTargetId);
+            const banner = wrapper ? elementBanner(wrapper) : '';
+            document.getElementById('linkModalBody').innerHTML = banner + html;
+        }
+
+        function backButtonHTML(fn) {
+            return `<button class="link-option-btn" style="opacity:0.75;" onclick='(${fn.toString()})()'><i class="fa-solid fa-arrow-left"></i> Quay lại</button>`;
+        }
+
+        function renderLinkStepChooseDbPage(step, nextFn) {
+            crumbHTML(step, 4, 'Chọn Database');
+            const pages = getAllDbPages();
+            const body = document.getElementById('linkModalBody');
+            if (!pages.length) {
+                setModalBody(`<div class="link-modal-empty">Chưa có trang Database nào.<br>Hãy tạo 1 trang Database trước (nút "+" phía trên thanh Slide), sau đó thêm Bảng + Cột rồi quay lại đây.</div>
+                    <button class="link-option-btn" onclick="closeLinkModal()"><i class="fa-solid fa-xmark"></i> Đóng lại</button>`);
+                return;
+            }
+            setModalBody(`<div class="link-crumbs">Chọn Database sẽ lưu dữ liệu:</div>` + pages.map(p =>
+                `<button class="link-option-btn" onclick='pickDbPage("${p.id}")'><i class="fa-solid fa-database" style="color:#3b82f6;"></i> ${escapeAttr(p.title)}</button>`
+            ).join(''));
+            window._linkNextFn = nextFn;
+        }
+        function pickDbPage(pageId) { tempLink.dbPageId = pageId; const next = window._linkNextFn; next(); }
+
+        function renderLinkStepChooseTable(step, nextFn) {
+            crumbHTML(step, 4, 'Chọn Bảng');
+            const page = items.find(i => i.id === tempLink.dbPageId);
+            const body = document.getElementById('linkModalBody');
+            if (!page || !page.tables || !page.tables.length) {
+                setModalBody(`<div class="link-modal-empty">Database "${escapeAttr(page ? page.title : '')}" chưa có Bảng nào.<br>Hãy vào trang Database đó tạo Bảng trước.</div>
+                    ${backButtonHTML(() => reopenModalFromStart())}
+                    <button class="link-option-btn" onclick="closeLinkModal()"><i class="fa-solid fa-xmark"></i> Đóng lại</button>`);
+                return;
+            }
+            setModalBody(`<div class="link-crumbs">Đã chọn: <b>${escapeAttr(page.title)}</b> → Chọn Bảng:</div>` + page.tables.map(t =>
+                `<button class="link-option-btn" onclick='pickDbTable("${t.id}")'><i class="fa-solid fa-table" style="color:#38bdf8;"></i> ${escapeAttr(t.name)}</button>`
+            ).join('') + backButtonHTML(() => reopenModalFromStart()));
+            window._linkNextFn = nextFn;
+        }
+        function pickDbTable(tableId) { tempLink.tableId = tableId; const next = window._linkNextFn; next(); }
+
+        function renderLinkStepChooseColumn(step, finishFn) {
+            crumbHTML(step, 4, 'Chọn Thuộc tính (Cột)');
+            const page = items.find(i => i.id === tempLink.dbPageId);
+            const table = page.tables.find(t => t.id === tempLink.tableId);
+            const body = document.getElementById('linkModalBody');
+            if (!table || !table.columns || !table.columns.length) {
+                setModalBody(`<div class="link-modal-empty">Bảng "${escapeAttr(table ? table.name : '')}" chưa có Cột (thuộc tính) nào.<br>Hãy thêm cột trong Database trước.</div>
+                    ${backButtonHTML(() => reopenModalFromStart())}
+                    <button class="link-option-btn" onclick="closeLinkModal()"><i class="fa-solid fa-xmark"></i> Đóng lại</button>`);
+                return;
+            }
+            setModalBody(`<div class="link-crumbs">Bảng <b>${escapeAttr(table.name)}</b> → Chọn Cột:</div>` + table.columns.map(c =>
+                `<button class="link-option-btn" onclick='pickDbColumn(${JSON.stringify(String(c.id))})'><i class="fa-solid fa-columns" style="color:#facc15;"></i> ${escapeAttr(c.name)}</button>`
+            ).join('') + backButtonHTML(() => reopenModalFromStart()));
+            window._linkFinishFn = finishFn;
+        }
+        function pickDbColumn(colId) { tempLink.colId = colId; const fn = window._linkFinishFn; fn(); }
+
+        function reopenModalFromStart() {
+            openLinkModal(linkModalTargetId);
+        }
+
+        function renderLinkStepAskPairing(step) {
+            crumbHTML(step, 4, 'Chọn cách lưu');
+            const body = document.getElementById('linkModalBody');
+            setModalBody(`
+                <div class="link-modal-empty">Dữ liệu gõ vào sẽ lưu khi nào?</div>
+                <button class="link-option-btn" onclick="finishInputLinkDirect()"><i class="fa-solid fa-bolt" style="color:#facc15;"></i> Tự động lưu ngay khi gõ chữ</button>
+                <button class="link-option-btn" onclick="renderLinkStepChooseSlide(3, () => renderLinkStepChooseNumber(4, finishInputLinkPaired))"><i class="fa-solid fa-toggle-on" style="color:#a855f7;"></i> Chỉ lưu khi bấm Nút Bấm (ghép Slide + Số)</button>
+                ${backButtonHTML(() => reopenModalFromStart())}
+            `);
+        }
+
+        function renderLinkStepChooseSlide(step, nextFn) {
+            crumbHTML(step, 4, 'Chọn Slide');
+            const slides = getAllSlides();
+            const body = document.getElementById('linkModalBody');
+            setModalBody(`<div class="link-crumbs">Chọn Slide:</div>` + slides.map(s =>
+                `<button class="link-option-btn" onclick='pickSlide("${s.id}")'><i class="fa-solid fa-desktop" style="color:#a855f7;"></i> ${escapeAttr(s.title)}</button>`
+            ).join(''));
+            window._linkNextFn = nextFn;
+        }
+        function pickSlide(slideId) { tempLink.slideId = slideId; const next = window._linkNextFn; next(); }
+
+        function renderLinkStepChooseNumber(step, nextFn) {
+            crumbHTML(step, 4, 'Chọn Số');
+            const body = document.getElementById('linkModalBody');
+            let btns = '';
+            for (let n = 1; n <= 12; n++) btns += `<button onclick="pickNumber(${n})">${n}</button>`;
+            setModalBody(`<div class="link-crumbs">Chọn Số (dùng để khớp Khung Nhập ↔ Nút Bấm — 2 bên phải chọn CÙNG Slide và CÙNG Số):</div><div class="link-number-grid">${btns}</div>`);
+            window._linkNextFn = nextFn;
+        }
+        function pickNumber(n) { tempLink.number = n; const next = window._linkNextFn; next(); }
+
+        function finishInputLinkDirect() {
+            tempLink.mode = 'db';
+            finishInputLink();
+        }
+        function finishInputLinkPaired() {
+            tempLink.mode = 'slide';
+            finishInputLink();
+        }
+
+        function finishInputLink() {
+            const wrapper = document.getElementById(linkModalTargetId);
+            if (!wrapper) return;
+            wrapper.dataset.linkMode = tempLink.mode;
+            wrapper.dataset.linkDbPage = tempLink.dbPageId || '';
+            wrapper.dataset.linkTable = tempLink.tableId || '';
+            wrapper.dataset.linkCol = tempLink.colId || '';
+            wrapper.dataset.linkSlide = tempLink.slideId || '';
+            wrapper.dataset.linkNumber = tempLink.number || '';
+            updateLinkBadge(wrapper);
+            closeLinkModal();
+            showToast(`✅ Đã lưu liên kết cho ${elementLabel(wrapper)}.`);
+        }
+
+        function finishButtonLink() {
+            const wrapper = document.getElementById(linkModalTargetId);
+            if (!wrapper) return;
+            wrapper.dataset.linkSlide = tempLink.slideId || '';
+            wrapper.dataset.linkNumber = tempLink.number || '';
+            updateLinkBadge(wrapper);
+            closeLinkModal();
+            showToast(`✅ Đã lưu liên kết cho ${elementLabel(wrapper)}.`);
+        }
+
+        function updateLinkBadge(wrapper) {
+            const btn = document.getElementById('linkBtn-' + wrapper.id);
+            if (!btn) return;
+            const isLinked = wrapper.dataset.type === 'input'
+                ? !!wrapper.dataset.linkMode
+                : !!(wrapper.dataset.linkSlide && wrapper.dataset.linkNumber);
+            btn.classList.toggle('linked', isLinked);
+
+            // Tóm tắt liên kết hiện tại để người dùng tự kiểm tra qua tooltip
+            let summary = '🔗 Liên kết tới Database hoặc Slide';
+            if (isLinked) {
+                const page = items.find(i => i.id === wrapper.dataset.linkDbPage);
+                const table = page && (page.tables || []).find(t => t.id === wrapper.dataset.linkTable);
+                const col = table && (table.columns || []).find(c => String(c.id) === String(wrapper.dataset.linkCol));
+                const slide = items.find(i => i.id === wrapper.dataset.linkSlide);
+
+                if (wrapper.dataset.type === 'input') {
+                    if (wrapper.dataset.linkMode === 'db') {
+                        summary = `✅ Đã liên kết: Tự động lưu vào ${page ? page.title : '?'} → ${table ? table.name : '?'} → ${col ? col.name : '?'}`;
+                    } else {
+                        summary = `✅ Đã liên kết: Slide "${slide ? slide.title : '?'}" • Số ${wrapper.dataset.linkNumber} → lưu vào ${page ? page.title : '?'} → ${table ? table.name : '?'} → ${col ? col.name : '?'} (chờ bấm Nút)`;
+                    }
+                } else {
+                    summary = `✅ Đã ghép với: Slide "${slide ? slide.title : '?'}" • Số ${wrapper.dataset.linkNumber}`;
+                }
+            } else {
+                summary += ' (chưa liên kết)';
+            }
+            btn.title = summary;
+        }
+
+        /* ==== GHI DỮ LIỆU VÀO DATABASE (dùng khi ở chế độ Xem trước) ==== */
+        function upsertDbRow(dbPageId, tableId, rowId, values) {
+            const page = items.find(i => i.id === dbPageId);
+            if (!page) return false;
+            const table = (page.tables || []).find(t => t.id === tableId);
+            if (!table) return false;
+            let row = table.rows.find(r => r.id === rowId);
+            if (!row) {
+                row = { id: rowId, values: {} };
+                table.columns.forEach(c => { row.values[c.id] = ''; });
+                table.rows.push(row);
+            }
+            Object.keys(values).forEach(k => { row.values[k] = values[k]; });
+            if (currentItemId === dbPageId) renderDatabasePage();
+            return true;
+        }
+
+        window.slideLinkCache = {}; // key: `${slideId}::${number}` -> {dbPageId, tableId, values:{colId:value}}
+
+        function handlePreviewInputChange(wrapper, inputEl) {
+            const mode = wrapper.dataset.linkMode;
+            if (!mode) return;
+            if (mode === 'db') {
+                if (!wrapper.dataset.linkDbPage || !wrapper.dataset.linkTable || !wrapper.dataset.linkCol) return;
+                // Dùng CHUNG 1 dòng "đang soạn" cho mỗi Bảng, để nhiều Khung Nhập khác cột (id, name...)
+                // của cùng 1 Bảng gộp vào đúng 1 dòng, không tách ra nhiều dòng riêng.
+                const draftRowId = 'draft_' + wrapper.dataset.linkTable;
+                upsertDbRow(wrapper.dataset.linkDbPage, wrapper.dataset.linkTable, draftRowId, { [wrapper.dataset.linkCol]: inputEl.value });
+            } else if (mode === 'slide') {
+                const key = wrapper.dataset.linkSlide + '::' + wrapper.dataset.linkNumber;
+                const rec = window.slideLinkCache[key] || { values: {} };
+                rec.dbPageId = wrapper.dataset.linkDbPage;
+                rec.tableId = wrapper.dataset.linkTable;
+                rec.values[wrapper.dataset.linkCol] = inputEl.value;
+                window.slideLinkCache[key] = rec;
+            }
+        }
+
+        function handlePreviewButtonClick(wrapper) {
+            const key = wrapper.dataset.linkSlide + '::' + wrapper.dataset.linkNumber;
+            const rec = window.slideLinkCache[key];
+            const kind = wrapper.dataset.btnKind || 'submit';
+            if (!rec || !rec.dbPageId || !rec.tableId) {
+                showToast('⚠️ Chưa khớp với Khung Nhập nào. Hãy rê chuột vào icon 🔗 của Khung Nhập để xem đã liên kết đúng Slide + Số chưa.');
+                return;
+            }
+            if (kind === 'add') {
+                upsertDbRow(rec.dbPageId, rec.tableId, 'row_' + Date.now() + Math.random().toString(36).slice(2, 6), rec.values);
+                showToast('✅ Đã thêm dòng mới vào Database.');
+            } else if (kind === 'search') {
+                const page = items.find(i => i.id === rec.dbPageId);
+                const table = page && page.tables.find(t => t.id === rec.tableId);
+                let found = null;
+                if (table) {
+                    found = table.rows.find(row => Object.keys(rec.values).some(colId => String(row.values[colId] ?? '') === String(rec.values[colId]) && rec.values[colId] !== ''));
+                }
+                if (found) {
+                    document.querySelectorAll('.el-wrapper[data-type="input"]').forEach(inp => {
+                        if (inp.dataset.linkSlide + '::' + inp.dataset.linkNumber === key && found.values[inp.dataset.linkCol] !== undefined) {
+                            const field = inp.querySelector('.free-input');
+                            if (field) field.value = found.values[inp.dataset.linkCol];
+                        }
+                    });
+                    showToast('🔎 Đã tìm thấy và điền dữ liệu.');
+                } else {
+                    showToast('🔎 Không tìm thấy dữ liệu phù hợp.');
+                }
+            } else {
+                upsertDbRow(rec.dbPageId, rec.tableId, 'rec_' + key, rec.values);
+                showToast('✅ Đã lưu dữ liệu vào Database.');
+            }
+        }
+
+        function wirePreviewInteractivity(stage) {
+            stage.querySelectorAll('.el-wrapper[data-type="input"]').forEach(wrapper => {
+                const field = wrapper.querySelector('.free-input');
+                if (!field) return;
+                field.addEventListener('input', () => handlePreviewInputChange(wrapper, field));
+            });
+            stage.querySelectorAll('.el-wrapper[data-type="button"]').forEach(wrapper => {
+                const box = wrapper.querySelector('.free-button-box');
+                if (!box) return;
+                box.setAttribute('contenteditable', 'false');
+                wrapper.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    handlePreviewButtonClick(wrapper);
+                });
+            });
+        }
+
+        function openPreviewModal() {
+            saveCurrentSlideState();
+            const modal = document.getElementById('previewModal');
+            const stage = document.getElementById('previewStage');
+            modal.classList.add('open');
+
+            const currentItem = items.find(s => s.id === currentItemId) || items[0];
+            renderPreviewSlide(currentItem.id);
+        }
+
+        function renderPreviewSlide(slideId) {
+            const stage = document.getElementById('previewStage');
+            const slide = items.find(s => s.id === slideId);
+            if (!slide) return;
+
+            stage.style.background = slide.background || '#030712';
+            stage.innerHTML = `<div class="fx-overlay-container" id="previewFxOverlay"></div>` + (slide.elements || '');
+
+            stage.querySelectorAll('.el-toolbar, .resize-handle-br').forEach(el => el.remove());
+            stage.querySelectorAll('.el-wrapper').forEach(wrapper => {
+                wrapper.classList.remove('selected');
+
+                // Khung Nhập / Nút Bấm không nên điều hướng slide khi có href trống
+                if (wrapper.dataset.targetHref && wrapper.dataset.type !== 'input' && wrapper.dataset.type !== 'button') {
+                    wrapper.classList.add('clickable-link');
+                    wrapper.onclick = () => renderPreviewSlide(wrapper.dataset.targetHref);
+                }
+            });
+
+            wirePreviewInteractivity(stage);
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.remove('open');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#boxPicker') && !e.target.closest('#boxToolBtn')) {
+                document.getElementById('boxPicker').classList.remove('open');
+            }
+            if (!e.target.closest('#iconPicker') && !e.target.closest('#iconToolBtn')) {
+                document.getElementById('iconPicker').classList.remove('open');
+            }
+            if (!e.target.closest('#globalFxPicker') && !e.target.closest('#globalFxBtn')) {
+                document.getElementById('globalFxPicker').classList.remove('open');
+            }
+            if (!e.target.closest('#elementsPicker') && !e.target.closest('#elementsToolBtn')) {
+                document.getElementById('elementsPicker').classList.remove('open');
+            }
+            if (!e.target.closest('.add-plus-container')) {
+                const pop = document.getElementById('addPlusPopover');
+                if (pop) pop.classList.remove('open');
+            }
+        });
+
+        window.onload = () => {
+            initIconPicker();
+            initDraggableToolbar();
+            initPasteImageListener();
+            initKeyboardShortcuts();
+            renderSlideBar();
+            loadSlideState('slide-1');
+        };
+    </script>
+<a href="index.html" style="position:fixed;left:16px;bottom:16px;z-index:99999;background:#7c3aed;color:#fff;padding:10px 16px;border-radius:999px;font:600 13px Inter,system-ui,sans-serif;text-decoration:none;box-shadow:0 6px 20px rgba(0,0,0,.3)">← Về AURA</a>
+</body>
+</html>
