@@ -647,24 +647,29 @@
     <main class="container">
 
         <!-- THÊM MỚI: DANH MỤC NHANH (GIÚP TRANG ĐẦY ĐẶN HƠN) -->
-        <div class="category-grid">
-            <a href="#tatca" class="cat-card" onclick="locNam()">
-                <i class="fa-solid fa-mars"></i>
-                <h4>Thời Trang Nam</h4>
-            </a>
-            <a href="#tatca" class="cat-card" onclick="locNu()">
-                <i class="fa-solid fa-venus"></i>
-                <h4>Thời Trang Nữ</h4>
-            </a>
-            <a href="#tatca" class="cat-card" onclick="locTreEm()">
-                <i class="fa-solid fa-child"></i>
-                <h4>Đồ Trẻ Em</h4>
-            </a>
-            <a href="#banchay" class="cat-card">
-                <i class="fa-solid fa-bolt"></i>
-                <h4>Flash Sale</h4>
-            </a>
-        </div>
+      <div class="category-grid">
+
+    <a href="#tatca" class="cat-card" onclick="locSanPham('nam')">
+        <i class="fa-solid fa-mars"></i>
+        <h4>Thời Trang Nam</h4>
+    </a>
+
+    <a href="#tatca" class="cat-card" onclick="locSanPham('nu')">
+        <i class="fa-solid fa-venus"></i>
+        <h4>Thời Trang Nữ</h4>
+    </a>
+
+    <a href="#tatca" class="cat-card" onclick="locSanPham('treem')">
+        <i class="fa-solid fa-child"></i>
+        <h4>Đồ Trẻ Em</h4>
+    </a>
+
+    <a href="#banchay" class="cat-card">
+        <i class="fa-solid fa-bolt"></i>
+        <h4>Flash Sale</h4>
+    </a>
+
+</div>
 
 
 
@@ -714,18 +719,39 @@
 
 
         <!-- Tất Cả Sản Phẩm -->
-        <section id="tatca" class="section">
-            <div class="section-header">
-                <h2 class="section-title">Tất Cả Sản Phẩm</h2>
-                <div class="filter-buttons">
-                    <button class="btn-filter active" onclick="handleFilter(this, locTatCa)">Tất cả</button>
-                    <button class="btn-filter" onclick="handleFilter(this, locNam)">Đồ Nam</button>
-                    <button class="btn-filter" onclick="handleFilter(this, locNu)">Đồ Nữ</button>
-                    <button class="btn-filter" onclick="handleFilter(this, locTreEm)">Trẻ Em</button>
-                </div>
-            </div>
-            <div id="loadall" class="product-grid"></div>
-        </section>
+     <section id="tatca" class="section">
+
+    <div class="section-header">
+
+        <h2 class="section-title">
+            Tất Cả Sản Phẩm
+        </h2>
+
+        <div class="filter-buttons">
+
+            <button class="btn-filter active" onclick="locSanPham('all')">
+                Tất cả
+            </button>
+
+            <button class="btn-filter" onclick="locSanPham('nam')">
+                Đồ Nam
+            </button>
+
+            <button class="btn-filter" onclick="locSanPham('nu')">
+                Đồ Nữ
+            </button>
+
+            <button class="btn-filter" onclick="locSanPham('treem')">
+                Trẻ Em
+            </button>
+
+        </div>
+
+    </div>
+
+    <div id="loadall" class="product-grid"></div>
+
+</section>
 
 
 
