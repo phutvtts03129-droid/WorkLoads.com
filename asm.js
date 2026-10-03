@@ -318,69 +318,82 @@
         // ======================================================
         // HIỂN THỊ TẤT CẢ SẢN PHẨM
         // ======================================================
-        function loadall() {
-            const productList = document.querySelector("#loadall");
-            if (!productList) return;
+     function loadall(spList = products) {
 
-            const html = products
-                .map((product) => {
-                    const salePrice = product.price - (product.price * product.discount / 100);
+    const productList = document.querySelector("#loadall");
 
-                    return `
-                        <div class="product-card cat-${product.category}">
-                            <div class="badge-sale">
-                                -${product.discount}%
-                            </div>
+    if (!productList) return;
 
-                            <img
-                                src="${product.image}"
-                                alt="${product.name}"
-                                class="product-img"
-                            >
+    const html = spList
+        .map((product) => {
 
-                            <div class="product-info">
-                                <span class="category-tag">
-                                    ${
-                                        product.category === "nam" ? "Nam"
-                                        : product.category ==="nu" ? "Nữ"
+            const salePrice =
+                product.price -
+                (product.price * product.discount / 100);
+
+            return `
+                <div class="product-card cat-${product.category}">
+
+                    <div class="badge-sale">
+                        -${product.discount}%
+                    </div>
+
+                    <img
+                        src="${product.image}"
+                        alt="${product.name}"
+                        class="product-img"
+                    >
+
+                    <div class="product-info">
+
+                        <span class="category-tag">
+                            ${
+                                product.category === "nam"
+                                    ? "Nam"
+                                    : product.category === "nu"
+                                        ? "Nữ"
                                         : "Trẻ em"
-                                    }
-                                </span>
+                            }
+                        </span>
 
-                                <h3 class="product-name">
-                                    ${product.name}
-                                </h3>
+                        <h3 class="product-name">
+                            ${product.name}
+                        </h3>
 
-                                <p class="product-desc">
-                                    ${product.description}
-                                </p>
+                        <p class="product-desc">
+                            ${product.description}
+                        </p>
 
-                                <div class="price-box">
-                                    <span class="current-price">
-                                        ${salePrice.toLocaleString()}đ
-                                    </span>
-                                    <span class="old-price">
-                                        ${product.price.toLocaleString()}đ
-                                    </span>
-                                </div>
+                        <div class="price-box">
 
-                                <div class="sold-count">
-                                    Đã bán: ${product.sold}
-                                </div>
+                            <span class="current-price">
+                                ${salePrice.toLocaleString()}đ
+                            </span>
 
-                                <button class="btn-add">
-                                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                                </button>
-                            </div>
+                            <span class="old-price">
+                                ${product.price.toLocaleString()}đ
+                            </span>
+
                         </div>
-                    `;
-                })
-                .join("");
 
-            productList.innerHTML = html;
-        }
+                        <div class="sold-count">
+                            Đã bán: ${product.sold}
+                        </div>
 
-    
+                        <button class="btn-add">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            Thêm vào giỏ
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+        })
+        .join("");
+
+    productList.innerHTML = html;
+}
         
         window.onload = function() {
             loadbanchay();
@@ -388,112 +401,23 @@
             loadall();
         };
 
-        // ===============================
-        // HIỂN THỊ SẢN PHẨM ĐÃ LỌC
-        // ===============================
-        function locNam() {
-            let sp = products.filter(function(product) {
-                return product.category == "nam";
-            });
-            hienThiLoc(sp);
-        }
+        
 
-        function locNu() {
-            let sp = products.filter(function(product) {
-                return product.category == "nu";
-            });
-            hienThiLoc(sp);
-        }
+function locSanPham(loai) {
 
-        function locTreEm() {
-            let sp = products.filter(function(product) {
-                return product.category == "treem";
-            });
-            hienThiLoc(sp);
-        }
+    let sp;
 
-        function locTatCa() {
-            hienThiLoc(products);
-        }
+    if (loai == "all") {
+        sp = products;
+    } else {
+        sp = products.filter(function(product) {
+            return product.category == loai;
+        });
+    }
 
-        // ======================================================
-        // HÀM HIỂN THỊ SẢN PHẨM SAU KHI LỌC (HÀM ĐƯỢC BỔ SUNG)
-        // ======================================================
-        function hienThiLoc(spList) {
-            const productList = document.querySelector("#loadall");
-            if (!productList) return;
+    loadall(sp);
+}
 
-            const html = spList
-                .map((product) => {
-                    const salePrice = product.price - (product.price * product.discount / 100);
 
-                    return `
-                        <div class="product-card cat-${product.category}">
-                            <div class="badge-sale">
-                                -${product.discount}%
-                            </div>
 
-                            ${product.isHot ? `
-                                <div class="badge-hot">
-                                    HOT
-                                </div>
-                            ` : ""}
-
-                            <img
-                                src="${product.image}"
-                                alt="${product.name}"
-                                class="product-img"
-                            >
-
-                            <div class="product-info">
-                                <span class="category-tag">
-                                    ${
-                                        product.category === "nam"
-                                        ? "Nam"
-                                        : product.category === "nu"
-                                        ? "Nữ"
-                                        : "Trẻ em"
-                                    }
-                                </span>
-
-                                <h3 class="product-name">
-                                    ${product.name}
-                                </h3>
-
-                                <p class="product-desc">
-                                    ${product.description}
-                                </p>
-
-                                <div class="price-box">
-                                    <span class="current-price">
-                                        ${salePrice.toLocaleString()}đ
-                                    </span>
-                                    <span class="old-price">
-                                        ${product.price.toLocaleString()}đ
-                                    </span>
-                                </div>
-
-                                <div class="sold-count">
-                                    Đã bán: ${product.sold}
-                                </div>
-
-                                <button class="btn-add">
-                                    <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                })
-                .join("");
-
-            productList.innerHTML = html;
-        }
-
-        // Hàm hỗ trợ đổi active class cho nút lọc
-        function handleFilter(btnElement, filterFunction) {
-            const filterBtns = document.querySelectorAll('.btn-filter');
-            filterBtns.forEach(btn => btn.classList.remove('active'));
-            btnElement.classList.add('active');
-            filterFunction();
-        }
-   
+       
